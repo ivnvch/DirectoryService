@@ -1,0 +1,21 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DirectoryService.API", "DirectoryService.API\DirectoryService.API.csproj", "{BB038DDB-7046-4194-A929-B42D72294C21}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{93116370-851C-4943-928E-AE602D2E6F65}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{BB038DDB-7046-4194-A929-B42D72294C21}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BB038DDB-7046-4194-A929-B42D72294C21}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BB038DDB-7046-4194-A929-B42D72294C21}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BB038DDB-7046-4194-A929-B42D72294C21}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{BB038DDB-7046-4194-A929-B42D72294C21} = {93116370-851C-4943-928E-AE602D2E6F65}
+	EndGlobalSection
+EndGlobal
