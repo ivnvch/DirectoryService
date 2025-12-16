@@ -1,11 +1,12 @@
 using CSharpFunctionalExtensions;
 using DirectoryService.Domain.DepartmentLocations;
-using DirectoryService.Domain.DepartmentPostitions;
+using DirectoryService.Domain.DepartmentPositions;
 using DirectoryService.Domain.Departments.ValueObject;
+using DirectoryService.Shared.Errors;
 
 namespace DirectoryService.Domain.Departments;
 
-public class Department
+public sealed class Department
 {
     private Department(
         string name,
@@ -43,7 +44,7 @@ public class Department
     public IReadOnlyList<DepartmentPosition> Positions => _positions;
 
 
-    public static Result<Department> Create(
+    public static Result<Department, Error> Create(
         string name,
         DepartmentIdentifier departmentIdentifier,
         Guid? parentId, 
@@ -53,7 +54,7 @@ public class Department
         DateTime created)
     {
         if (string.IsNullOrWhiteSpace(name))
-          return Result.Failure<Department>($"The name '{name}' is invalid");
+          return GeneralErrors.ValueIsInvalid($"'{name}'");
 
         return new Department(name, departmentIdentifier, parentId, departmentPath, depth, isActive, created);
     }

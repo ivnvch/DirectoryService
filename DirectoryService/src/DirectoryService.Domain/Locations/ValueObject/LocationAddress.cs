@@ -1,4 +1,5 @@
 using CSharpFunctionalExtensions;
+using DirectoryService.Shared.Errors;
 
 namespace DirectoryService.Domain.Locations.ValueObject;
 
@@ -11,10 +12,10 @@ public record LocationAddress
     
     public string Value { get; private set; }
 
-    public static Result<LocationAddress> Create(string value)
+    public static Result<LocationAddress, Error> Create(string value)
     {
         if(string.IsNullOrWhiteSpace(value))
-            return Result.Failure<LocationAddress>("Address cannot be empty");
+            return GeneralErrors.ValueIsInvalid("Address");
         
         return new LocationAddress(value);
     }

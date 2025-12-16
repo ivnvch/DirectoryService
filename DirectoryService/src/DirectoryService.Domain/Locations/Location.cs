@@ -1,10 +1,33 @@
+using System.Runtime.InteropServices;
+using CSharpFunctionalExtensions;
 using DirectoryService.Domain.DepartmentLocations;
 using DirectoryService.Domain.Locations.ValueObject;
+using DirectoryService.Shared.Errors;
 
 namespace DirectoryService.Domain.Locations;
 
-public class Location
+public sealed class Location
 {
+    private Location()
+    {
+        
+    }
+
+    public Location(
+        string name, 
+        LocationAddress address, 
+        LocationTimezone timezone, 
+        bool isActive, 
+        DateTime createdAt)
+    {
+        Id = Guid.NewGuid();
+        Name = name;
+        Address = address;
+        Timezone = timezone;
+        IsActive = isActive;
+        CreatedAt = createdAt;
+        UpdatedAt = createdAt;
+    }
     private readonly List<DepartmentLocation> _locations = [];
     public Guid Id { get; private set; }
     public string Name { get; private set; }
@@ -14,4 +37,12 @@ public class Location
     public DateTime CreatedAt { get; private set; }
     public DateTime UpdatedAt { get; private set; }
     public IReadOnlyList<DepartmentLocation> Locations => _locations;
+
+    public static Result<Location, Error> Create(string name, LocationAddress address, LocationTimezone timezone, bool isActive, DateTime createdAt)
+    {
+        if(string.IsNullOrWhiteSpace(name))
+            return GeneralErrors.ValueIsInvalid("Name");
+        
+        return new Location(name, address, timezone, isActive, createdAt);
+    }
 }

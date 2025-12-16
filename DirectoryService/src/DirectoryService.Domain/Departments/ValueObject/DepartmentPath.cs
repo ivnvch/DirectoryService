@@ -1,5 +1,6 @@
 using System.Text.RegularExpressions;
 using CSharpFunctionalExtensions;
+using DirectoryService.Shared.Errors;
 
 namespace DirectoryService.Domain.Departments.ValueObject;
 
@@ -10,29 +11,29 @@ public record DepartmentPath
         Value = value;
     }
     
-    public string Value { get; init; }
+    public string Value { get; }
 
     public static Result<DepartmentPath> Create(string value, string? existingPath = null)
     {
         return new DepartmentPath(IsValidDepartmentPath(value, existingPath).Value);
     }
     
-    public static Result<string> IsValidDepartmentPath(string path, string? existingPath = null)
+    public static Result<string, Error> IsValidDepartmentPath(string path, string? existingPath = null)
     {
         if (string.IsNullOrWhiteSpace(path))
-            return Result.Failure<string>("Invalid path");
+            return GeneralErrors.ValueIsInvalid("path");
 
         if (!PathRegex.IsMatch(path))
-            return Result.Failure<string>("Invalid path");
+            return GeneralErrors.ValueIsInvalid("path");
 
         if (!string.IsNullOrWhiteSpace(existingPath))
         {
             if (!PathRegex.IsMatch(existingPath))
-                return Result.Failure<string>("Invalid path");
+                return GeneralErrors.ValueIsInvalid("path");
 
             string prefix = existingPath + ".";
             if (!path.StartsWith(prefix, StringComparison.Ordinal))
-                return Result.Failure<string>("Invalid path");
+                return GeneralErrors.ValueIsInvalid("path");
         }
 
         return path;

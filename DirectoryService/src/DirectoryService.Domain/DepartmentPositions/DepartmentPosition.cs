@@ -1,4 +1,4 @@
-namespace DirectoryService.Domain.DepartmentPostitions;
+namespace DirectoryService.Domain.DepartmentPositions;
 
 public class DepartmentPosition
 {

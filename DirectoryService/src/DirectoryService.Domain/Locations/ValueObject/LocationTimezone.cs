@@ -1,4 +1,6 @@
 using CSharpFunctionalExtensions;
+using DirectoryService.Shared.Errors;
+using NodaTime;
 
 namespace DirectoryService.Domain.Locations.ValueObject;
 
@@ -10,10 +12,14 @@ public record LocationTimezone
     }
     
     public string Value { get; private set; }
-    public static Result<LocationTimezone> Create(string value)
+    public static Result<LocationTimezone, Error> Create(string value)
     {
         if(string.IsNullOrWhiteSpace(value))
-            return Result.Failure<LocationTimezone>("Timezone cannot be empty");
+            return GeneralErrors.ValueIsInvalid("Timezone");
+        
+        var zone = DateTimeZoneProviders.Tzdb.GetZoneOrNull(value);
+        if (zone is null)
+            return  GeneralErrors.ValueIsInvalid("Timezone");
         
         return new LocationTimezone(value);
     }
