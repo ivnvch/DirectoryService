@@ -1,4 +1,6 @@
 using CSharpFunctionalExtensions;
+using DirectoryService.Domain.DepartmentLocations;
+using DirectoryService.Domain.DepartmentPostitions;
 using DirectoryService.Domain.Departments.ValueObject;
 
 namespace DirectoryService.Domain.Departments;
@@ -24,6 +26,9 @@ public class Department
         CreatedAt = created;
     }
 
+    private readonly List<DepartmentPosition> _positions = [];
+    private readonly List<DepartmentLocation> _locations = [];
+
     public Guid Id { get; private set; }
     public string Name { get; private set; }
     public DepartmentIdentifier DepartmentIdentifier { get; private set; }
@@ -33,6 +38,9 @@ public class Department
     public bool IsActive { get; private set; }
     public DateTime CreatedAt { get; private set; }
     public DateTime UpdatedAt { get; private set; }
+    public IReadOnlyList<DepartmentLocation> Locations => _locations;
+
+    public IReadOnlyList<DepartmentPosition> Positions => _positions;
 
 
     public static Result<Department> Create(
