@@ -8,6 +8,10 @@ namespace DirectoryService.Domain.Departments;
 
 public sealed class Department
 {
+    private Department()
+    {
+        
+    }
     private Department(
         Guid id,
         string name,

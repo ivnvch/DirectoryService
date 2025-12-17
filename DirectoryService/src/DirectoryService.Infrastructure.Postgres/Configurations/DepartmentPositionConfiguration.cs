@@ -1,0 +1,28 @@
+using DirectoryService.Domain.DepartmentPositions;
+using DirectoryService.Domain.Departments;
+using DirectoryService.Domain.Positions;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+
+namespace DirectoryService.Infrastructure.Configurations;
+
+public class DepartmentPositionConfiguration : IEntityTypeConfiguration<DepartmentPosition>
+{
+    public void Configure(EntityTypeBuilder<DepartmentPosition> builder)
+    {
+        builder.ToTable("department_position");
+        
+        builder.HasKey(dp => dp.DepartmentId)
+            .HasName("department_position_department_id");
+        
+        builder.HasOne<Department>()
+            .WithMany(d => d.Positions)
+            .HasForeignKey(dp => dp.DepartmentId)
+            .OnDelete(DeleteBehavior.Cascade);
+        
+        builder.HasOne<Position>()
+            .WithMany(d => d.Departments)
+            .HasForeignKey(dp => dp.PositionId)
+            .OnDelete(DeleteBehavior.Cascade);
+    }
+}

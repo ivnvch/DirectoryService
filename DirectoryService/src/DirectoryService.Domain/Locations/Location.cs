@@ -14,13 +14,14 @@ public sealed class Location
     }
 
     public Location(
+        Guid id,
         string name, 
         LocationAddress address, 
         LocationTimezone timezone, 
         bool isActive, 
         DateTime createdAt)
     {
-        Id = Guid.NewGuid();
+        Id = id;
         Name = name;
         Address = address;
         Timezone = timezone;
@@ -28,7 +29,7 @@ public sealed class Location
         CreatedAt = createdAt;
         UpdatedAt = createdAt;
     }
-    private readonly List<DepartmentLocation> _locations = [];
+    private readonly List<DepartmentLocation> _departments = [];
     public Guid Id { get; private set; }
     public string Name { get; private set; }
     public LocationAddress Address { get; private set; }
@@ -36,13 +37,13 @@ public sealed class Location
     public bool IsActive { get; private set; }
     public DateTime CreatedAt { get; private set; }
     public DateTime UpdatedAt { get; private set; }
-    public IReadOnlyList<DepartmentLocation> Locations => _locations;
+    public IReadOnlyList<DepartmentLocation> Departments => _departments;
 
     public static Result<Location, Error> Create(string name, LocationAddress address, LocationTimezone timezone, bool isActive, DateTime createdAt)
     {
         if(string.IsNullOrWhiteSpace(name))
             return GeneralErrors.ValueIsInvalid("Name");
         
-        return new Location(name, address, timezone, isActive, createdAt);
+        return new Location(Guid.NewGuid(), name, address, timezone, isActive, createdAt);
     }
 }
