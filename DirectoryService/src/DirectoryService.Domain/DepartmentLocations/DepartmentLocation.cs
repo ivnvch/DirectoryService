@@ -4,9 +4,9 @@ public class DepartmentLocation
 {
     private DepartmentLocation() { }
 
-    public DepartmentLocation(Guid departmentId, Guid locationId)
+    public DepartmentLocation(Guid id, Guid departmentId, Guid locationId)
     {
-        Id = Guid.NewGuid();
+        Id = id;
         DepartmentId = departmentId;
         LocationId = locationId;
     }

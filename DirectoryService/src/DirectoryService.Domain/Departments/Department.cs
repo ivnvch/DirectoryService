@@ -9,15 +9,17 @@ namespace DirectoryService.Domain.Departments;
 public sealed class Department
 {
     private Department(
+        Guid id,
         string name,
         DepartmentIdentifier departmentIdentifier,
         Guid? parentId, 
         DepartmentPath departmentPath,
         short depth,
         bool isActive,
-        DateTime created)
+        DateTime created,
+        IEnumerable<Guid> locations)
     {
-        Id = Guid.NewGuid();
+        Id = id;
         Name = name;
         DepartmentIdentifier = departmentIdentifier;
         ParentId = parentId;
@@ -25,6 +27,10 @@ public sealed class Department
         Depth = depth;
         IsActive = isActive;
         CreatedAt = created;
+
+        var depLocations = locations.Select(l =>
+            new DepartmentLocation(Guid.NewGuid(), id, l));
+        _locations = depLocations.ToList();
     }
 
     private readonly List<DepartmentPosition> _positions = [];
@@ -51,11 +57,29 @@ public sealed class Department
         DepartmentPath departmentPath,
         short depth,
         bool isActive,
-        DateTime created)
+        DateTime created,
+        IEnumerable<Guid> departmentLocations)
     {
         if (string.IsNullOrWhiteSpace(name))
           return GeneralErrors.ValueIsInvalid($"'{name}'");
+        
+        List<Guid> locationList = departmentLocations.ToList() ?? [];
+        
+        if(departmentLocations.Count() == 0)
+            return GeneralErrors.ValueIsInvalid($"'{departmentLocations}'");
+        
+        if(locationList.Any(id => id == Guid.Empty))
+            return GeneralErrors.ValueIsInvalid($"location id");
 
-        return new Department(name, departmentIdentifier, parentId, departmentPath, depth, isActive, created);
+        return new Department(
+            Guid.NewGuid(),
+            name,
+            departmentIdentifier, 
+            parentId, 
+            departmentPath, 
+            depth, 
+            isActive, 
+            created,
+            locationList);
     }
 }
