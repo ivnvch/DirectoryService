@@ -21,9 +21,21 @@ public class LocationConfiguration : IEntityTypeConfiguration<Location>
 
         builder.ComplexProperty(l => l.Address, ad =>
         {
-            ad.Property(l => l.Value)
-                .HasColumnName("address")
+            ad.Property(l => l.Country)
+                .HasColumnName("country")
                 .IsRequired();
+            ad.Property(l => l.City)
+                .HasColumnName("city")
+                .IsRequired();
+            ad.Property(l => l.Street)
+                .HasColumnName("street")
+                .IsRequired();
+            ad.Property(l => l.House)
+                .HasColumnName("house")
+                .IsRequired();
+            ad.Property(l => l.Apartment)
+                .HasColumnName("apartment")
+                .IsRequired(false);
         });
 
         builder.ComplexProperty(l => l.Timezone, tz =>
