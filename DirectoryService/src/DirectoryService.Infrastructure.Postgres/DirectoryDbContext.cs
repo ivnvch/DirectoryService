@@ -16,6 +16,8 @@ public class DirectoryDbContext : DbContext
     {
         optionsBuilder.UseNpgsql(_connectionString);
 
+        optionsBuilder.EnableSensitiveDataLogging();
+        optionsBuilder.EnableDetailedErrors();
         optionsBuilder.UseLoggerFactory(CreateLoggerFactory());
     }
 
