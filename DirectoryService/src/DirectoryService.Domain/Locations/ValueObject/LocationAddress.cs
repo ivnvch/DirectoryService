@@ -5,18 +5,53 @@ namespace DirectoryService.Domain.Locations.ValueObject;
 
 public record LocationAddress
 {
-    public LocationAddress(string value)
+    public LocationAddress(
+        string country,
+        string city,
+        string street,
+        string house,
+        string? apartment = null)
     {
-        Value = value;
+        Country = country;
+        City = city;
+        Street = street;
+        House = house;
+        Apartment = apartment;
     }
     
-    public string Value { get; private set; }
+    
+    public string Country { get; private set; }
+    public string City { get; private set; }
+    public string Street { get; private set; }
+    public string House { get; private set; }
+    public string? Apartment  { get; private set; }
+    
 
-    public static Result<LocationAddress, Error> Create(string value)
+    public static Result<LocationAddress, Error> Create(
+        string country,
+        string city,
+        string street,
+        string house,
+        string? region,
+        string? apartment)
     {
-        if(string.IsNullOrWhiteSpace(value))
-            return GeneralErrors.ValueIsInvalid("Address");
+        if(string.IsNullOrWhiteSpace(country))
+            return GeneralErrors.ValueIsInvalid($"{country}");
         
-        return new LocationAddress(value);
+        if(string.IsNullOrWhiteSpace(city))
+            return GeneralErrors.ValueIsInvalid($"{city}");
+        
+        if(string.IsNullOrWhiteSpace(street))
+            return GeneralErrors.ValueIsInvalid($"{street}");
+        
+        if(string.IsNullOrWhiteSpace(house))
+            return GeneralErrors.ValueIsInvalid($"{house}");
+        
+        return new LocationAddress(
+            country,
+            city,
+            street,
+            house,
+            apartment);
     }
 }

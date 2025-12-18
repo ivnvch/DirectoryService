@@ -7,7 +7,8 @@ namespace DirectoryService.Domain.Positions;
 
 public sealed class Position
 {
-    private Position(Guid id, string name, string? description, bool isActive, DateTime createdAt, DateTime? updatedAt, IEnumerable<Guid> positions)
+    private Position(){}
+    private Position(Guid id, string name, string? description, bool isActive, DateTime createdAt, DateTime? updatedAt, IEnumerable<Guid> departments)
     {
         Id = id;
         Name = name;
@@ -15,12 +16,12 @@ public sealed class Position
         IsActive = isActive;
         CreatedAt = createdAt;
         UpdatedAt = updatedAt;
-        _departmentPositions = positions
+        _departments = departments
             .Select(x => new DepartmentPosition(Guid.NewGuid(), Guid.NewGuid() ,x))
             .ToList();
     }
     
-    private readonly List<DepartmentPosition> _departmentPositions = [];
+    private readonly List<DepartmentPosition> _departments = [];
     
     public Guid Id { get; private set; }
     public string Name { get; private set; }
@@ -28,7 +29,7 @@ public sealed class Position
     public bool IsActive { get; private set; }
     public DateTime CreatedAt { get; private set; }
     public DateTime? UpdatedAt { get; private set; }
-    public IReadOnlyList<DepartmentPosition> DepartmentPositions => _departmentPositions;
+    public IReadOnlyList<DepartmentPosition> Departments => _departments;
 
     public static Result<Position, Error> Create(
         string name, 
@@ -36,15 +37,15 @@ public sealed class Position
         bool isActive, 
         DateTime createdAt, 
         DateTime? updatedAt, 
-        IEnumerable<Guid> positions)
+        IEnumerable<Guid> departments)
     {
         if (string.IsNullOrWhiteSpace(name))
             return GeneralErrors.ValueIsInvalid("Name ");
         if (string.IsNullOrWhiteSpace(description) && description.Length > LengthConstant.Max1000Length)
             return GeneralErrors.ValueIsInvalid("Description");
         
-        if(!positions.Any())
-            return GeneralErrors.ValueIsInvalid("Positions");
+        if(!departments.Any())
+            return GeneralErrors.ValueIsInvalid("departments");
         
 
         return new Position(
@@ -54,6 +55,6 @@ public sealed class Position
             isActive,
             createdAt,
             updatedAt,
-            positions);
+            departments);
     }
 }
