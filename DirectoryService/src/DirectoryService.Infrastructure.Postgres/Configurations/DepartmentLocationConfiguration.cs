@@ -13,16 +13,22 @@ public class DepartmentLocationConfiguration : IEntityTypeConfiguration<Departme
         builder.ToTable("department_locations");
         
         builder.HasKey(p => p.Id)
-            .HasName("department_location_id");
+            .HasName("pk_department_location_id");
+
+        builder.Property(dl => dl.DepartmentId)
+            .HasColumnName("fk_department_location_department_id");
+        
+        builder.Property(dl => dl.LocationId)
+            .HasColumnName("fk_department_location_location_id");
 
         builder.HasOne<Department>()
             .WithMany(d => d.Locations)
             .HasForeignKey(dp => dp.DepartmentId)
-            .OnDelete(DeleteBehavior.Cascade);
+            .OnDelete(DeleteBehavior.NoAction);
         
         builder.HasOne<Location>()
             .WithMany(l => l.Departments)
             .HasForeignKey(p => p.LocationId)
-            .OnDelete(DeleteBehavior.Cascade);
+            .OnDelete(DeleteBehavior.NoAction);
     }
 }

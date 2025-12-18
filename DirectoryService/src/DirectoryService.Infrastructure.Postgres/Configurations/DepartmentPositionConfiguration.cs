@@ -12,17 +12,23 @@ public class DepartmentPositionConfiguration : IEntityTypeConfiguration<Departme
     {
         builder.ToTable("department_position");
         
-        builder.HasKey(dp => dp.DepartmentId)
-            .HasName("department_position_department_id");
+        builder.HasKey(dp => dp.Id)
+            .HasName("pk_department_position_id");
+        
+        builder.Property(dp => dp.PositionId)
+            .HasColumnName("fk_department_position_position_id");
+        
+        builder.Property(dp => dp.DepartmentId)
+            .HasColumnName("fk_department_position_department_id");
         
         builder.HasOne<Department>()
             .WithMany(d => d.Positions)
             .HasForeignKey(dp => dp.DepartmentId)
-            .OnDelete(DeleteBehavior.Cascade);
+            .OnDelete(DeleteBehavior.NoAction);
         
         builder.HasOne<Position>()
             .WithMany(d => d.Departments)
             .HasForeignKey(dp => dp.PositionId)
-            .OnDelete(DeleteBehavior.Cascade);
+            .OnDelete(DeleteBehavior.NoAction);
     }
 }
