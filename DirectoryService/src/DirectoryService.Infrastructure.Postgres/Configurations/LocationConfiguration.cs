@@ -19,8 +19,10 @@ public class LocationConfiguration : IEntityTypeConfiguration<Location>
             .HasMaxLength(LengthConstant.Max150Length)
             .IsRequired();
 
-        builder.ComplexProperty(l => l.Address, ad =>
+        builder.OwnsOne(l => l.Address, ad =>
         {
+            ad.ToJson("address");
+            
             ad.Property(l => l.Country)
                 .HasColumnName("country")
                 .IsRequired();
