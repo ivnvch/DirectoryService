@@ -2,4 +2,4 @@ using MediatR;
 
 namespace DirectoryService.Application.CQRS;
 
-public interface ICommand<out TResponse> : IRequest<TResponse>;
+public interface ICommand;/*<out TResponse> : IRequest<TResponse>;*/
