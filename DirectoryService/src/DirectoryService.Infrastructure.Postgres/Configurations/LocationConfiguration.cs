@@ -14,10 +14,13 @@ public class LocationConfiguration : IEntityTypeConfiguration<Location>
         builder.HasKey(l => l.Id)
             .HasName("pk_location_id");
 
-        builder.Property(l => l.Name)
-            .HasColumnName("name")
-            .HasMaxLength(LengthConstant.Max150Length)
-            .IsRequired();
+        builder.ComplexProperty(l => l.Name, n =>
+        {
+            n.Property(l => l.Value)
+                .HasColumnName("name")
+                .HasMaxLength(LengthConstant.Max150Length)
+                .IsRequired();
+        });
 
         builder.OwnsOne(l => l.Address, ad =>
         {

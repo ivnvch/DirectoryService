@@ -32,7 +32,6 @@ public record LocationAddress
         string city,
         string street,
         string house,
-        string? region,
         string? apartment)
     {
         if(string.IsNullOrWhiteSpace(country))
