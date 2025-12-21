@@ -1,4 +1,5 @@
 using System.Reflection;
+using DirectoryService.Domain.Locations;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
@@ -12,10 +13,16 @@ public class DirectoryDbContext : DbContext
     {
         _connectionString = connectionString;
     }
+
+    public DbSet<Location> Locations { get; set; } = null!;
+
+
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         optionsBuilder.UseNpgsql(_connectionString);
 
+        optionsBuilder.EnableSensitiveDataLogging();
+        optionsBuilder.EnableDetailedErrors();
         optionsBuilder.UseLoggerFactory(CreateLoggerFactory());
     }
 
