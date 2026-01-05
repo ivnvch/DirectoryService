@@ -12,6 +12,19 @@ public record Error
         Type = type;
     }
     
+    public static Error Validation(string code, string message, string? invalidField = null) =>
+        new([new ErrorMessage(code, message, invalidField)], ErrorType.VALIDATION);
+    public static Error NotFound(string code, string message, string? invalidField = null) =>
+        new([new ErrorMessage(code, message, invalidField)], ErrorType.NOT_FOUND);
+    public static Error Failure(string code, string message, string? invalidField = null) =>
+        new([new ErrorMessage(code, message, invalidField)], ErrorType.FAILURE);
+    public static Error Conflict(string code, string message, string? invalidField = null) =>
+        new([new ErrorMessage(code, message, invalidField)], ErrorType.CONFLICT);
+    public static Error Authentication(string code, string message, string? invalidField = null) =>
+        new([new ErrorMessage(code, message, invalidField)], ErrorType.AUTHENTICATION);
+    public static Error Authorization(string code, string message, string? invalidField = null) =>
+        new([new ErrorMessage(code, message, invalidField)], ErrorType.AUTHORIZATION);
+    
     public static Error Validation(params IEnumerable<ErrorMessage> messages)
         => new(messages, ErrorType.VALIDATION);
     public static Error NotFound(params IEnumerable<ErrorMessage> messages)   
@@ -24,6 +37,9 @@ public record Error
         => new(messages, ErrorType.AUTHENTICATION);
     public static Error Authorization(params IEnumerable<ErrorMessage> messages)   
         => new(messages, ErrorType.AUTHORIZATION);
+    
+    public Errors ToErrors()
+        => new([this]);
     
 }
 
