@@ -1,3 +1,4 @@
+using DirectoryService.API.EndpointResults;
 using DirectoryService.API.Models.RequestModels;
 using DirectoryService.Application.CQRS;
 using DirectoryService.Application.Locations.Commands.CreateLocations;
@@ -10,14 +11,12 @@ namespace DirectoryService.API.Controllers;
 public class LocationsController : ControllerBase
 {
     [HttpPost]
-    public async Task<ActionResult<Guid>> Create(
+    public async Task<EndpointResult<Guid>> Create(
         [FromServices] ICommandHandler<Guid, CreateLocationCommand> handler,
         [FromBody] CreateLocationRequest request,
         CancellationToken cancellation)
     {
         var command = new CreateLocationCommand(request.Name, request.address, request.Timezone);
-        var result = await handler.Handle(command, cancellation);
-
-        return Ok(result.Value);
+        return await handler.Handle(command, cancellation);
     }
 }
