@@ -8,14 +8,14 @@ namespace DirectoryService.Domain.Positions;
 public sealed class Position
 {
     private Position(){}
-    private Position(Guid id, string name, string? description, bool isActive, DateTime createdAt, DateTime? updatedAt, IEnumerable<Guid> departments)
+    private Position(Guid id, string name, string? description, IEnumerable<Guid> departments)
     {
         Id = id;
         Name = name;
         Description = description;
-        IsActive = isActive;
-        CreatedAt = createdAt;
-        UpdatedAt = updatedAt;
+        IsActive = true;
+        CreatedAt = DateTime.UtcNow;
+        UpdatedAt = CreatedAt;
         _departments = departments
             .Select(x => new DepartmentPosition(Guid.NewGuid(), Guid.NewGuid() ,x))
             .ToList();
@@ -34,9 +34,6 @@ public sealed class Position
     public static Result<Position, Error> Create(
         string name, 
         string? description, 
-        bool isActive, 
-        DateTime createdAt, 
-        DateTime? updatedAt, 
         IEnumerable<Guid> departments)
     {
         if (string.IsNullOrWhiteSpace(name))
@@ -52,9 +49,6 @@ public sealed class Position
             Guid.NewGuid(),
             name,
             description,
-            isActive,
-            createdAt,
-            updatedAt,
             departments);
     }
 }

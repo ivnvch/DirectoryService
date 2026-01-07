@@ -1,6 +1,6 @@
 namespace DirectoryService.Domain.DepartmentLocations;
 
-public class DepartmentLocation
+public sealed class DepartmentLocation
 {
     private DepartmentLocation() { }
 

@@ -39,13 +39,14 @@ public class ExceptionMiddleware
             NotFoundException => (StatusCodes.Status404NotFound,
                 JsonSerializer.Deserialize<Error[]>(exception.Message)),
             
-            _ => (StatusCodes.Status500InternalServerError, [Error.Failure(new ErrorMessage(null, "Something went wrong", null))])
+            _ => (StatusCodes.Status500InternalServerError, [Error.Failure(null, "Something went wrong", null)])
         };
         
+        var envelope = Envelope.Error(errors);
         context.Response.ContentType = "application/json";
         context.Response.StatusCode = code;
 
-        await context.Response.WriteAsJsonAsync(errors);
+        await context.Response.WriteAsJsonAsync(envelope);
     }
 }
 

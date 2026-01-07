@@ -11,11 +11,11 @@ public record LocationTimezone
         Value = value;
     }
     
-    public string Value { get; private set; }
+    public string Value { get; }
     public static Result<LocationTimezone, Error> Create(string value)
     {
         if(string.IsNullOrWhiteSpace(value))
-            return GeneralErrors.ValueIsInvalid("Timezone");
+            return GeneralErrors.ValueIsRequired("Timezone");
         
         var zone = DateTimeZoneProviders.Tzdb.GetZoneOrNull(value);
         if (zone is null)

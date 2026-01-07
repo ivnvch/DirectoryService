@@ -5,7 +5,6 @@ using DirectoryService.Domain.Locations;
 using DirectoryService.Domain.Locations.ValueObject;
 using DirectoryService.Shared.Errors;
 using FluentValidation;
-using FluentValidation.Results;
 using Microsoft.Extensions.Logging;
 
 namespace DirectoryService.Application.Locations.Commands.CreateLocations;
@@ -23,11 +22,11 @@ public class CreateLocationHandler : ICommandHandler<Guid, CreateLocationCommand
         _createLocationValidator = createLocationValidator;
     }
 
-    public async Task<Result<Guid, Error>> Handle(CreateLocationCommand request, CancellationToken cancellationToken)
+    public async Task<Result<Guid, Errors>> Handle(CreateLocationCommand request, CancellationToken cancellationToken)
     {
         var validationResult = await _createLocationValidator.ValidateAsync(request, cancellationToken);
         if (!validationResult.IsValid)
-            return Result.Failure<Guid, Error>(GeneralErrors.ValueIsInvalid());
+            return GeneralErrors.ValueIsInvalid("location").ToErrors();
         
         var name = LocationName.Create(request.Name);
         
@@ -43,12 +42,10 @@ public class CreateLocationHandler : ICommandHandler<Guid, CreateLocationCommand
         var location = Location.Create(
             name.Value,
             address.Value,
-            timezone.Value,
-            true,
-            DateTime.UtcNow);
+            timezone.Value);
         
         if(location.IsFailure)
-            return Result.Failure<Guid, Error>(location.Error);
+            return GeneralErrors.ValueIsInvalid("location").ToErrors();
         
        await _locationRepository.AddAsync(location.Value, cancellationToken);
        _logger.LogInformation($"Created location with id {location.Value.Id}");
