@@ -17,7 +17,20 @@ public class SuccessResult<TValue> : IResult
         ArgumentNullException.ThrowIfNull(httpContext);
         
         var envelope = Envelope.Ok(_value);
-        httpContext.Response.StatusCode = (int)HttpStatusCode.OK;
+        httpContext.Response.StatusCode = StatusCodes.Status200OK;
+
+        return httpContext.Response.WriteAsJsonAsync(envelope);
+    }
+}
+
+public class SuccessResult : IResult
+{
+    public Task ExecuteAsync(HttpContext httpContext)
+    {
+        ArgumentNullException.ThrowIfNull(httpContext);
+        
+        var envelope = Envelope.Ok();
+        httpContext.Response.StatusCode = StatusCodes.Status200OK;
 
         return httpContext.Response.WriteAsJsonAsync(envelope);
     }

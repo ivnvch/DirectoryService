@@ -17,17 +17,15 @@ public sealed class Location
         Guid id,
         LocationName name, 
         LocationAddress address, 
-        LocationTimezone timezone, 
-        bool isActive, 
-        DateTime createdAt)
+        LocationTimezone timezone)
     {
         Id = id;
         Name = name;
         Address = address;
         Timezone = timezone;
-        IsActive = isActive;
-        CreatedAt = createdAt;
-        UpdatedAt = createdAt;
+        IsActive = true;
+        CreatedAt = DateTime.UtcNow;
+        UpdatedAt = CreatedAt;
     }
     private readonly List<DepartmentLocation> _departments = [];
     public Guid Id { get; private set; }
@@ -39,8 +37,11 @@ public sealed class Location
     public DateTime UpdatedAt { get; private set; }
     public IReadOnlyList<DepartmentLocation> Departments => _departments;
 
-    public static Result<Location, Error> Create(LocationName name, LocationAddress address, LocationTimezone timezone, bool isActive, DateTime createdAt)
+    public static Result<Location, Error> Create(
+        LocationName name, 
+        LocationAddress address, 
+        LocationTimezone timezone)
     {
-        return new Location(Guid.NewGuid(), name, address, timezone, isActive, createdAt);
+        return new Location(Guid.NewGuid(), name, address, timezone);
     }
 }
