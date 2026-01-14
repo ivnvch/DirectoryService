@@ -19,7 +19,7 @@ public record LocationTimezone
         
         var zone = DateTimeZoneProviders.Tzdb.GetZoneOrNull(value);
         if (zone is null)
-            return  GeneralErrors.ValueIsInvalid("Timezone");
+            return  GeneralErrors.ValueIsInvalid("Timezone must be valid IANA code");
         
         return new LocationTimezone(value);
     }
