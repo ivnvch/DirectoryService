@@ -2,20 +2,14 @@ using DirectoryService.API;
 using DirectoryService.API.Middlewares;
 using DirectoryService.Application;
 using DirectoryService.Infrastructure;
-using Microsoft.OpenApi.Models;
-using DirectoryService.API.Middlewares;
-using DirectoryService.Shared.Errors;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 
-builder.Services.AddScoped<DirectoryDbContext>(_ =>
-    new DirectoryDbContext(builder.Configuration.GetConnectionString("directory_service")!));
-
 builder.Services.AddApplication();
-builder.Services.AddInfrastructure();
+builder.Services.AddInfrastructure(builder.Configuration);
 
 builder.Services.AddConfiguration(builder.Configuration);
 

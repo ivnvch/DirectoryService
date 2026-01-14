@@ -16,7 +16,7 @@ public sealed class Location
     public Location(
         Guid id,
         LocationName name, 
-        LocationAddress address, 
+        LocationAddress address,  
         LocationTimezone timezone)
     {
         Id = id;
