@@ -1,9 +1,12 @@
+using DirectoryService.Application.Departments.Repositories;
 using DirectoryService.Application.Locations.Repositories;
+using DirectoryService.Infrastructure.Departments.Repositories;
 using DirectoryService.Infrastructure.Locations.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 
 namespace DirectoryService.Infrastructure;
 
@@ -16,6 +19,7 @@ public static class DependencyInjection
             var connectionString = configuration.GetConnectionString("directory_service");
             
             IHostEnvironment? hostEnvironment = sp.GetService<IHostEnvironment>();
+            ILoggerFactory? loggerFactory = sp.GetRequiredService<ILoggerFactory>();
             
             options.UseNpgsql(connectionString);
 
@@ -24,9 +28,14 @@ public static class DependencyInjection
                 options.EnableSensitiveDataLogging();
                 options.EnableDetailedErrors();
             }
+            
+            options.UseLoggerFactory(loggerFactory);
         });
         services.AddScoped<ILocationRepository, LocationRepository>();
+        services.AddScoped<IDepartmentRepository, DepartmentRepository>();
         
         return services;
     }
+    /*private static ILoggerFactory CreateLoggerFactory() =>
+        LoggerFactory.Create(builder => { builder.AddConsole(); });*/
 }
