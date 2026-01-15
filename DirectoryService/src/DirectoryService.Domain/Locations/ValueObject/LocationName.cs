@@ -11,11 +11,11 @@ public record LocationName
         Value = value;
     }
     
-    public string Value { get; private set; }
+    public string Value { get; }
 
     public static Result<LocationName, Error> Create(string name)
     {
-        if(string.IsNullOrWhiteSpace(name) && (name.Length > LengthConstant.Min2Length || name.Length < LengthConstant.Max150Length))
+        if(string.IsNullOrWhiteSpace(name) && (name.Length is > LengthConstant.Min2Length or < LengthConstant.Max150Length))
             return  GeneralErrors.ValueIsInvalid("Name cannot be empty");
         
         return new LocationName(name);

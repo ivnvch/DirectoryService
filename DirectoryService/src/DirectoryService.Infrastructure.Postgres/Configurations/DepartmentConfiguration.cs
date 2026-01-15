@@ -14,10 +14,13 @@ public class DepartmentConfiguration : IEntityTypeConfiguration<Department>
         builder.HasKey(x => x.Id)
             .HasName("pk_department_id");
 
-        builder.Property(x => x.Name)
-            .IsRequired()
-            .HasMaxLength(LengthConstant.Max150Length)
-            .HasColumnName("name");
+        builder.ComplexProperty(d => d.Name, dn =>
+        {
+            dn.Property(x => x.Value)
+                .IsRequired()
+                .HasMaxLength(LengthConstant.Max150Length)
+                .HasColumnName("name");
+        });
 
         builder.ComplexProperty(d => d.DepartmentIdentifier, di =>
         {
@@ -50,5 +53,11 @@ public class DepartmentConfiguration : IEntityTypeConfiguration<Department>
         builder.Property(d => d.UpdatedAt)
             .HasColumnName("updated_at")
             .HasColumnType("timestamp with time zone");
+
+        builder.HasMany(x => x.ChildrenDepartments)
+            .WithOne()
+            .IsRequired(false)
+            .HasForeignKey(x => x.ParentId)
+            .OnDelete(DeleteBehavior.Restrict);
     }
 }

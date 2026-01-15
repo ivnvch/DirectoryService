@@ -1,11 +1,22 @@
+using System.Text.Json;
+using System.Text.Json.Serialization;
+
 namespace DirectoryService.Shared.Errors;
 
-public record ErrorMessage(string Code, string Message, string? InvalidField);
+public record ErrorMessage(string Code, string Message, string? InvalidField = null);
 public record Error
 {
+    private const string SEPARATOR = "||";
     public IReadOnlyList<ErrorMessage> Messages { get; } = [];
     public ErrorType Type { get; }
 
+    [JsonConstructor]
+    private Error(IReadOnlyList<ErrorMessage> messages,ErrorType type)
+    {
+        Messages = messages.ToArray();
+        Type = type;
+    }
+    
     private Error(IEnumerable<ErrorMessage> messages,ErrorType type)
     {
         Messages = messages.ToArray();
@@ -40,9 +51,43 @@ public record Error
     
     public Errors ToErrors()
         => new([this]);
+
+    public string Serialize()//правильно ли?
+    {
+        string serialize = "";
+        foreach (var message in Messages)
+        {
+           serialize = string.Join(SEPARATOR, message.Code, message.Message, Type);
+        }
+        
+        return serialize;
+    }
+
+    /*public static Error Deserialize(string serialized)//правильно ли?
+    {
+        
+        
+        string[] parts = serialized.Split(SEPARATOR);
+        if (parts.Length < 3)
+        {
+            throw new ArgumentException($"Invalid format: {serialized}");
+        }
+
+        if (Enum.TryParse<ErrorType>(parts[2], out var type) == false)
+        {
+            throw new ArgumentException($"Invalid format: {serialized}");
+        }
+        
+        return new Error(new ErrorMessage[]{new ErrorMessage(parts[0], parts[0])}, type);
+    }*/
+    
+    public static Error Deserialize(string json)
+        => JsonSerializer.Deserialize<Error>(json)
+           ?? throw new ArgumentException("Invalid Error json");
     
 }
 
+[JsonConverter(typeof(JsonStringEnumConverter))]
 public enum ErrorType
 {
     VALIDATION,

@@ -14,76 +14,88 @@ public sealed class Department
     }
     private Department(
         Guid id,
-        string name,
+        DepartmentName name,
         DepartmentIdentifier departmentIdentifier,
-        Guid? parentId, 
         DepartmentPath departmentPath,
-        short depth,
-        bool isActive,
-        DateTime created,
-        IEnumerable<Guid> locations)
+        int depth,
+        IEnumerable<DepartmentLocation> departmentLocations)
     {
         Id = id;
         Name = name;
         DepartmentIdentifier = departmentIdentifier;
-        ParentId = parentId;
         DepartmentPath = departmentPath;
         Depth = depth;
-        IsActive = isActive;
-        CreatedAt = created;
+        IsActive = true;
+        CreatedAt = DateTime.UtcNow;
+        UpdatedAt = CreatedAt;
 
-        var depLocations = locations.Select(l =>
-            new DepartmentLocation(Guid.NewGuid(), id, l));
-        _locations = depLocations.ToList();
+        /*var depLocations = locations.Select(l =>
+            new DepartmentLocation(Guid.NewGuid(), id, l));*/
+        _locations = departmentLocations.ToList();
     }
 
     private readonly List<DepartmentPosition> _positions = [];
     private readonly List<DepartmentLocation> _locations = [];
+    private readonly List<Department> _childrenDepartments = [];
 
     public Guid Id { get; private set; }
-    public string Name { get; private set; }
-    public DepartmentIdentifier DepartmentIdentifier { get; private set; }
+    public DepartmentName Name { get; private set; } = null!;
+    public DepartmentIdentifier DepartmentIdentifier { get; private set; } = null!;
     public Guid? ParentId { get; private set; }
-    public DepartmentPath DepartmentPath { get; private set; }
-    public short Depth { get; private set; }
+    public DepartmentPath DepartmentPath { get; private set; } = null!;
+    public int Depth { get; private set; }
     public bool IsActive { get; private set; }
     public DateTime CreatedAt { get; private set; }
     public DateTime UpdatedAt { get; private set; }
     public IReadOnlyList<DepartmentLocation> Locations => _locations;
-
     public IReadOnlyList<DepartmentPosition> Positions => _positions;
+    public IReadOnlyList<Department> ChildrenDepartments => _childrenDepartments;
 
 
-    public static Result<Department, Error> Create(
-        string name,
+    public static Result<Department, Error> CreateParent(
+        DepartmentName name,
         DepartmentIdentifier departmentIdentifier,
-        Guid? parentId, 
         DepartmentPath departmentPath,
-        short depth,
-        bool isActive,
-        DateTime created,
-        IEnumerable<Guid> departmentLocations)
+        IEnumerable<DepartmentLocation> departmentLocations)
     {
-        if (string.IsNullOrWhiteSpace(name))
+        if (string.IsNullOrWhiteSpace(name.Value))
           return GeneralErrors.ValueIsInvalid($"'{name}'");
         
-        List<Guid> locationList = departmentLocations.ToList() ?? [];
+        List<DepartmentLocation> locationList = departmentLocations.ToList();
         
-        if(departmentLocations.Count() == 0)
-            return GeneralErrors.ValueIsInvalid($"'{departmentLocations}'");
+        if(locationList.Count() == 0)
+            return GeneralErrors.ValueIsInvalid($"'{locationList}'");
         
-        if(locationList.Any(id => id == Guid.Empty))
-            return GeneralErrors.ValueIsInvalid($"location id");
 
         return new Department(
             Guid.NewGuid(),
             name,
             departmentIdentifier, 
-            parentId, 
-            departmentPath, 
-            depth, 
-            isActive, 
-            created,
+            departmentPath,
+            0,
             locationList);
+    }
+
+    public static Result<Department, Error> CreateChild(
+        DepartmentName name,
+        DepartmentIdentifier departmentIdentifier,
+        Department parent,
+        IEnumerable<DepartmentLocation> departmentLocations,
+        Guid? departmentId = null)
+    {
+        var departmentLocationsList = departmentLocations.ToList();
+        if(departmentLocationsList.Count == 0)
+            return Error.Validation("department.location", "Department locations must contain at least one location");
+
+        var path = parent.DepartmentPath.CreateChild(departmentIdentifier);
+
+        return new Department(
+            departmentId ?? Guid.NewGuid(),
+            name,
+            departmentIdentifier,
+            path.Value,
+            parent.Depth + 1,
+            departmentLocationsList
+            );
     }
 }
