@@ -23,9 +23,16 @@ public class CreateDepartmentValidator : AbstractValidator<CreateDepartmentComma
             .MustBeValueObject(DepartmentIdentifier.Create);
         
         RuleFor(x => x.ParentId)
-            .NotEqual(Guid.Empty)
-            .When(x => x.ParentId.HasValue);
+            .Must(id => id is null || id.Value != Guid.Empty)
+            .WithError(GeneralErrors.ValueIsInvalid("parentId"));
         
+        RuleFor(x => x.LocationIds)
+            .NotNull()
+            .WithError(GeneralErrors.ValueIsRequired("locationIds"));
+
+        RuleFor(x => x.LocationIds)
+            .Must(list => list.Length > 0)
+            .WithError(GeneralErrors.ValueIsRequired("locationIds"));
 
         RuleFor(x => x.LocationIds)
             .MustAsync(async (ids, cancellation) =>
@@ -38,12 +45,7 @@ public class CreateDepartmentValidator : AbstractValidator<CreateDepartmentComma
                return result is { IsSuccess: true, Value: true };
             })
             .WithError(Error.Validation(
-                new ErrorMessage("CreateDepartmentCommand.LocationIds.is.invalid", 
+                new ErrorMessage("CreateDepartmentCommand.LocationIds.is.not.unique", 
                               "Some LocationIds are not exists")));// нужно ли здесь пробрасывать ошибку
-
-        /*RuleFor(x => x.LocationIds)
-            .Must(ids => ids.Length == ids.ToHashSet().Count)
-            .WithError(Error.Validation(new ErrorMessage("CreateDepartmentCommand.LocationIds.is.invalid", "Duplicate LocationIds are not allowed")));
-            */
     }
 }
