@@ -1,4 +1,5 @@
 using DirectoryService.Domain.Departments;
+using DirectoryService.Domain.Departments.ValueObject;
 using DirectoryService.Shared.Constants;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -29,13 +30,15 @@ public class DepartmentConfiguration : IEntityTypeConfiguration<Department>
                 .HasColumnName("identifier")
                 .HasMaxLength(LengthConstant.Max150Length);
         });
-
-        builder.ComplexProperty(d => d.DepartmentPath, dp =>
-        {
-            dp.Property(d => d.Value)
-                .IsRequired()
-                .HasColumnName("path");
-        });
+        
+        builder.Property(d => d.DepartmentPath)
+            .HasColumnType("ltree")
+            .IsRequired()
+            .HasColumnName("path")
+            .HasConversion(value => value.Value,
+                value => DepartmentPath.Create(value));
+        
+        builder.HasIndex(x => x.DepartmentPath).HasMethod("gist").HasDatabaseName("idx_department_path");
         
         builder.Property(d => d.ParentId)
             .HasColumnName("parent_id");

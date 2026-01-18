@@ -14,6 +14,7 @@ public sealed class Department
     }
     private Department(
         Guid id,
+        Guid? parentId,
         DepartmentName name,
         DepartmentIdentifier departmentIdentifier,
         DepartmentPath departmentPath,
@@ -21,6 +22,7 @@ public sealed class Department
         IEnumerable<DepartmentLocation> departmentLocations)
     {
         Id = id;
+        ParentId = parentId;
         Name = name;
         DepartmentIdentifier = departmentIdentifier;
         DepartmentPath = departmentPath;
@@ -54,6 +56,7 @@ public sealed class Department
 
     public static Result<Department, Error> CreateParent(
         DepartmentName name,
+        Guid parentId,
         DepartmentIdentifier departmentIdentifier,
         IEnumerable<DepartmentLocation> departmentLocations,
         Guid? departmentId = null)
@@ -70,6 +73,7 @@ public sealed class Department
 
         return new Department(
             departmentId ?? Guid.NewGuid(),
+            parentId,
             name,
             departmentIdentifier, 
             path,
@@ -92,6 +96,7 @@ public sealed class Department
 
         return new Department(
             departmentId ?? Guid.NewGuid(),
+            parent.Id,
             name,
             departmentIdentifier,
             path.Value,

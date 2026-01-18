@@ -47,4 +47,15 @@ public class DepartmentRepository : IDepartmentRepository
           return DepartmentError.DatabaseError();
        }
     }
+
+    public async Task<Result<Department, Error>> GetById(Guid id, CancellationToken cancellationToken = default)
+    {
+        var department = await _context.Departments
+            .FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
+
+        if (department is null)
+            return GeneralErrors.NotFound(id);//проверить, как будет формироваться ошибка
+        
+        return department;
+    }
 }
