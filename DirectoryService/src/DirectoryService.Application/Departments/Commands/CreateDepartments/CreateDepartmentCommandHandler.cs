@@ -1,4 +1,5 @@
 using CSharpFunctionalExtensions;
+using CSharpFunctionalExtensions.ValueTasks;
 using DirectoryService.Application.CQRS;
 using DirectoryService.Application.Departments.Repositories;
 using DirectoryService.Application.Extensions.Validation;
@@ -58,7 +59,7 @@ public class CreateDepartmentCommandHandler : ICommandHandler<Guid, CreateDepart
         var allLocationExists = await _locationRepository.AllExistAsync(locationIds, token);
         
         if(allLocationExists.IsFailure)
-            return Error.Failure("locationIds.is.", allLocationExists.Error.ToString());
+            return GeneralErrors.Failure();//
 
         if (allLocationExists.Value == false)
             return Error.NotFound("location.not.found", "Одна или несколько локаций были не найдены");
@@ -71,7 +72,7 @@ public class CreateDepartmentCommandHandler : ICommandHandler<Guid, CreateDepart
             dl));
 
         var department = parent is null
-            ? Department.CreateParent(name, identifier, departmentLocations, departmentId)
+            ? Department.CreateParent(name, parent.Id, identifier, departmentLocations, departmentId)
             : Department.CreateChild(name, identifier, parent, departmentLocations, departmentId);
         
         if(department.IsFailure)

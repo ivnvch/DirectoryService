@@ -28,13 +28,10 @@ public class CreatePositionValidator : AbstractValidator<CreatePositionCommand>
                 {
                     Result<bool, Error> result = await _positionRepository.ExistsActiveWithName(name, cancellationToken);
 
-                    return result is { IsSuccess: true, Value: true };
-                }
-            
-                );
+                    return result is { IsSuccess: true, Value: false };
+                });
         
         RuleFor(x => x.Description)
-            .NotEmpty()
             .MaximumLength(1000);
         
         RuleFor(x => x.DepartmentIds)
@@ -54,6 +51,6 @@ public class CreatePositionValidator : AbstractValidator<CreatePositionCommand>
             })
             .WithError(Error.Validation(
                 new ErrorMessage("CreatePositionCommand.DepartmentIds.is.not.unique", 
-                    "Some of departments are not existst")));
+                    "Some of departments are not exists")));
     }
 }

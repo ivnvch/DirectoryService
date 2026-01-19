@@ -1,7 +1,9 @@
 using DirectoryService.Application.Departments.Repositories;
 using DirectoryService.Application.Locations.Repositories;
+using DirectoryService.Application.Positions.Repositories;
 using DirectoryService.Infrastructure.Departments.Repositories;
 using DirectoryService.Infrastructure.Locations.Repositories;
+using DirectoryService.Infrastructure.Positions.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -33,6 +35,7 @@ public static class DependencyInjection
         });
         services.AddScoped<ILocationRepository, LocationRepository>();
         services.AddScoped<IDepartmentRepository, DepartmentRepository>();
+        services.AddScoped<IPositionRepository, PositionRepository>();
         
         return services;
     }
