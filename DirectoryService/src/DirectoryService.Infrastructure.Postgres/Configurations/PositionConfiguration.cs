@@ -17,6 +17,11 @@ public class PositionConfiguration : IEntityTypeConfiguration<Position>
             .IsRequired()
             .HasColumnName("name");
         
+        builder.HasIndex(p => p.Name)
+            .IsUnique()
+            .HasFilter("is_active = true")
+            .HasName("idx_position_name_active");
+        
         builder.Property(p => p.Description)
             .HasColumnName("description");
 

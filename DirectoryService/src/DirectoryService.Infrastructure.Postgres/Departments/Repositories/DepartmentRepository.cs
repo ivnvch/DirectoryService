@@ -54,8 +54,20 @@ public class DepartmentRepository : IDepartmentRepository
             .FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
 
         if (department is null)
-            return GeneralErrors.NotFound(id);//проверить, как будет формироваться ошибка
+            return GeneralErrors.NotFound(id);
         
         return department;
+    }
+
+    public async Task<Result<bool, Errors>> AllDepartmentsExistAsync(IReadOnlyCollection<Guid> departmentIds, CancellationToken cancellationToken = default)
+    {
+        if (departmentIds.Count == 0)
+            return false;
+        
+        var existingCount = await _context.Departments
+            .Where(d => departmentIds.Contains(d.Id))
+            .CountAsync(cancellationToken);
+        
+        return existingCount == departmentIds.Count;
     }
 }

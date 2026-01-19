@@ -8,4 +8,7 @@ public interface IDepartmentRepository
 {
     Task<Result<Guid, Error>> Add(Department department,  CancellationToken cancellationToken = default);
     Task<Result<Department, Error>> GetById(Guid id, CancellationToken cancellationToken = default);
+
+    Task<Result<bool, Errors>> AllDepartmentsExistAsync(IReadOnlyCollection<Guid> departmentIds,
+        CancellationToken cancellationToken = default);
 }
