@@ -59,10 +59,10 @@ public class CreateDepartmentCommandHandler : ICommandHandler<Guid, CreateDepart
         var allLocationExists = await _locationRepository.AllExistAsync(locationIds, token);
         
         if(allLocationExists.IsFailure)
-            return GeneralErrors.Failure();//
+            return GeneralErrors.Failure("Some locations do not exist");//
 
         if (allLocationExists.Value == false)
-            return Error.NotFound("location.not.found", "Одна или несколько локаций были не найдены");
+            return Error.NotFound("location.not.found", "One or more locations were not found.");
         
         Guid departmentId = Guid.NewGuid();
 
@@ -78,7 +78,11 @@ public class CreateDepartmentCommandHandler : ICommandHandler<Guid, CreateDepart
         if(department.IsFailure)
             return department.Error;
         
-        await _departmentRepository.Add(department.Value, token);
+        var result = await _departmentRepository.Add(department.Value, token);
+
+        if (result.IsFailure)
+            Error.Failure(result.Error.Messages);
+        
 
         return departmentId;
     }

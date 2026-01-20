@@ -62,7 +62,6 @@ public class PositionRepository : IPositionRepository
     public async Task<Result<bool, Error>> ExistsActiveWithName(string name, CancellationToken cancellationToken)
     {
        return await _context.Positions
-            .AsNoTracking()
             .AnyAsync(p => p.IsActive && p.Name == name, cancellationToken: cancellationToken);
     }
 }
