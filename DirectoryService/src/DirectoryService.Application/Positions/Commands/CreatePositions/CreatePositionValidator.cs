@@ -12,6 +12,7 @@ public class CreatePositionValidator : AbstractValidator<CreatePositionCommand>
 {
     private readonly IDepartmentRepository _departmentRepository;
     private readonly IPositionRepository _positionRepository;
+    
     public CreatePositionValidator(IDepartmentRepository departmentRepository, IPositionRepository positionRepository)
     {
         _departmentRepository = departmentRepository;
@@ -21,18 +22,22 @@ public class CreatePositionValidator : AbstractValidator<CreatePositionCommand>
             .NotEmpty()
             .NotNull()
             .MaximumLength(1000)
-            .MinimumLength(3);
+            .MinimumLength(3)
+            .WithError(GeneralErrors.ValueIsRequired("Name"));
 
         RuleFor(x => x.Name)
             .MustAsync(async(name, cancellationToken) =>
                 {
-                    Result<bool, Error> result = await _positionRepository.ExistsActiveWithName(name, cancellationToken);
+                    UnitResult<Error> result = await _positionRepository.ExistsActiveWithName(name, cancellationToken);
 
-                    return result is { IsSuccess: true, Value: false };
-                });
+                    return result is { IsSuccess: true};
+                })
+            .WithError(Error.Validation(new ErrorMessage(
+                "name.already.exists", "Position name already exists")));
         
         RuleFor(x => x.Description)
-            .MaximumLength(1000);
+            .MaximumLength(1000)
+            .WithError(GeneralErrors.ValueIsInvalid("Description"));
         
         RuleFor(x => x.DepartmentIds)
             .NotNull()

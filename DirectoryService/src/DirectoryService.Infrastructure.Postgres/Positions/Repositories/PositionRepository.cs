@@ -59,9 +59,12 @@ public class PositionRepository : IPositionRepository
         }
     }
 
-    public async Task<Result<bool, Error>> ExistsActiveWithName(string name, CancellationToken cancellationToken)
+    public async Task<UnitResult<Error>> ExistsActiveWithName(string name, CancellationToken cancellationToken)
     {
-       return await _context.Positions
+       var result = await _context.Positions
             .AnyAsync(p => p.IsActive && p.Name == name, cancellationToken: cancellationToken);
+
+       return !result ? UnitResult.Success<Error>()
+               : UnitResult.Failure(GeneralErrors.NotFound(name: name));
     }
 }
