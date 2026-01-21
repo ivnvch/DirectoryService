@@ -1,5 +1,7 @@
 using System.Reflection;
+using DirectoryService.Domain.Departments;
 using DirectoryService.Domain.Locations;
+using DirectoryService.Domain.Positions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
@@ -10,18 +12,11 @@ public class DirectoryDbContext : DbContext
     public DirectoryDbContext(DbContextOptions<DirectoryDbContext> options): base(options){}
 
     public DbSet<Location> Locations { get; set; } = null!;
-
-
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    {
-        optionsBuilder.UseLoggerFactory(CreateLoggerFactory());
-    }
-
+    public DbSet<Department> Departments { get; set; } = null!;
+    public DbSet<Position> Positions { get; set; } = null!;
+    
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
     }
-
-    private ILoggerFactory CreateLoggerFactory() =>
-        LoggerFactory.Create(builder => { builder.AddConsole(); });
 }

@@ -21,7 +21,7 @@ public record DepartmentName
             return GeneralErrors.ValueIsRequired("department name");
         
         if(value.Length is <  NAME_MIN_LENGTH or > NAME_MAX_LENGTH)
-            return GeneralErrors.ValueIsInvalid("department name");
+            return GeneralErrors.ValueIsInvalid("department name length");
         
         return new DepartmentName(value);
     }

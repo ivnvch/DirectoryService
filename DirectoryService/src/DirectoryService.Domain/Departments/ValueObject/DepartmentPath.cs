@@ -37,11 +37,17 @@ public record DepartmentPath
                 return GeneralErrors.ValueIsInvalid("path");
 
             string prefix = existingPath + ".";
+            path = prefix + path;
             if (!path.StartsWith(prefix, StringComparison.Ordinal))
                 return GeneralErrors.ValueIsInvalid("path");
         }
 
         return path;
+    }
+
+    public static DepartmentPath Create(string value)
+    {
+        return new DepartmentPath(value);
     }
 
     private static readonly Regex PathRegex = new Regex(

@@ -8,7 +8,7 @@ namespace DirectoryService.Domain.Positions;
 public sealed class Position
 {
     private Position(){}
-    private Position(Guid id, string name, string? description, IEnumerable<Guid> departments)
+    private Position(Guid id, string name, string? description, IEnumerable<DepartmentPosition> departments)
     {
         Id = id;
         Name = name;
@@ -16,9 +16,7 @@ public sealed class Position
         IsActive = true;
         CreatedAt = DateTime.UtcNow;
         UpdatedAt = CreatedAt;
-        _departments = departments
-            .Select(x => new DepartmentPosition(Guid.NewGuid(), Guid.NewGuid() ,x))
-            .ToList();
+        _departments = departments.ToList();
     }
     
     private readonly List<DepartmentPosition> _departments = [];
@@ -34,13 +32,14 @@ public sealed class Position
     public static Result<Position, Error> Create(
         string name, 
         string? description, 
-        IEnumerable<Guid> departments)
+        IEnumerable<DepartmentPosition> departmentPositions)
     {
         if (string.IsNullOrWhiteSpace(name))
             return GeneralErrors.ValueIsInvalid("Name ");
         if (string.IsNullOrWhiteSpace(description) && description.Length > LengthConstant.Max1000Length)
             return GeneralErrors.ValueIsInvalid("Description");
-        
+
+        var departments = departmentPositions.ToList();
         if(!departments.Any())
             return GeneralErrors.ValueIsInvalid("departments");
         

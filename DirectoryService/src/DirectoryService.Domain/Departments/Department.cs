@@ -14,6 +14,7 @@ public sealed class Department
     }
     private Department(
         Guid id,
+        Guid? parentId,
         DepartmentName name,
         DepartmentIdentifier departmentIdentifier,
         DepartmentPath departmentPath,
@@ -21,6 +22,7 @@ public sealed class Department
         IEnumerable<DepartmentLocation> departmentLocations)
     {
         Id = id;
+        ParentId = parentId;
         Name = name;
         DepartmentIdentifier = departmentIdentifier;
         DepartmentPath = departmentPath;
@@ -54,9 +56,10 @@ public sealed class Department
 
     public static Result<Department, Error> CreateParent(
         DepartmentName name,
+        Guid parentId,
         DepartmentIdentifier departmentIdentifier,
-        DepartmentPath departmentPath,
-        IEnumerable<DepartmentLocation> departmentLocations)
+        IEnumerable<DepartmentLocation> departmentLocations,
+        Guid? departmentId = null)
     {
         if (string.IsNullOrWhiteSpace(name.Value))
           return GeneralErrors.ValueIsInvalid($"'{name}'");
@@ -65,13 +68,15 @@ public sealed class Department
         
         if(locationList.Count() == 0)
             return GeneralErrors.ValueIsInvalid($"'{locationList}'");
-        
+
+        var path = DepartmentPath.CreateParent(departmentIdentifier).Value;
 
         return new Department(
-            Guid.NewGuid(),
+            departmentId ?? Guid.NewGuid(),
+            parentId,
             name,
             departmentIdentifier, 
-            departmentPath,
+            path,
             0,
             locationList);
     }
@@ -91,6 +96,7 @@ public sealed class Department
 
         return new Department(
             departmentId ?? Guid.NewGuid(),
+            parent.Id,
             name,
             departmentIdentifier,
             path.Value,
