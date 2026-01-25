@@ -268,27 +268,27 @@ namespace DirectoryService.Infrastructure.Migrations
 
                             b1.Property<string>("Apartment")
                                 .HasColumnType("text")
-                                .HasColumnName("apartment");
+                                .HasAnnotation("Relational:JsonPropertyName", "apartment");
 
                             b1.Property<string>("City")
                                 .IsRequired()
                                 .HasColumnType("text")
-                                .HasColumnName("city");
+                                .HasAnnotation("Relational:JsonPropertyName", "city");
 
                             b1.Property<string>("Country")
                                 .IsRequired()
                                 .HasColumnType("text")
-                                .HasColumnName("country");
+                                .HasAnnotation("Relational:JsonPropertyName", "country");
 
                             b1.Property<string>("House")
                                 .IsRequired()
                                 .HasColumnType("text")
-                                .HasColumnName("house");
+                                .HasAnnotation("Relational:JsonPropertyName", "house");
 
                             b1.Property<string>("Street")
                                 .IsRequired()
                                 .HasColumnType("text")
-                                .HasColumnName("street");
+                                .HasAnnotation("Relational:JsonPropertyName", "street");
 
                             b1.HasKey("LocationId");
 

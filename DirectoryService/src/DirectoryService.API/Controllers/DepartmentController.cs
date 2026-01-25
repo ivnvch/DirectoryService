@@ -25,7 +25,7 @@ public class DepartmentController : ControllerBase
         return await handler.Handle(command, cancellation);
     }
 
-    [HttpPut("/{departmentId:guid}/locations")]
+    [HttpPatch("/{departmentId:guid}/locations")]
     public async Task<EndpointResult<Guid>> UpdateLocations(
         [FromRoute] Guid departmentId,
         [FromServices] ICommandHandler<Guid, UpdateDepartmentLocationCommand>  handler,

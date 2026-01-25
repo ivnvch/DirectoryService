@@ -21,6 +21,7 @@ public class PositionController : ControllerBase
             request.Name,
             request.Description,
             request.DepartmentIds);
+        
         return await handler.Handle(command, cancellationToken);
     }
 }

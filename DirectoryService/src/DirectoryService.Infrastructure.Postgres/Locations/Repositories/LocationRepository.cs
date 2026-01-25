@@ -25,9 +25,6 @@ public class LocationRepository :  ILocationRepository
              _context.Locations.Add(location);
         try
         {
-
-            await _context.SaveChangesAsync(cancellation);
-
             _logger.LogInformation($"Location {location.Id} has been added.");
 
             return location.Id;

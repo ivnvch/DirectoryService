@@ -1,6 +1,7 @@
 using System.Data.Common;
 using CSharpFunctionalExtensions;
 using DirectoryService.Application.Departments.Repositories;
+using DirectoryService.Domain.DepartmentLocations;
 using DirectoryService.Domain.Departments;
 using DirectoryService.Domain.Departments.Errors;
 using DirectoryService.Shared.Errors;
@@ -24,12 +25,10 @@ public class DepartmentRepository : IDepartmentRepository
 
     public async Task<Result<Guid, Error>> Add(Department department, CancellationToken cancellationToken = default)
     {
-       _context.Departments.Add(department);
 
        try
        {
-           await _context.SaveChangesAsync(cancellationToken);
-
+           _context.Departments.Add(department);
            _logger.LogInformation($"Department: {department.Name} with Department ID: {department.Id} has been added");
 
            return department.Id;
@@ -51,6 +50,7 @@ public class DepartmentRepository : IDepartmentRepository
     public async Task<Result<Department, Error>> GetById(Guid id, CancellationToken cancellationToken = default)
     {
         var department = await _context.Departments
+            .Where(x => x.IsActive)
             .FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
 
         if (department is null)
@@ -69,5 +69,14 @@ public class DepartmentRepository : IDepartmentRepository
             .CountAsync(cancellationToken);
         
         return existingCount == departmentIds.Count;
+    }
+
+    public async Task<UnitResult<Error>> DeleteLocations(Guid departmentId, CancellationToken cancellationToken = default)
+    {
+       await _context.DepartmentLocations
+            .Where(d => d.DepartmentId == departmentId)
+            .ExecuteDeleteAsync(cancellationToken);
+
+       return UnitResult.Success<Error>();
     }
 }

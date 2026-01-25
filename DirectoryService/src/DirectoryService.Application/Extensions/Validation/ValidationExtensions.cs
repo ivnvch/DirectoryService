@@ -16,13 +16,5 @@ public static class ValidationExtensions
             select error.Messages;
         
         return Error.Validation(errors.SelectMany(error => error));
-                    
-        /*IEnumerable<ErrorMessage> messages = validationResult.Errors.Select(v =>
-            new ErrorMessage(
-                v.ErrorCode,
-                v.ErrorMessage,
-                v.PropertyName));*/
-
-        //return Error.Validation(messages).ToErrors();
     }
 }

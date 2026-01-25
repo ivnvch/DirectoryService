@@ -29,22 +29,21 @@ public class CreatePositionCommandHandler : ICommandHandler<Guid, CreatePosition
         _departmentRepository = departmentRepository;
     }
 
-    public async Task<Result<Guid, Error>> Handle(CreatePositionCommand command, CancellationToken token)
+    public async Task<Result<Guid, Errors>> Handle(CreatePositionCommand command, CancellationToken token)
     {
         var validationResult = await _positionValidator.ValidateAsync(command, token);
         if (validationResult.IsValid == false)
-            return validationResult.ToError();
+            return validationResult.ToError().ToErrors();
 
         List<Guid> departmentIds = command.DepartmentIds;
 
         var allDepartmentsExists = await _departmentRepository.AllDepartmentsExistAsync(departmentIds, token);
         if (allDepartmentsExists.IsFailure)
-            return Error.Failure(new ErrorMessage(
-                "allDepartmentsExists.is.failure", "An error occurred during the search departments."));
-
+            return allDepartmentsExists.Error;
+        
         if (allDepartmentsExists.Value == false)
             return Error.NotFound(
-                "department.not.found", "One or more departments are not found.");
+                "department.not.found", "One or more departments are not found.").ToErrors();
         
         Guid positionId = Guid.NewGuid();
 
@@ -60,12 +59,12 @@ public class CreatePositionCommandHandler : ICommandHandler<Guid, CreatePosition
             departmentPositions);
 
         if (position.IsFailure)
-            return position.Error;
+            return position.Error.ToErrors();
         
        var result = await _positionRepository.Add(position.Value, token);
 
        if (result.IsFailure)
-           return Error.Failure(result.Error.Messages);
+           return Error.Failure(result.Error.Messages).ToErrors();
 
         return positionId;
     }

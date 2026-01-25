@@ -1,6 +1,9 @@
 using CSharpFunctionalExtensions;
 using DirectoryService.Application.Abstractions.Database;
+using DirectoryService.Application.Database;
 using DirectoryService.Shared.Errors;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.Logging;
 
 namespace DirectoryService.Infrastructure.Database;
@@ -9,24 +12,46 @@ public class TransactionManager : ITransactionManager
 {
     private readonly DirectoryDbContext _context;
     private readonly ILogger<TransactionManager> _logger;
+    private readonly ILoggerFactory _loggerFactory;
 
-    public TransactionManager(DirectoryDbContext context, ILogger<TransactionManager> logger)
+    public TransactionManager(DirectoryDbContext context,
+        ILogger<TransactionManager> logger, 
+        ILoggerFactory loggerFactory)
     {
         _context = context;
         _logger = logger;
+        _loggerFactory = loggerFactory;
     }
 
-    public async Task<UnitResult<Errors>> SaveChangesAsync(CancellationToken cancellationToken = default)
+    public async Task<Result<ITransactionScope, Error>> BeginTransactionAsync(CancellationToken cancellationToken)
+    {
+        try
+        {
+            var transaction = await _context.Database.BeginTransactionAsync(cancellationToken);
+            
+            var transactionScopeLogger = _loggerFactory.CreateLogger<TransactionScope>();
+            var transactionScope = new TransactionScope(transaction.GetDbTransaction(), transactionScopeLogger);
+
+            return transactionScope;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error occured during transaction");
+            return Error.Failure("database", "Error occured during transaction");
+        }
+    }
+
+    public async Task<UnitResult<Error>> SaveChangesAsync(CancellationToken cancellationToken)
     {
         try
         {
             await _context.SaveChangesAsync(cancellationToken);
-            return UnitResult.Success<Errors>();
+            return UnitResult.Success<Error>();
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error saving changes");
-            return UnitResult.Failure<Errors>(GeneralErrors.Failure());
+            return UnitResult.Failure<Error>(GeneralErrors.Failure());
         }
     }
 }
