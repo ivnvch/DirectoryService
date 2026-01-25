@@ -25,12 +25,12 @@ public class CreateLocationHandler : ICommandHandler<Guid, CreateLocationCommand
         _createLocationValidator = createLocationValidator;
     }
 
-    public async Task<Result<Guid, Error>> Handle(CreateLocationCommand command, CancellationToken cancellationToken)
+    public async Task<Result<Guid, Errors>> Handle(CreateLocationCommand command, CancellationToken cancellationToken)
     {
         var validationResult = await _createLocationValidator.ValidateAsync(command, cancellationToken);
 
         if (!validationResult.IsValid)
-            return validationResult.ToError();
+            return validationResult.ToError().ToErrors();
           
 
         var name = LocationName.Create(command.Name).Value;
@@ -51,9 +51,12 @@ public class CreateLocationHandler : ICommandHandler<Guid, CreateLocationCommand
             timezone);
 
         if (location.IsFailure)
-            return GeneralErrors.ValueIsInvalid("location");
+            return location.Error.ToErrors();
 
-        await _locationRepository.Add(location.Value, cancellationToken);
+        var addedLocation = await _locationRepository.Add(location.Value, cancellationToken);
+        if(addedLocation.IsFailure)
+            return addedLocation.Error.ToErrors();
+        
         _logger.LogInformation($"Created location with id {location.Value.Id}");
 
         return location.Value.Id;

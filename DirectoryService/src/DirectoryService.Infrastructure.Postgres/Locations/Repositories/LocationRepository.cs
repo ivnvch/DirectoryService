@@ -32,18 +32,18 @@ public class LocationRepository :  ILocationRepository
 
             return location.Id;
         }
-        /*catch (DbUpdateException ex) when (ex.InnerException is PostgresException pgEx)
+        catch (DbUpdateException ex) when (ex.InnerException is PostgresException pgEx)
         {
             if (pgEx is { SqlState: PostgresErrorCodes.UniqueViolation, ConstraintName: not null } &&
-                pgEx.ConstraintName.Contains("location", StringComparison.InvariantCultureIgnoreCase))
+                pgEx.ConstraintName.Contains("ix_locations_address", StringComparison.InvariantCultureIgnoreCase))
             {
-
+                return LocationErrors.LocationAddressConflict(location.Address.ToString());
             }
 
             _logger.LogError(ex, "Database update error while creating location: {location}", location);
 
             return LocationErrors.DatabaseError();
-        }*/
+        }
         catch (OperationCanceledException ex)
         {
             _logger.LogError(ex, "Operation cancelled while creating location: {location}", location);

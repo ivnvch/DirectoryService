@@ -10,4 +10,8 @@ public static class LocationErrors
 
     public static Error OperationCancelled() =>
          Error.Failure(new ErrorMessage("location.operation.cancelled", "Операция была отменена"));
+
+    public static Error LocationAddressConflict(string address) =>
+        Error.Conflict("location.conflict.address",
+            $"Location with this address: {address} already exists.");
 }
