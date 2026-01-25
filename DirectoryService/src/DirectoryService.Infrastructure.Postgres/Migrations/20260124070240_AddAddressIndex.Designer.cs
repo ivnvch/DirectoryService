@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using DirectoryService.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -12,9 +13,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace DirectoryService.Infrastructure.Migrations
 {
     [DbContext(typeof(DirectoryDbContext))]
-    partial class DirectoryDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260124070240_AddAddressIndex")]
+    partial class AddAddressIndex
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -268,27 +271,27 @@ namespace DirectoryService.Infrastructure.Migrations
 
                             b1.Property<string>("Apartment")
                                 .HasColumnType("text")
-                                .HasAnnotation("Relational:JsonPropertyName", "apartment");
+                                .HasColumnName("apartment");
 
                             b1.Property<string>("City")
                                 .IsRequired()
                                 .HasColumnType("text")
-                                .HasAnnotation("Relational:JsonPropertyName", "city");
+                                .HasColumnName("city");
 
                             b1.Property<string>("Country")
                                 .IsRequired()
                                 .HasColumnType("text")
-                                .HasAnnotation("Relational:JsonPropertyName", "country");
+                                .HasColumnName("country");
 
                             b1.Property<string>("House")
                                 .IsRequired()
                                 .HasColumnType("text")
-                                .HasAnnotation("Relational:JsonPropertyName", "house");
+                                .HasColumnName("house");
 
                             b1.Property<string>("Street")
                                 .IsRequired()
                                 .HasColumnType("text")
-                                .HasAnnotation("Relational:JsonPropertyName", "street");
+                                .HasColumnName("street");
 
                             b1.HasKey("LocationId");
 

@@ -2,6 +2,7 @@ using DirectoryService.API.EndpointResults;
 using DirectoryService.API.Models.RequestModels.Departments;
 using DirectoryService.Application.CQRS;
 using DirectoryService.Application.Departments.Commands.CreateDepartments;
+using DirectoryService.Application.Departments.Commands.UpdateDepartmentLocation;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DirectoryService.API.Controllers;
@@ -21,6 +22,20 @@ public class DepartmentController : ControllerBase
             request.Identifier,
             request.ParentId,
             request.LocationIds.ToArray());
+        return await handler.Handle(command, cancellation);
+    }
+
+    [HttpPatch("/{departmentId:guid}/locations")]
+    public async Task<EndpointResult<Guid>> UpdateLocations(
+        [FromRoute] Guid departmentId,
+        [FromServices] ICommandHandler<Guid, UpdateDepartmentLocationCommand>  handler,
+        [FromBody] UpdateDepartmentLocationsRequest request,
+        CancellationToken cancellation)
+    {
+        UpdateDepartmentLocationCommand command = new UpdateDepartmentLocationCommand(
+            departmentId,
+            request.LocationIds);
+        
         return await handler.Handle(command, cancellation);
     }
 }

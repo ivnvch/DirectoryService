@@ -1,0 +1,31 @@
+﻿using Microsoft.EntityFrameworkCore.Migrations;
+
+#nullable disable
+
+namespace DirectoryService.Infrastructure.Migrations
+{
+    /// <inheritdoc />
+    public partial class AddAddressIndex : Migration
+    {
+        /// <inheritdoc />
+        protected override void Up(MigrationBuilder migrationBuilder)
+        {
+            migrationBuilder.Sql(
+                """
+                    CREATE UNIQUE INDEX ix_locations_address ON locations (
+                    lower(trim(address->>'city')),
+                    lower(trim(address->>'street')),
+                    trim(address->>'house'),
+                    NULLIF(trim(address->>'apartment'), '')
+                    );
+                """);
+                                 
+        }
+
+        /// <inheritdoc />
+        protected override void Down(MigrationBuilder migrationBuilder)
+        {
+            migrationBuilder.Sql(@"DROP INDEX IF EXISTS ix_locations_address;");
+        }
+    }
+}

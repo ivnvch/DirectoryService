@@ -14,9 +14,10 @@ public class LocationConfiguration : IEntityTypeConfiguration<Location>
         builder.HasKey(l => l.Id)
             .HasName("pk_location_id");
 
-        builder.ComplexProperty(l => l.Name, n =>
+
+        builder.ComplexProperty(l => l.Name, ln =>
         {
-            n.Property(l => l.Value)
+            ln.Property(l => l.Value)
                 .HasColumnName("name")
                 .HasMaxLength(LengthConstant.Max150Length)
                 .IsRequired();
@@ -27,20 +28,20 @@ public class LocationConfiguration : IEntityTypeConfiguration<Location>
             ad.ToJson("address");
             
             ad.Property(l => l.Country)
-                .HasColumnName("country")
-                .IsRequired();
+                .IsRequired()
+                .Metadata.SetJsonPropertyName("country");
             ad.Property(l => l.City)
-                .HasColumnName("city")
-                .IsRequired();
+                .IsRequired()
+                .Metadata.SetJsonPropertyName("city");
             ad.Property(l => l.Street)
-                .HasColumnName("street")
-                .IsRequired();
+                .IsRequired()
+                .Metadata.SetJsonPropertyName("street");
             ad.Property(l => l.House)
-                .HasColumnName("house")
-                .IsRequired();
+                .IsRequired()
+                .Metadata.SetJsonPropertyName("house");
             ad.Property(l => l.Apartment)
-                .HasColumnName("apartment")
-                .IsRequired(false);
+                .IsRequired(false)
+                .Metadata.SetJsonPropertyName("apartment");
         });
 
         builder.ComplexProperty(l => l.Timezone, tz =>

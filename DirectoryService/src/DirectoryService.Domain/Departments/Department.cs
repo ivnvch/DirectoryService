@@ -30,9 +30,6 @@ public sealed class Department
         IsActive = true;
         CreatedAt = DateTime.UtcNow;
         UpdatedAt = CreatedAt;
-
-        /*var depLocations = locations.Select(l =>
-            new DepartmentLocation(Guid.NewGuid(), id, l));*/
         _locations = departmentLocations.ToList();
     }
 
@@ -52,11 +49,9 @@ public sealed class Department
     public IReadOnlyList<DepartmentLocation> Locations => _locations;
     public IReadOnlyList<DepartmentPosition> Positions => _positions;
     public IReadOnlyList<Department> ChildrenDepartments => _childrenDepartments;
-
-
+    
     public static Result<Department, Error> CreateParent(
         DepartmentName name,
-        Guid parentId,
         DepartmentIdentifier departmentIdentifier,
         IEnumerable<DepartmentLocation> departmentLocations,
         Guid? departmentId = null)
@@ -70,10 +65,10 @@ public sealed class Department
             return GeneralErrors.ValueIsInvalid($"'{locationList}'");
 
         var path = DepartmentPath.CreateParent(departmentIdentifier).Value;
-
+        
         return new Department(
             departmentId ?? Guid.NewGuid(),
-            parentId,
+            null,
             name,
             departmentIdentifier, 
             path,
@@ -103,5 +98,17 @@ public sealed class Department
             parent.Depth + 1,
             departmentLocationsList
             );
+    }
+
+    public UnitResult<Error> UpdateLocations(IEnumerable<DepartmentLocation> locationIds)
+    {
+        var departmentLocations =  locationIds.ToList();
+        if(departmentLocations.Count == 0)
+            return GeneralErrors.ValueIsRequired($"'{departmentLocations}'");
+
+        _locations.Clear();
+        _locations.AddRange(departmentLocations);
+
+        return UnitResult.Success<Error>();
     }
 }
