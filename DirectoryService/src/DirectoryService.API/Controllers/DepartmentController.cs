@@ -2,6 +2,7 @@ using DirectoryService.API.EndpointResults;
 using DirectoryService.API.Models.RequestModels.Departments;
 using DirectoryService.Application.CQRS;
 using DirectoryService.Application.Departments.Commands.CreateDepartments;
+using DirectoryService.Application.Departments.Commands.UpdateDepartmentPath;
 using DirectoryService.Application.Departments.Commands.UpdateDepartmentLocation;
 using Microsoft.AspNetCore.Mvc;
 
@@ -37,5 +38,16 @@ public class DepartmentController : ControllerBase
             request.LocationIds);
         
         return await handler.Handle(command, cancellation);
+    }
+
+    [HttpPatch("/{departmentId:guid}/parent")]
+    public async Task<EndpointResult<Guid>> UpdateDepartmentPath(
+        [FromRoute] Guid departmentId,
+        [FromServices] ICommandHandler<Guid, UpdateDepartmentPathCommand>  handler,
+        [FromBody] Guid? parentId,
+        CancellationToken cancellation)
+    {
+        UpdateDepartmentPathCommand pathCommand = new UpdateDepartmentPathCommand(departmentId, parentId);
+        return await handler.Handle(pathCommand, cancellation);
     }
 }

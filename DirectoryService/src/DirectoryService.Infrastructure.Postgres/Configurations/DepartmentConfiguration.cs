@@ -15,6 +15,9 @@ public class DepartmentConfiguration : IEntityTypeConfiguration<Department>
         builder.HasKey(x => x.Id)
             .HasName("pk_department_id");
 
+        builder.Property(x => x.Id)
+            .HasColumnName("id");
+
         builder.ComplexProperty(d => d.Name, dn =>
         {
             dn.Property(x => x.Value)
