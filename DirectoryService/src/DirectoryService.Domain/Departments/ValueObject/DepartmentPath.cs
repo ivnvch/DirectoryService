@@ -13,7 +13,7 @@ public record DepartmentPath
     
     public string Value { get; }
 
-    public static Result<DepartmentPath> CreateParent(DepartmentIdentifier identifier)
+    public static Result<DepartmentPath, Error> CreateParent(DepartmentIdentifier identifier)
     {
         return new DepartmentPath(IsValidDepartmentPath(identifier.Value).Value);
     }
@@ -21,6 +21,11 @@ public record DepartmentPath
     public Result<DepartmentPath> CreateChild(DepartmentIdentifier childIdentifier)
     {
         return new DepartmentPath(IsValidDepartmentPath(childIdentifier.Value, Value).Value);
+    }
+
+    public Result<DepartmentPath, Error> UpdatePath(DepartmentIdentifier identifier, DepartmentPath departmentPath)
+    {
+        return new DepartmentPath(departmentPath + "."  + identifier.Value);
     }
     
     public static Result<string, Error> IsValidDepartmentPath(string path, string? existingPath = null)

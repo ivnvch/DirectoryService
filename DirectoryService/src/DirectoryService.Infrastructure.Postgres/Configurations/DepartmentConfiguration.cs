@@ -18,7 +18,7 @@ public class DepartmentConfiguration : IEntityTypeConfiguration<Department>
         builder.Property(x => x.Id)
             .HasColumnName("id");
 
-        builder.ComplexProperty(d => d.Name, dn =>
+        builder.OwnsOne(d => d.Name, dn =>
         {
             dn.Property(x => x.Value)
                 .IsRequired()
@@ -26,7 +26,7 @@ public class DepartmentConfiguration : IEntityTypeConfiguration<Department>
                 .HasColumnName("name");
         });
 
-        builder.ComplexProperty(d => d.DepartmentIdentifier, di =>
+        builder.OwnsOne(d => d.DepartmentIdentifier, di =>
         {
             di.Property(d => d.Value)
                 .IsRequired()

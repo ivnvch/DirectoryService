@@ -60,7 +60,7 @@ public class DepartmentRepository : IDepartmentRepository
     public async Task<Result<Department, Error>> GetByIdWithLockAsync(Guid id, CancellationToken cancellationToken = default)
     {
         var department = await _context.Departments
-            .FromSql($"SELECT * FROM departments WHERE Id = {id} FOR UPDATE")
+            .FromSql($"SELECT * FROM departments WHERE id = {id} FOR UPDATE")
             .Where(x => x.IsActive)
             .FirstOrDefaultAsync(cancellationToken);
         
@@ -142,16 +142,16 @@ public class DepartmentRepository : IDepartmentRepository
         var updatePath = await dbConnection.ExecuteAsync(
             """
                       UPDATE departments
-                      SET path = (@departmentPath::ltree || subpath(oldPath, nlevel(@oldPath::ltree))) : ltree,
-                      depth = @departmentDepth::ltree + (depth - nlevel(oldDepth::ltree) + 1),
+                      SET path = (@departmentPath::ltree || subpath(path, nlevel(@oldPath::ltree)))::ltree,
+                      depth = @departmentDepth + (depth - nlevel(@oldPath::ltree) + 1),
                       updated_at = now()
-                      WHERE path <@oldPath::ltree
+                      WHERE path <@ @oldPath::ltree
                         AND path != @oldPath::ltree
                 """, new
             {
                 departmentPath = department.DepartmentPath.Value,
                 departmentDepth = department.Depth,
-                oldPath
+                oldPath = oldPath.Value
                 
             });
                 
