@@ -4,7 +4,7 @@ using DirectoryService.Application.Extensions.Validation;
 using DirectoryService.Shared.Errors;
 using FluentValidation;
 
-namespace DirectoryService.Application.Departments.MoveDepartments;
+namespace DirectoryService.Application.Departments.Commands.UpdateDepartmentPath;
 
 public class UpdateDepartmentPathValidator : AbstractValidator<UpdateDepartmentPathCommand>
 {
@@ -22,7 +22,7 @@ public class UpdateDepartmentPathValidator : AbstractValidator<UpdateDepartmentP
         RuleFor(x => x.DepartmentId)
             .MustAsync(async (departmentId, cancellecion) =>
             {
-                var isExist = await _departmentRepository.ExistDepartment(departmentId, cancellecion);
+                var isExist = await _departmentRepository.ExistDepartmentAsync(departmentId, cancellecion);
 
                 return isExist is { IsSuccess: true };
             })
@@ -33,7 +33,7 @@ public class UpdateDepartmentPathValidator : AbstractValidator<UpdateDepartmentP
             RuleFor(x => x.ParentId!.Value)
                 .MustAsync(async (parentId, cancellecion) =>
                 {
-                   UnitResult<Error> result = await _departmentRepository.ExistDepartment(parentId, cancellecion);
+                   UnitResult<Error> result = await _departmentRepository.ExistDepartmentAsync(parentId, cancellecion);
 
                    return result.IsSuccess;
                 })

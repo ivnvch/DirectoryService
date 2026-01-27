@@ -45,7 +45,7 @@ public class UpdateDepartmentLocationCommandHandler : ICommandHandler<Guid,  Upd
         
         using var transactionScope = transactionScopeResult.Value;
         
-        var department = await _departmentRepository.GetById(command.DepartmentId, token);
+        var department = await _departmentRepository.GetByIdAsync(command.DepartmentId, token);
         if (department.IsFailure)
         {
             transactionScope.Rollback();
@@ -64,7 +64,7 @@ public class UpdateDepartmentLocationCommandHandler : ICommandHandler<Guid,  Upd
         
        department.Value.UpdateLocations(newLocationsIds);
         
-       var deleteLocations = await _departmentRepository.DeleteLocations(command.DepartmentId, token);
+       var deleteLocations = await _departmentRepository.DeleteLocationsAsync(command.DepartmentId, token);
        if (deleteLocations.IsFailure)
        {
            transactionScope.Rollback();

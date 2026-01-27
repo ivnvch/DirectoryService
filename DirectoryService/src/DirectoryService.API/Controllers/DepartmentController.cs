@@ -2,8 +2,8 @@ using DirectoryService.API.EndpointResults;
 using DirectoryService.API.Models.RequestModels.Departments;
 using DirectoryService.Application.CQRS;
 using DirectoryService.Application.Departments.Commands.CreateDepartments;
-using DirectoryService.Application.Departments.Commands.UpdateDepartmentPath;
 using DirectoryService.Application.Departments.Commands.UpdateDepartmentLocation;
+using DirectoryService.Application.Departments.Commands.UpdateDepartmentPath;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DirectoryService.API.Controllers;

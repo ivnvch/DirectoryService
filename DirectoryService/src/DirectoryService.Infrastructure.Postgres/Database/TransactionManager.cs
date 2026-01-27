@@ -1,6 +1,6 @@
+using System.Data;
 using CSharpFunctionalExtensions;
 using DirectoryService.Application.Abstractions.Database;
-using DirectoryService.Application.Database;
 using DirectoryService.Shared.Errors;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
@@ -23,11 +23,13 @@ public class TransactionManager : ITransactionManager
         _loggerFactory = loggerFactory;
     }
 
-    public async Task<Result<ITransactionScope, Error>> BeginTransactionAsync(CancellationToken cancellationToken)
+    public async Task<Result<ITransactionScope, Error>> BeginTransactionAsync(
+        CancellationToken cancellationToken = default,
+        IsolationLevel? level = null)
     {
         try
         {
-            var transaction = await _context.Database.BeginTransactionAsync(cancellationToken);
+            var transaction = await _context.Database.BeginTransactionAsync(level ?? IsolationLevel.ReadCommitted, cancellationToken);
             
             var transactionScopeLogger = _loggerFactory.CreateLogger<TransactionScope>();
             var transactionScope = new TransactionScope(transaction.GetDbTransaction(), transactionScopeLogger);
