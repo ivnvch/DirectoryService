@@ -111,4 +111,30 @@ public sealed class Department
 
         return UnitResult.Success<Error>();
     }
+
+    public UnitResult<Error> UpdatePathWithoutParent()
+    {
+        ParentId = null;
+        Depth = 0;
+        var newPath = DepartmentPath.CreateParent(identifier: DepartmentIdentifier);
+        if(newPath.IsFailure)
+            return newPath.Error;
+        
+        DepartmentPath = newPath.Value;
+        
+        return UnitResult.Success<Error>();
+    }
+
+    public UnitResult<Error> UpdatePathWithParent(Guid parentId, short parentDepth, DepartmentPath departmentPath)
+    {
+        ParentId = parentId;
+        Depth = (short)(parentDepth + 1);
+        var path = DepartmentPath.UpdatePath(DepartmentIdentifier, departmentPath);
+        if(path.IsFailure)
+            return path.Error;
+        
+        DepartmentPath = path.Value;
+        
+        return UnitResult.Success<Error>();
+    }
 }

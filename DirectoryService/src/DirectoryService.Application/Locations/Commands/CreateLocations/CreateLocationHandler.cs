@@ -1,7 +1,6 @@
 using CSharpFunctionalExtensions;
 using DirectoryService.Application.Abstractions.Database;
 using DirectoryService.Application.CQRS;
-using DirectoryService.Application.Database;
 using DirectoryService.Application.Extensions.Validation;
 using DirectoryService.Application.Locations.Repositories;
 using DirectoryService.Domain.Locations;

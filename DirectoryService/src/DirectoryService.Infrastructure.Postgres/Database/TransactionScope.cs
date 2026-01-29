@@ -1,6 +1,6 @@
 using System.Data;
 using CSharpFunctionalExtensions;
-using DirectoryService.Application.Database;
+using DirectoryService.Application.Abstractions.Database;
 using DirectoryService.Shared.Errors;
 using Microsoft.Extensions.Logging;
 

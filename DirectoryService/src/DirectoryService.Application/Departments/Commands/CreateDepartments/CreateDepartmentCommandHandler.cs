@@ -56,7 +56,7 @@ public class CreateDepartmentCommandHandler : ICommandHandler<Guid, CreateDepart
 
         if (command.ParentId.HasValue)
         {
-            var parentId = await _departmentRepository.GetById(command.ParentId.Value, token);
+            var parentId = await _departmentRepository.GetByIdAsync(command.ParentId.Value, token);
             if (parentId.IsFailure)
             {
                 transactionScope.Rollback();
