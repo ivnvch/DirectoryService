@@ -142,7 +142,7 @@ public class DepartmentRepository : IDepartmentRepository
         var updatePath = await dbConnection.ExecuteAsync(
             """
                       UPDATE departments
-                      SET path = (@departmentPath::ltree || subpath(path, nlevel(@oldPath::ltree)))::ltree,
+                      SET path = (@departmentPath::ltree || subpath(path, nlevel(@oldPath::ltree))),
                       depth = @departmentDepth + (depth - nlevel(@oldPath::ltree) + 1),
                       updated_at = now()
                       WHERE path <@ @oldPath::ltree
@@ -152,7 +152,6 @@ public class DepartmentRepository : IDepartmentRepository
                 departmentPath = department.DepartmentPath.Value,
                 departmentDepth = department.Depth,
                 oldPath = oldPath.Value
-                
             });
                 
         return UnitResult.Success<Errors>();

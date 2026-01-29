@@ -25,7 +25,7 @@ public record DepartmentPath
 
     public Result<DepartmentPath, Error> UpdatePath(DepartmentIdentifier identifier, DepartmentPath departmentPath)
     {
-        return new DepartmentPath(departmentPath + "."  + identifier.Value);
+        return new DepartmentPath(IsValidDepartmentPath(identifier.Value, departmentPath.Value).Value);
     }
     
     public static Result<string, Error> IsValidDepartmentPath(string path, string? existingPath = null)

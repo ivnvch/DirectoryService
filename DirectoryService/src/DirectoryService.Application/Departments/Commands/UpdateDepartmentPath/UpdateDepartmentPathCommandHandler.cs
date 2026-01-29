@@ -71,7 +71,7 @@ public class UpdateDepartmentPathCommandHandler : ICommandHandler<Guid, UpdateDe
             var setPathWithNewParent = department.UpdatePathWithParent(parentDepartment.Id, (short)parentDepartment.Depth, parentDepartment.DepartmentPath);
 
             var result = await _departmentRepository
-                .UpdateDepartmentsHierarchyAsync(department, department.DepartmentPath, token);
+                .UpdateDepartmentsHierarchyAsync(department, oldPath, token);
             
             _logger.LogInformation($"В Department: {department.Name} установлен новый родитель и обновлены глубина и путь подразделения");
         }
