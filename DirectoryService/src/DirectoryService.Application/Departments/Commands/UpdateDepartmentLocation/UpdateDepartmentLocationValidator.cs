@@ -16,13 +16,6 @@ public class UpdateDepartmentLocationValidator : AbstractValidator<UpdateDepartm
         
         RuleFor(x => x.LocationIds)
             .NotNull()
-            .NotEmpty()
-            .MustAsync(async (ids, cancellationToken) =>
-            {
-                var result = await _locationRepository.AllExistAsync(ids.ToArray(), cancellationToken);
-                return result is { IsSuccess: true, Value: true };
-            })
-            .WithError(Error.Validation(
-                new ErrorMessage("locationIds.not.exists", "One or more locations are not exists")));
+            .NotEmpty();
     }
 }
