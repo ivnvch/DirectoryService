@@ -17,9 +17,9 @@ public class UpdateDepartmentLocationValidator : AbstractValidator<UpdateDepartm
         RuleFor(x => x.LocationIds)
             .NotNull()
             .NotEmpty()
-            .MustAsync(async (ids, cancellation) =>
+            .MustAsync(async (ids, cancellationToken) =>
             {
-                var result = await _locationRepository.AllExistAsync(ids.ToArray(), cancellation);
+                var result = await _locationRepository.AllExistAsync(ids.ToArray(), cancellationToken);
                 return result is { IsSuccess: true, Value: true };
             })
             .WithError(Error.Validation(

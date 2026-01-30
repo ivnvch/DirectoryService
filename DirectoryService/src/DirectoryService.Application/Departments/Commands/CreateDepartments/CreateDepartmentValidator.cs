@@ -35,12 +35,12 @@ public class CreateDepartmentValidator : AbstractValidator<CreateDepartmentComma
             .WithError(GeneralErrors.ValueIsRequired("locationIds"));
 
         RuleFor(x => x.LocationIds)
-            .MustAsync(async (ids, cancellation) =>
+            .MustAsync(async (ids, cancellationToken) =>
             {
                 if (ids is null)
                     return true;
 
-               var result = await _locationRepository.AllExistAsync(ids, cancellation);
+               var result = await _locationRepository.AllExistAsync(ids, cancellationToken);
                
                return result is { IsSuccess: true, Value: true };
             })

@@ -21,7 +21,8 @@ public class UpdateDepartmentPathCommandHandler : ICommandHandler<Guid, UpdateDe
     public UpdateDepartmentPathCommandHandler(
         IValidator<UpdateDepartmentPathCommand> validator,
         IDepartmentRepository departmentRepository, 
-        ITransactionManager transactionManager, ILogger<UpdateDepartmentPathCommandHandler> logger)
+        ITransactionManager transactionManager, 
+        ILogger<UpdateDepartmentPathCommandHandler> logger)
     {
         _departmentRepository = departmentRepository;
         _validator = validator;
@@ -29,19 +30,19 @@ public class UpdateDepartmentPathCommandHandler : ICommandHandler<Guid, UpdateDe
         _logger = logger;
     }
 
-    public async Task<Result<Guid, Errors>> Handle(UpdateDepartmentPathCommand command, CancellationToken token)
+    public async Task<Result<Guid, Errors>> Handle(UpdateDepartmentPathCommand command, CancellationToken cancellationToken)
     {
-        var validationResult = await _validator.ValidateAsync(command, token);
+        var validationResult = await _validator.ValidateAsync(command, cancellationToken);
         if (!validationResult.IsValid)
             validationResult.ToError().ToErrors();
 
-        var transactionScopeResult = await _transactionManager.BeginTransactionAsync(token);
+        var transactionScopeResult = await _transactionManager.BeginTransactionAsync(cancellationToken);
         if (transactionScopeResult.IsFailure)
             return transactionScopeResult.Error.ToErrors();
         
         using var transactionScope = transactionScopeResult.Value;
         
-        var departmentResult = await _departmentRepository.GetByIdWithLockAsync(command.DepartmentId, token);
+        var departmentResult = await _departmentRepository.GetByIdWithLockAsync(command.DepartmentId, cancellationToken);
         if (departmentResult.IsFailure)
         {
             transactionScope.Rollback();
@@ -53,7 +54,7 @@ public class UpdateDepartmentPathCommandHandler : ICommandHandler<Guid, UpdateDe
 
         if (command.ParentId.HasValue)
         {
-            var parentDepartmentResult = await _departmentRepository.GetByIdWithLockAsync(command.ParentId.Value, token);
+            var parentDepartmentResult = await _departmentRepository.GetByIdWithLockAsync(command.ParentId.Value, cancellationToken);
             if (parentDepartmentResult.IsFailure)
             {
                 transactionScope.Rollback();
@@ -61,17 +62,18 @@ public class UpdateDepartmentPathCommandHandler : ICommandHandler<Guid, UpdateDe
             }
             Department? parentDepartment = parentDepartmentResult.Value;
             
-            var isDescendants = await _departmentRepository.IsDescendantsAsync(department.Id, parentDepartment.Id, token);
+            var isDescendants = await _departmentRepository.IsDescendantsAsync(department.Id, parentDepartment.Id, cancellationToken);
             if (isDescendants.IsFailure)
             {
                 transactionScope.Rollback();
                 return isDescendants.Error.ToErrors();
             }
 
-            var setPathWithNewParent = department.UpdatePathWithParent(parentDepartment.Id, (short)parentDepartment.Depth, parentDepartment.DepartmentPath);
+            var setPathWithNewParent = department
+                .UpdatePathWithParent(parentDepartment.Id, (short)parentDepartment.Depth, parentDepartment.DepartmentPath);
 
             var result = await _departmentRepository
-                .UpdateDepartmentsHierarchyAsync(department, oldPath, token);
+                .UpdateDepartmentsHierarchyAsync(department, oldPath, cancellationToken);
             
             _logger.LogInformation($"В Department: {department.Name} установлен новый родитель и обновлены глубина и путь подразделения");
         }
@@ -84,12 +86,12 @@ public class UpdateDepartmentPathCommandHandler : ICommandHandler<Guid, UpdateDe
                 return setNewPath.Error.ToErrors();
             }
             
-            await _departmentRepository.UpdateDepartmentsHierarchyAsync(department, oldPath, token);
+            await _departmentRepository.UpdateDepartmentsHierarchyAsync(department, oldPath, cancellationToken);
             
             _logger.LogError("Путь департамента изменён на корневой. Обновлены все пути дочерних подразделений");
         }
 
-        await _transactionManager.SaveChangesAsync(token);
+        await _transactionManager.SaveChangesAsync(cancellationToken);
         transactionScope.Commit();
         
         return department.Id;

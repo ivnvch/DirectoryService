@@ -20,9 +20,9 @@ public class UpdateDepartmentPathValidator : AbstractValidator<UpdateDepartmentP
         
         
         RuleFor(x => x.DepartmentId)
-            .MustAsync(async (departmentId, cancellecion) =>
+            .MustAsync(async (departmentId, cancellationToken) =>
             {
-                var isExist = await _departmentRepository.ExistDepartmentAsync(departmentId, cancellecion);
+                var isExist = await _departmentRepository.ExistDepartmentAsync(departmentId, cancellationToken);
 
                 return isExist is { IsSuccess: true };
             })
@@ -31,9 +31,9 @@ public class UpdateDepartmentPathValidator : AbstractValidator<UpdateDepartmentP
         When(x => x.ParentId.HasValue, () =>
         {
             RuleFor(x => x.ParentId!.Value)
-                .MustAsync(async (parentId, cancellecion) =>
+                .MustAsync(async (parentId, cancellationToken) =>
                 {
-                   UnitResult<Error> result = await _departmentRepository.ExistDepartmentAsync(parentId, cancellecion);
+                   UnitResult<Error> result = await _departmentRepository.ExistDepartmentAsync(parentId, cancellationToken);
 
                    return result.IsSuccess;
                 })
