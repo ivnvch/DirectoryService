@@ -45,12 +45,12 @@ public class CreatePositionValidator : AbstractValidator<CreatePositionCommand>
             .WithError(GeneralErrors.ValueIsRequired("DepartmentIds"));
 
         RuleFor(x => x.DepartmentIds)
-            .MustAsync(async (ids, cancellation) =>
+            .MustAsync(async (ids, cancellationToken) =>
             {
                 if (ids is null)
                     return false;
 
-                var result = await _departmentRepository.AllDepartmentsExistAsync(ids, cancellation);
+                var result = await _departmentRepository.AllDepartmentsExistAsync(ids, cancellationToken);
 
                 return result is {IsSuccess: true, Value: true};
             })

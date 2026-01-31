@@ -33,26 +33,26 @@ public class UpdateDepartmentLocationCommandHandler : ICommandHandler<Guid,  Upd
         _logger = logger;
     }
 
-    public async Task<Result<Guid, Errors>> Handle(UpdateDepartmentLocationCommand command, CancellationToken token)
+    public async Task<Result<Guid, Errors>> Handle(UpdateDepartmentLocationCommand command, CancellationToken cancellationToken)
     {
-        var validationResult = await _validator.ValidateAsync(command, token);
+        var validationResult = await _validator.ValidateAsync(command, cancellationToken);
         if (!validationResult.IsValid)
             return validationResult.ToError().ToErrors();
 
-        var transactionScopeResult = await _transactionManager.BeginTransactionAsync(token);
+        var transactionScopeResult = await _transactionManager.BeginTransactionAsync(cancellationToken);
         if (transactionScopeResult.IsFailure)
             return transactionScopeResult.Error.ToErrors();
         
         using var transactionScope = transactionScopeResult.Value;
         
-        var department = await _departmentRepository.GetById(command.DepartmentId, token);
+        var department = await _departmentRepository.GetByIdAsync(command.DepartmentId, cancellationToken);
         if (department.IsFailure)
         {
             transactionScope.Rollback();
             return department.Error.ToErrors();
         }
         
-        var locationIds = await _locationRepository.AllExistAsync(command.LocationIds.ToArray(), token);
+        var locationIds = await _locationRepository.AllExistAsync(command.LocationIds.ToArray(), cancellationToken);
         if (locationIds.IsFailure)
         {
             transactionScope.Rollback();
@@ -64,14 +64,14 @@ public class UpdateDepartmentLocationCommandHandler : ICommandHandler<Guid,  Upd
         
        department.Value.UpdateLocations(newLocationsIds);
         
-       var deleteLocations = await _departmentRepository.DeleteLocations(command.DepartmentId, token);
+       var deleteLocations = await _departmentRepository.DeleteLocationsAsync(command.DepartmentId, cancellationToken);
        if (deleteLocations.IsFailure)
        {
            transactionScope.Rollback();
            return deleteLocations.Error.ToErrors();
        }
        
-       var saveChanges = await _transactionManager.SaveChangesAsync(token);
+       var saveChanges = await _transactionManager.SaveChangesAsync(cancellationToken);
        if (saveChanges.IsFailure)
        {
            transactionScope.Rollback();

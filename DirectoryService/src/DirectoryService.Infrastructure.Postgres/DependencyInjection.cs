@@ -1,5 +1,4 @@
 using DirectoryService.Application.Abstractions.Database;
-using DirectoryService.Application.Database;
 using DirectoryService.Application.Departments.Repositories;
 using DirectoryService.Application.Locations.Repositories;
 using DirectoryService.Application.Positions.Repositories;

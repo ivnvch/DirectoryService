@@ -10,12 +10,8 @@ namespace DirectoryService.Application.Departments.Commands.CreateDepartments;
 
 public class CreateDepartmentValidator : AbstractValidator<CreateDepartmentCommand>
 {
-    private readonly ILocationRepository _locationRepository;
-    
     public CreateDepartmentValidator(ILocationRepository locationRepository)
     {
-        _locationRepository = locationRepository;
-        
         RuleFor(x => x.Name)
             .MustBeValueObject(DepartmentName.Create);
         
@@ -33,19 +29,5 @@ public class CreateDepartmentValidator : AbstractValidator<CreateDepartmentComma
         RuleFor(x => x.LocationIds)
             .Must(list => list.Length > 0)
             .WithError(GeneralErrors.ValueIsRequired("locationIds"));
-
-        RuleFor(x => x.LocationIds)
-            .MustAsync(async (ids, cancellation) =>
-            {
-                if (ids is null)
-                    return true;
-
-               var result = await _locationRepository.AllExistAsync(ids, cancellation);
-               
-               return result is { IsSuccess: true, Value: true };
-            })
-            .WithError(Error.Validation(
-                new ErrorMessage("CreateDepartmentCommand.LocationIds.is.not.unique", 
-                              "Some LocationIds are not exists")));// нужно ли здесь пробрасывать ошибку
     }
 }

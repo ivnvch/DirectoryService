@@ -29,15 +29,15 @@ public class CreatePositionCommandHandler : ICommandHandler<Guid, CreatePosition
         _departmentRepository = departmentRepository;
     }
 
-    public async Task<Result<Guid, Errors>> Handle(CreatePositionCommand command, CancellationToken token)
+    public async Task<Result<Guid, Errors>> Handle(CreatePositionCommand command, CancellationToken cancellationToken)
     {
-        var validationResult = await _positionValidator.ValidateAsync(command, token);
+        var validationResult = await _positionValidator.ValidateAsync(command, cancellationToken);
         if (validationResult.IsValid == false)
             return validationResult.ToError().ToErrors();
 
         List<Guid> departmentIds = command.DepartmentIds;
 
-        var allDepartmentsExists = await _departmentRepository.AllDepartmentsExistAsync(departmentIds, token);
+        var allDepartmentsExists = await _departmentRepository.AllDepartmentsExistAsync(departmentIds, cancellationToken);
         if (allDepartmentsExists.IsFailure)
             return allDepartmentsExists.Error;
         
@@ -61,7 +61,7 @@ public class CreatePositionCommandHandler : ICommandHandler<Guid, CreatePosition
         if (position.IsFailure)
             return position.Error.ToErrors();
         
-       var result = await _positionRepository.Add(position.Value, token);
+       var result = await _positionRepository.Add(position.Value, cancellationToken);
 
        if (result.IsFailure)
            return Error.Failure(result.Error.Messages).ToErrors();

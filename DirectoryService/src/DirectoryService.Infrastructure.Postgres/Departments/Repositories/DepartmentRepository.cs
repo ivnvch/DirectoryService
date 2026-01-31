@@ -1,14 +1,12 @@
-using System.Data.Common;
 using CSharpFunctionalExtensions;
 using DirectoryService.Application.Departments.Repositories;
-using DirectoryService.Domain.DepartmentLocations;
 using DirectoryService.Domain.Departments;
 using DirectoryService.Domain.Departments.Errors;
+using DirectoryService.Domain.Departments.ValueObject;
 using DirectoryService.Shared.Errors;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using Npgsql;
-using Npgsql.PostgresTypes;
+using Dapper;
 
 namespace DirectoryService.Infrastructure.Departments.Repositories;
 
@@ -47,12 +45,25 @@ public class DepartmentRepository : IDepartmentRepository
        }
     }
 
-    public async Task<Result<Department, Error>> GetById(Guid id, CancellationToken cancellationToken = default)
+    public async Task<Result<Department, Error>> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
         var department = await _context.Departments
             .Where(x => x.IsActive)
             .FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
 
+        if (department is null)
+            return GeneralErrors.NotFound(id);
+        
+        return department;
+    }
+
+    public async Task<Result<Department, Error>> GetByIdWithLockAsync(Guid id, CancellationToken cancellationToken = default)
+    {
+        var department = await _context.Departments
+            .FromSql($"SELECT * FROM departments WHERE id = {id} FOR UPDATE")
+            .Where(x => x.IsActive)
+            .FirstOrDefaultAsync(cancellationToken);
+        
         if (department is null)
             return GeneralErrors.NotFound(id);
         
@@ -71,12 +82,78 @@ public class DepartmentRepository : IDepartmentRepository
         return existingCount == departmentIds.Count;
     }
 
-    public async Task<UnitResult<Error>> DeleteLocations(Guid departmentId, CancellationToken cancellationToken = default)
+    public async Task<UnitResult<Error>> ExistDepartmentAsync(Guid departmentId, CancellationToken cancellationToken = default)
+    {
+       bool result = await _context.Departments
+            .AnyAsync(x => x.Id == departmentId && x.IsActive, cancellationToken: cancellationToken);
+        
+        return result ? UnitResult.Success<Error>()
+            : GeneralErrors.NotFound(departmentId);
+    }
+
+    public async Task<UnitResult<Error>> DeleteLocationsAsync(Guid departmentId, CancellationToken cancellationToken = default)
     {
        await _context.DepartmentLocations
             .Where(d => d.DepartmentId == departmentId)
             .ExecuteDeleteAsync(cancellationToken);
 
        return UnitResult.Success<Error>();
+    }
+
+    public async Task<UnitResult<Error>> LockDescendants(DepartmentPath path, CancellationToken cancellationToken = default)
+    {
+        await _context.Database.ExecuteSqlInterpolatedAsync(
+            $"""
+             SELECT * FROM departments 
+             WHERE path <@{path.Value}::ltree AND path != {path.Value}::ltree
+             FOR UPDATE
+             """, cancellationToken);
+        
+        return UnitResult.Success<Error>();
+    }
+
+    public async Task<UnitResult<Error>> IsDescendantsAsync(Guid oldDepartmentId, Guid newDepartmentId, CancellationToken cancellationToken = default)
+    {
+        var dbConnection =  _context.Database.GetDbConnection();
+
+        var isDescendant = await dbConnection.ExecuteScalarAsync<bool>(
+            """
+                SELECT EXISTS (
+                    SELECT 1 
+                    FROM departments nd
+                    JOIN departments od ON od.id = @oldDepartmentId
+                    WHERE nd.id = @newDepartmentId
+                    AND nd.path <@ od.path
+                ) 
+                """, new
+            {
+                oldDepartmentId,
+                newDepartmentId
+            });
+        
+        return !isDescendant ? UnitResult.Success<Error>()
+                : UnitResult.Failure(Error.Failure("department.not.descendant", "Department not descendant"));
+    }
+
+    public async Task<UnitResult<Errors>> UpdateDepartmentsHierarchyAsync(Department department, DepartmentPath oldPath, CancellationToken cancellationToken = default)
+    {
+        var dbConnection = _context.Database.GetDbConnection();
+
+        var updatePath = await dbConnection.ExecuteAsync(
+            """
+                      UPDATE departments
+                      SET path = (@departmentPath::ltree || subpath(path, nlevel(@oldPath::ltree))),
+                      depth = @departmentDepth + (depth - nlevel(@oldPath::ltree) + 1),
+                      updated_at = now()
+                      WHERE path <@ @oldPath::ltree
+                        AND path != @oldPath::ltree
+                """, new
+            {
+                departmentPath = department.DepartmentPath.Value,
+                departmentDepth = department.Depth,
+                oldPath = oldPath.Value
+            });
+                
+        return UnitResult.Success<Errors>();
     }
 }
