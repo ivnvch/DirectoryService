@@ -8,12 +8,8 @@ namespace DirectoryService.Application.Departments.Commands.UpdateDepartmentLoca
 
 public class UpdateDepartmentLocationValidator : AbstractValidator<UpdateDepartmentLocationCommand>
 {
-    private readonly ILocationRepository _locationRepository;
-    
     public UpdateDepartmentLocationValidator(ILocationRepository locationRepository)
     {
-        _locationRepository = locationRepository;
-        
         RuleFor(x => x.LocationIds)
             .NotNull()
             .NotEmpty();
