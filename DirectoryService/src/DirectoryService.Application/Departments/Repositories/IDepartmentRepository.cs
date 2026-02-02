@@ -20,6 +20,6 @@ public interface IDepartmentRepository
     Task<UnitResult<Error>> DeleteLocationsAsync(Guid departmentId, CancellationToken cancellationToken = default);
     
     Task<UnitResult<Error>> LockDescendants(DepartmentPath path, CancellationToken cancellationToken = default);
-    Task<UnitResult<Error>> IsDescendantsAsync(Guid oldDepartmentId, Guid newDepartmentId, CancellationToken cancellationToken = default);
+    Task<bool> IsDescendantsAsync(Guid oldDepartmentId, Guid newDepartmentId, CancellationToken cancellationToken = default);
     Task<UnitResult<Errors>> UpdateDepartmentsHierarchyAsync(Department department, DepartmentPath oldPath, CancellationToken cancellationToken = default);
 }

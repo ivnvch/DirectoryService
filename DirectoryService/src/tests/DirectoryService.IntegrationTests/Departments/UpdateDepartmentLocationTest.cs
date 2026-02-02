@@ -142,7 +142,7 @@ public class UpdateDepartmentLocationTest : DirectoryBaseTests
                 departmentId,
                 anotherLocationId);
 
-            var departmentName = DepartmentName.Create("депортамент");
+            var departmentName = DepartmentName.Create("департамент");
             var departmentIdentifier = DepartmentIdentifier.Create("Identifier");
 
             var department = Department.CreateParent(

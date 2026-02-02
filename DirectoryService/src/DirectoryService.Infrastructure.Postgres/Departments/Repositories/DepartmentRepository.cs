@@ -112,7 +112,7 @@ public class DepartmentRepository : IDepartmentRepository
         return UnitResult.Success<Error>();
     }
 
-    public async Task<UnitResult<Error>> IsDescendantsAsync(Guid oldDepartmentId, Guid newDepartmentId, CancellationToken cancellationToken = default)
+    public async Task<bool> IsDescendantsAsync(Guid oldDepartmentId, Guid newDepartmentId, CancellationToken cancellationToken = default)
     {
         var dbConnection =  _context.Database.GetDbConnection();
 
@@ -131,8 +131,7 @@ public class DepartmentRepository : IDepartmentRepository
                 newDepartmentId
             });
         
-        return !isDescendant ? UnitResult.Success<Error>()
-                : UnitResult.Failure(Error.Failure("department.not.descendant", "Department not descendant"));
+        return isDescendant;
     }
 
     public async Task<UnitResult<Errors>> UpdateDepartmentsHierarchyAsync(Department department, DepartmentPath oldPath, CancellationToken cancellationToken = default)
