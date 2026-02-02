@@ -1,6 +1,5 @@
-using System.ComponentModel.Design.Serialization;
+using System.Linq;
 using DirectoryService.Application.Extensions.Validation;
-using DirectoryService.Application.Locations.Repositories;
 using DirectoryService.Shared.Errors;
 using FluentValidation;
 
@@ -8,10 +7,14 @@ namespace DirectoryService.Application.Departments.Commands.UpdateDepartmentLoca
 
 public class UpdateDepartmentLocationValidator : AbstractValidator<UpdateDepartmentLocationCommand>
 {
-    public UpdateDepartmentLocationValidator(ILocationRepository locationRepository)
+    public UpdateDepartmentLocationValidator()
     {
         RuleFor(x => x.LocationIds)
             .NotNull()
-            .NotEmpty();
+            .WithError(GeneralErrors.ValueIsRequired("locationIds"));
+
+        RuleFor(x => x.LocationIds)
+            .Must(list => list.Any())
+            .WithError(GeneralErrors.ValueIsRequired("locationIds"));
     }
 }
