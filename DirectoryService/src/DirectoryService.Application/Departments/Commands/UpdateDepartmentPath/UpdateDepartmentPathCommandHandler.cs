@@ -79,11 +79,6 @@ public class UpdateDepartmentPathCommandHandler : ICommandHandler<Guid, UpdateDe
         }
         else
         {
-            if (department.ParentId is null)
-            {
-                transactionScope.Rollback();
-                return Error.Failure("department.is.already.root", "The department is the root department").ToErrors();
-            }
             var setNewPath = department.UpdatePathWithoutParent();
             if (setNewPath.IsFailure)
             {
