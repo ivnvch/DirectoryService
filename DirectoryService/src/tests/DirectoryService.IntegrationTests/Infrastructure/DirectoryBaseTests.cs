@@ -1,3 +1,4 @@
+using DirectoryService.Domain.Departments;
 using DirectoryService.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -35,6 +36,18 @@ public class DirectoryBaseTests : IClassFixture<DirectoryTestWebFactory>, IAsync
         var dbContext = scope.ServiceProvider.GetRequiredService<DirectoryDbContext>();
         await action(dbContext);
     }
+
+    protected Task<Guid> CreateLocationAsync()
+        => ExecuteInDb(context => TestDataFactory.CreateLocationAsync(context));
+
+    protected Task<Department> CreateDepartmentAsync(int locationsCount = 1)
+        => ExecuteInDb(context => TestDataFactory.CreateDepartmentAsync(context, locationsCount));
+
+    protected Task<Guid> CreateDepartmentIdAsync(int locationsCount = 1)
+        => ExecuteInDb(context => TestDataFactory.CreateDepartmentIdAsync(context, locationsCount));
+
+    protected Task<Department> CreateChildDepartmentAsync(Department parent, int locationsCount = 1)
+        => ExecuteInDb(context => TestDataFactory.CreateChildDepartmentAsync(context, parent, locationsCount));
 
     public Task InitializeAsync() => Task.CompletedTask;
 

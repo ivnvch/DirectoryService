@@ -1,6 +1,4 @@
 using DirectoryService.Application.Departments.Commands.CreateDepartments;
-using DirectoryService.Domain.Locations;
-using DirectoryService.Domain.Locations.ValueObject;
 using DirectoryService.IntegrationTests.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -20,7 +18,7 @@ public class CreateDepartmentTest : DirectoryBaseTests
     public async Task CreateDepartment_with_valid_data_should_succeed()
     {
         //arrange
-        var locationId = await CreateLocation();
+        var locationId = await CreateLocationAsync();
 
         var cancellationToken = CancellationToken.None;
         
@@ -54,7 +52,7 @@ public class CreateDepartmentTest : DirectoryBaseTests
     public async Task CreateDepartment_with_invalid_data_should_fail()
     {
         //arrange
-        var locationId = await CreateLocation();
+        var locationId = await CreateLocationAsync();
         
         var cancellationToken = CancellationToken.None;
         //act
@@ -73,8 +71,8 @@ public class CreateDepartmentTest : DirectoryBaseTests
     public async Task CreateDepartment_with_list_locationId_should_succeed()
     {
         //arrange
-        var locationId = await CreateLocation();
-        var anotherLocationId = await CreateLocation();
+        var locationId = await CreateLocationAsync();
+        var anotherLocationId = await CreateLocationAsync();
         
         var listLocationId = new List<Guid> { locationId, anotherLocationId };
 
@@ -102,22 +100,6 @@ public class CreateDepartmentTest : DirectoryBaseTests
             Assert.True(result.IsSuccess);
             Assert.NotNull(locations);
             Assert.True(new HashSet<Guid>(listLocationId).SetEquals(locations));
-        });
-    }
-
-    private async Task<Guid> CreateLocation()
-    {
-      return  await ExecuteInDb(async context =>
-        {
-            var location = Location.Create(
-                LocationName.Create("Минск").Value,
-                LocationAddress.Create("длыва", "длфвыо", "двыла", "выдла", "23").Value,
-                LocationTimezone.Create("Europe/Minsk").Value);
-
-            context.Add(location.Value);
-            await context.SaveChangesAsync();
-
-            return location.Value.Id;
         });
     }
 

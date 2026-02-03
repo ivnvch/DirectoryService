@@ -1,10 +1,4 @@
-using DirectoryService.Application.Departments.Commands.CreateDepartments;
 using DirectoryService.Application.Departments.Commands.UpdateDepartmentLocation;
-using DirectoryService.Domain.DepartmentLocations;
-using DirectoryService.Domain.Departments;
-using DirectoryService.Domain.Departments.ValueObject;
-using DirectoryService.Domain.Locations;
-using DirectoryService.Domain.Locations.ValueObject;
 using DirectoryService.IntegrationTests.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -22,8 +16,8 @@ public class UpdateDepartmentLocationTest : DirectoryBaseTests
     [Fact]
     public async Task UpdateDepartmentLocation_with_valid_data_should_succeed()
     {
-        var departmentId = await CreateDepartment();
-        var locationIds = await CreateLocation();
+        var departmentId = await CreateDepartmentIdAsync(locationsCount: 2);
+        var locationIds = await CreateLocationAsync();
         CancellationToken cancellationToken = CancellationToken.None;
 
         var result = await ExecuteHandler(sut =>
@@ -51,7 +45,7 @@ public class UpdateDepartmentLocationTest : DirectoryBaseTests
     public async Task UpdateDepartmentLocation_with_NotExistDepartment_should_fail()
     {
         //affect
-        var locationId = await CreateLocation();
+        var locationId = await CreateLocationAsync();
         CancellationToken cancellationToken = CancellationToken.None;
 
         //act
@@ -70,7 +64,7 @@ public class UpdateDepartmentLocationTest : DirectoryBaseTests
     [Fact]
     public async Task UpdateDepartmentLocation_with_empty_locations_should_fail()
     {
-        var departmentId = await CreateDepartment();
+        var departmentId = await CreateDepartmentIdAsync(locationsCount: 2);
         var initialLocationIds = await ExecuteInDb(async context =>
         {
             var department = await context.Departments
@@ -110,50 +104,4 @@ public class UpdateDepartmentLocationTest : DirectoryBaseTests
         return await action(sut);
     }
 
-    private async Task<Guid> CreateLocation()
-    {
-        return await ExecuteInDb(async context =>
-        {
-            var location = Location.Create(
-                LocationName.Create("Минск").Value,
-                LocationAddress.Create("длыва", "длфвыо", "двыла", "выдла", "23").Value,
-                LocationTimezone.Create("Europe/Minsk").Value);
-
-            context.Add(location.Value);
-            await context.SaveChangesAsync();
-
-            return location.Value.Id;
-        });
-    }
-
-    private async Task<Guid> CreateDepartment()
-    {
-        return await ExecuteInDb(async context =>
-        {
-            var locationId = await CreateLocation();
-            var anotherLocationId = await CreateLocation();
-
-            var departmentId = Guid.NewGuid();
-            var departmentLocation = DepartmentLocation.Create(
-                departmentId,
-                locationId);
-            
-            var anotherDepartmentLocation = DepartmentLocation.Create(
-                departmentId,
-                anotherLocationId);
-
-            var departmentName = DepartmentName.Create("департамент");
-            var departmentIdentifier = DepartmentIdentifier.Create("Identifier");
-
-            var department = Department.CreateParent(
-                departmentName.Value,
-                departmentIdentifier.Value,
-                [departmentLocation, anotherDepartmentLocation],
-                departmentId);
-
-            context.Add(department.Value);
-            await context.SaveChangesAsync();
-            return department.Value.Id;
-        });
-    }
 }

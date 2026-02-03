@@ -1,12 +1,6 @@
-using CSharpFunctionalExtensions;
 using DirectoryService.Application.Departments.Commands.UpdateDepartmentPath;
-using DirectoryService.Domain.DepartmentLocations;
 using DirectoryService.Domain.Departments;
-using DirectoryService.Domain.Departments.ValueObject;
-using DirectoryService.Domain.Locations;
-using DirectoryService.Domain.Locations.ValueObject;
 using DirectoryService.IntegrationTests.Infrastructure;
-using DirectoryService.Shared.Errors;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -21,7 +15,7 @@ public class UpdateDepartmentPathTest : DirectoryBaseTests
     [Fact]
     public async Task UpdateParentDepartmentPath_with_valid_data_should_succeed()
     {
-        var department = await CreateDepartment();
+        var department = await CreateDepartmentAsync();
         CancellationToken cancellationToken = CancellationToken.None;
 
         var departmentBefore = await ExecuteInDb(async context =>
@@ -51,7 +45,7 @@ public class UpdateDepartmentPathTest : DirectoryBaseTests
     public async Task UpdateDepartmentPath_when_newParentId_isDescendant_should_failed()
     {
         var departmentWithDescendant = await CreateDepartmentWithDescendant();
-        var department = await CreateDepartment(departmentWithDescendant);
+        var department = await CreateChildDepartmentAsync(departmentWithDescendant);
         
         CancellationToken cancellationToken = CancellationToken.None;
 
@@ -67,7 +61,7 @@ public class UpdateDepartmentPathTest : DirectoryBaseTests
     public async Task UpdateDepartmentPath_with_validParentId_should_succeed()
     {
         var departmentWithDescendant = await CreateDepartmentWithDescendant();
-        var department = await CreateDepartment();
+        var department = await CreateDepartmentAsync();
         CancellationToken cancellationToken = CancellationToken.None;
         
         var result = await ExecuteHandler(sut =>
@@ -87,87 +81,9 @@ public class UpdateDepartmentPathTest : DirectoryBaseTests
         return await action(sut);
     }
 
-    private async Task<Department> CreateDepartment(Department? depWith = null)
-    {
-        return await ExecuteInDb(async context =>
-        {
-            var departmentId = Guid.NewGuid();
-            var locationId = await CreateLocation();
-            
-            var departmentLocation = DepartmentLocation.Create(
-                departmentId,
-                locationId);
-            
-            var departmentName = DepartmentName.Create("департамент");
-            var departmentIdentifier = DepartmentIdentifier.Create("Identifier");
-            Result<Department, Error> department;
-            if (depWith is null)
-            {
-                 department = Department.CreateParent(
-                    departmentName.Value,
-                    departmentIdentifier.Value,
-                    [departmentLocation],
-                    departmentId);
-            }
-            else
-            {
-                 department = Department.CreateChild(
-                    departmentName.Value,
-                    departmentIdentifier.Value,
-                    depWith,
-                    [departmentLocation],
-                    departmentId);
-            }
-            
-            context.Add(department.Value);
-            await context.SaveChangesAsync();
-            
-            return department.Value;
-        });
-    }
-    
-    private async Task<Guid> CreateLocation()
-    {
-        return await ExecuteInDb(async context =>
-        {
-            var location = Location.Create(
-                LocationName.Create("Минск").Value,
-                LocationAddress.Create("длыва", "длфвыо", "двыла", "выдла", "23").Value,
-                LocationTimezone.Create("Europe/Minsk").Value);
-
-            context.Add(location.Value);
-            await context.SaveChangesAsync();
-
-            return location.Value.Id;
-        });
-    }
-
     private async Task<Department> CreateDepartmentWithDescendant()
     {
-        var parentDepartment = await CreateDepartment();
-        return await ExecuteInDb(async context =>
-        {
-            var departmentId = Guid.NewGuid();
-            var locationId = await CreateLocation();
-            
-            var departmentLocation = DepartmentLocation.Create(
-                departmentId,
-                locationId);
-            
-            var departmentName = DepartmentName.Create("департамент");
-            var departmentIdentifier = DepartmentIdentifier.Create("Identifier");
-            
-            var department = Department.CreateChild(
-                departmentName.Value,
-                departmentIdentifier.Value,
-                parentDepartment,
-                [departmentLocation],
-                departmentId);
-            
-            context.Add(department.Value);
-            await context.SaveChangesAsync();
-            
-            return department.Value;
-        });
+        var parentDepartment = await CreateDepartmentAsync();
+        return await CreateChildDepartmentAsync(parentDepartment);
     }
 }
