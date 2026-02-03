@@ -63,10 +63,10 @@ public class UpdateDepartmentPathCommandHandler : ICommandHandler<Guid, UpdateDe
             Department? parentDepartment = parentDepartmentResult.Value;
             
             var isDescendants = await _departmentRepository.IsDescendantsAsync(department.Id, parentDepartment.Id, cancellationToken);
-            if (isDescendants.IsFailure)
+            if (isDescendants)
             {
                 transactionScope.Rollback();
-                return isDescendants.Error.ToErrors();
+                return Error.Failure("department.not.descendant", $"Cannot set a descendant department with Id {parentDepartment.Id} as parent.").ToErrors();
             }
 
             var setPathWithNewParent = department
@@ -75,7 +75,7 @@ public class UpdateDepartmentPathCommandHandler : ICommandHandler<Guid, UpdateDe
             var result = await _departmentRepository
                 .UpdateDepartmentsHierarchyAsync(department, oldPath, cancellationToken);
             
-            _logger.LogInformation($"В Department: {department.Name} установлен новый родитель и обновлены глубина и путь подразделения");
+            _logger.LogInformation($"New parent Department: {department.Name} has been installed and the depth and path of the subdivision have been updated ");
         }
         else
         {
@@ -88,7 +88,7 @@ public class UpdateDepartmentPathCommandHandler : ICommandHandler<Guid, UpdateDe
             
             await _departmentRepository.UpdateDepartmentsHierarchyAsync(department, oldPath, cancellationToken);
             
-            _logger.LogError("Путь департамента изменён на корневой. Обновлены все пути дочерних подразделений");
+            _logger.LogError("The department's path has been changed to the root path. All paths of the child divisions have been updated");
         }
 
         await _transactionManager.SaveChangesAsync(cancellationToken);
