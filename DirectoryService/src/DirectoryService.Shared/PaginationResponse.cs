@@ -1,7 +1,7 @@
 namespace DirectoryService.Shared;
 
 public record PaginationResponse<T>(
-    IReadOnlyList<T> Results,
+    IReadOnlyList<T> Items,
     int TotalCount,
     int Page,
     int PageSize,

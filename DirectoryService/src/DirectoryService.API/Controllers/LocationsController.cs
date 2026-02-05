@@ -1,11 +1,9 @@
-using CSharpFunctionalExtensions;
 using DirectoryService.API.EndpointResults;
 using DirectoryService.API.Models.RequestModels;
 using DirectoryService.Application.CQRS;
 using DirectoryService.Application.Locations.Commands.CreateLocations;
 using DirectoryService.Application.Locations.Queries.GetLocations;
 using DirectoryService.Shared;
-using DirectoryService.Shared.Errors;
 using DirectoryService.Shared.Locations.ResponseModels;
 using Microsoft.AspNetCore.Mvc;
 
