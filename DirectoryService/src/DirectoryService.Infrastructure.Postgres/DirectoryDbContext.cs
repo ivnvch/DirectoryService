@@ -1,5 +1,7 @@
 using System.Reflection;
+using DirectoryService.Application.Abstractions.Database;
 using DirectoryService.Domain.DepartmentLocations;
+using DirectoryService.Domain.DepartmentPositions;
 using DirectoryService.Domain.Departments;
 using DirectoryService.Domain.Locations;
 using DirectoryService.Domain.Positions;
@@ -8,7 +10,7 @@ using Microsoft.Extensions.Logging;
 
 namespace DirectoryService.Infrastructure;
 
-public class DirectoryDbContext : DbContext
+public class DirectoryDbContext : DbContext, IReadDbContext
 {
     public DirectoryDbContext(DbContextOptions<DirectoryDbContext> options): base(options){}
 
@@ -21,4 +23,15 @@ public class DirectoryDbContext : DbContext
     {
         modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
     }
+
+    public IQueryable<Location> LocationsRead =>
+        Set<Location>().AsQueryable().AsNoTracking();
+    public IQueryable<Position> PositionsRead =>
+        Set<Position>().AsQueryable().AsNoTracking();
+    public IQueryable<Department> DepartmentsRead =>
+        Set<Department>().AsQueryable().AsNoTracking();
+    public IQueryable<DepartmentPosition> DepartmentPositionsRead =>
+        Set<DepartmentPosition>().AsQueryable().AsNoTracking();
+    
+    
 }
