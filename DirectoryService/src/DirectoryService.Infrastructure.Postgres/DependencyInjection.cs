@@ -35,14 +35,17 @@ public static class DependencyInjection
             
             options.UseLoggerFactory(loggerFactory);
         });
+        
+        Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;
+        
         services.AddScoped<IReadDbContext>(sp => sp.GetRequiredService<DirectoryDbContext>());
         services.AddScoped<ILocationRepository, LocationRepository>();
         services.AddScoped<IDepartmentRepository, DepartmentRepository>();
         services.AddScoped<IPositionRepository, PositionRepository>();
         services.AddScoped<ITransactionManager, TransactionManager>();
         
+        services.AddSingleton<IDbConnectionFactory, NpgsqlConnectionFactory>();
+        
         return services;
     }
-    /*private static ILoggerFactory CreateLoggerFactory() =>
-        LoggerFactory.Create(builder => { builder.AddConsole(); });*/
 }

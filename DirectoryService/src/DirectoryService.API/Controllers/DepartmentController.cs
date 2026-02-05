@@ -4,6 +4,7 @@ using DirectoryService.Application.CQRS;
 using DirectoryService.Application.Departments.Commands.CreateDepartments;
 using DirectoryService.Application.Departments.Commands.UpdateDepartmentLocation;
 using DirectoryService.Application.Departments.Commands.UpdateDepartmentPath;
+using DirectoryService.Shared.Departments;
 using DirectoryService.Shared.Errors;
 using Microsoft.AspNetCore.Mvc;
 
@@ -52,5 +53,13 @@ public class DepartmentController : ControllerBase
     {
         UpdateDepartmentPathCommand pathCommand = new UpdateDepartmentPathCommand(departmentId, parentId);
         return await handler.Handle(pathCommand, cancellationToken);
+    }
+
+    [HttpGet("/top-positions")]
+    public async Task<EndpointResult<GetTopDepartmentsDto>> GetTopDepartments(
+        [FromServices] IQueryHandler<GetTopDepartmentsDto> handler,
+        CancellationToken cancellationToken)
+    {
+        return await handler.Handle(cancellationToken);
     }
 }
