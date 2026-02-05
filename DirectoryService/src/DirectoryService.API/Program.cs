@@ -16,6 +16,8 @@ builder.Services.AddConfiguration(builder.Configuration);
 
 builder.Services.AddScoped<ISeeder, DirectorySeeder>();
 
+Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;
+
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())

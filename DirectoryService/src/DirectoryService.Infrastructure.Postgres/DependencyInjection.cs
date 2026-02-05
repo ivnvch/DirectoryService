@@ -41,6 +41,8 @@ public static class DependencyInjection
         services.AddScoped<IPositionRepository, PositionRepository>();
         services.AddScoped<ITransactionManager, TransactionManager>();
         
+        services.AddSingleton<IDbConnectionFactory, NpgsqlConnectionFactory>();
+        
         return services;
     }
     /*private static ILoggerFactory CreateLoggerFactory() =>

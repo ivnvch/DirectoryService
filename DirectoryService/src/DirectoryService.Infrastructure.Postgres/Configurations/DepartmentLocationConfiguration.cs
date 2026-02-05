@@ -15,11 +15,14 @@ public class DepartmentLocationConfiguration : IEntityTypeConfiguration<Departme
         builder.HasKey(p => p.Id)
             .HasName("pk_department_location_id");
 
+        builder.Property(p => p.Id)
+            .HasColumnName("id");
+
         builder.Property(dl => dl.DepartmentId)
-            .HasColumnName("fk_department_location_department_id");
+            .HasColumnName("department_id");
         
         builder.Property(dl => dl.LocationId)
-            .HasColumnName("fk_department_location_location_id");
+            .HasColumnName("location_id");
 
         builder.HasOne<Department>()
             .WithMany(d => d.Locations)

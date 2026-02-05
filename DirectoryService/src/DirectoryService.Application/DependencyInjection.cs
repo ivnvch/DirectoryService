@@ -14,7 +14,11 @@ public static class DependencyInjection
 
         services.Scan(scan => scan.FromAssemblies(assembly)
             .AddClasses(classes => classes
-                .AssignableToAny(typeof(ICommandHandler<,>), typeof(IQueryHandler<,>), typeof(IListQueryHandler<,>)))
+                .AssignableToAny(
+                    typeof(ICommandHandler<,>), 
+                    typeof(IQueryHandler<,>), 
+                    typeof(IListQueryHandler<,>),
+                    typeof(IQueryHandler<>)))
             .AsSelfWithInterfaces()
             .WithScopedLifetime());
         
