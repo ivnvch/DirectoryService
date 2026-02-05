@@ -6,5 +6,5 @@ public record GetLocationsRequest(
     bool? IsActive,
     string? SortBy,
     string? SortDirection,
-    int Page = 1,
-    int PageSize = 20);
+    int Page,
+    int PageSize);

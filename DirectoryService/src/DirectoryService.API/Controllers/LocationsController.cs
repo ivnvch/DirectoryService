@@ -1,8 +1,11 @@
+using CSharpFunctionalExtensions;
 using DirectoryService.API.EndpointResults;
 using DirectoryService.API.Models.RequestModels;
 using DirectoryService.Application.CQRS;
 using DirectoryService.Application.Locations.Commands.CreateLocations;
 using DirectoryService.Application.Locations.Queries.GetLocations;
+using DirectoryService.Shared;
+using DirectoryService.Shared.Errors;
 using DirectoryService.Shared.Locations.ResponseModels;
 using Microsoft.AspNetCore.Mvc;
 
@@ -23,9 +26,9 @@ public class LocationsController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<EndpointResult<GetLocationsDto>> Get(
+    public async Task<EndpointResult<PaginationResponse<GetLocationDto>>> Get(
         [FromQuery]  GetLocationsRequest request, 
-        [FromServices] IQueryHandler<GetLocationsDto, GetLocationsQuery> query,
+        [FromServices] IQueryHandler<PaginationResponse<GetLocationDto>, GetLocationsQuery> query,
         CancellationToken cancellationToken)
     {
         var locationQuery = new GetLocationsQuery(
