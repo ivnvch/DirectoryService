@@ -8,8 +8,10 @@ namespace DirectoryService.Application.Abstractions.Database;
 public interface IReadDbContext
 {
     IQueryable<Location> LocationsRead { get; }
-    IQueryable<Position> PositionsRead { get; }
-    IQueryable<Department> DepartmentsRead { get; }
-    IQueryable<DepartmentPosition> DepartmentPositionsRead { get; }
     
+    IQueryable<Position> PositionsRead { get; }
+    
+    IQueryable<Department> DepartmentsRead { get; }
+    
+    IQueryable<DepartmentPosition> DepartmentPositionsRead { get; }
 }

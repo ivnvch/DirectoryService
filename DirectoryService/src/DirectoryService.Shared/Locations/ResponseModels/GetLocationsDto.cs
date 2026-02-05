@@ -8,5 +8,3 @@ public record GetLocationDto
     public bool IsActive { get; init; }
     public DateTime CreatedAt { get; init; }
 }
-
-public record GetLocationsDto(List<GetLocationDto> Locations, long TotalCount);

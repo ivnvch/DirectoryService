@@ -4,6 +4,7 @@ using DirectoryService.Application.Abstractions.Database;
 using DirectoryService.Application.CQRS;
 using DirectoryService.Application.Extensions.Validation;
 using DirectoryService.Domain.Locations;
+using DirectoryService.Shared;
 using DirectoryService.Shared.Errors;
 using DirectoryService.Shared.Locations.ResponseModels;
 using FluentValidation;
@@ -11,7 +12,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DirectoryService.Application.Locations.Queries.GetLocations;
 
-public class GetLocationsHandler : IQueryHandler<GetLocationsDto, GetLocationsQuery>
+public class GetLocationsHandler : IQueryHandler<PaginationResponse<GetLocationDto>, GetLocationsQuery>
 {
     private readonly IReadDbContext _readDbContext;
     private readonly IValidator<GetLocationsQuery> _validator;
@@ -22,7 +23,7 @@ public class GetLocationsHandler : IQueryHandler<GetLocationsDto, GetLocationsQu
         _validator = validator;
     }
 
-    public async Task<Result<GetLocationsDto, Errors>> Handle(GetLocationsQuery query,
+    public async Task<Result<PaginationResponse<GetLocationDto>, Errors>> Handle(GetLocationsQuery query,
         CancellationToken cancellationToken)
     {
         var validationResult = await _validator.ValidateAsync(query, cancellationToken);
@@ -44,7 +45,7 @@ public class GetLocationsHandler : IQueryHandler<GetLocationsDto, GetLocationsQu
 
         Expression<Func<Location, object>> keySelector = query.SortBy?.ToLower() switch
         {
-            "name" => x => x.Name,
+            "name" => x => x.Name.Value,
             "date" => x => x.CreatedAt,
             _ => x => x.CreatedAt
         };
@@ -52,10 +53,8 @@ public class GetLocationsHandler : IQueryHandler<GetLocationsDto, GetLocationsQu
         queryResult = query.SortDirection == "asc"
             ? queryResult.OrderBy(keySelector)
             : queryResult.OrderByDescending(keySelector);
-            
-        queryResult = queryResult.OrderBy(keySelector);
         
-        var totalCount = await queryResult.LongCountAsync(cancellationToken);
+        var totalCount = await queryResult.CountAsync(cancellationToken);
         
         queryResult = queryResult
             .Skip((query.Page - 1) * query.PageSize)
@@ -71,8 +70,14 @@ public class GetLocationsHandler : IQueryHandler<GetLocationsDto, GetLocationsQu
                     Timezone = x.Timezone.Value,
                     IsActive = x.IsActive
                 }).ToListAsync(cancellationToken);
-
-
-         return new GetLocationsDto(result, totalCount);
+         
+         int totalPages = (totalCount + query.PageSize - 1) / query.PageSize;
+         
+         return new PaginationResponse<GetLocationDto>(
+             result,
+             totalCount,
+             query.Page,
+             query.PageSize,
+             totalPages);
     }
 }
