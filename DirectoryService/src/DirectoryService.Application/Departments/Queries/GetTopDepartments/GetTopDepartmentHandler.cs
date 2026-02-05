@@ -19,8 +19,8 @@ public class GetTopDepartmentHandler : IQueryHandler<GetTopDepartmentsDto>
     }
 
     public async Task<Result<GetTopDepartmentsDto, Errors>> Handle(CancellationToken cancellationToken)
-    {
-        var connection = await _dbConnectionFactory.CreateConnectionAsync(cancellationToken);
+    { 
+        using var connection = await _dbConnectionFactory.CreateConnectionAsync(cancellationToken);
         
         var department = await connection.QueryAsync<GetTopDepartmentDto>(
             """

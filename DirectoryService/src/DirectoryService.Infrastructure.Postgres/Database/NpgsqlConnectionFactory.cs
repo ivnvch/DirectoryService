@@ -12,20 +12,22 @@ public class NpgsqlConnectionFactory : IDbConnectionFactory, IDisposable, IAsync
 
     public NpgsqlConnectionFactory(IConfiguration configuration)
     {
-        var dataSourceBuilder = new NpgsqlDataSourceBuilder(configuration.GetConnectionString("directory_service"));
-        dataSourceBuilder
-            .UseLoggerFactory(CreateLoggerFactory());
+        var dataSourceBuilder = new NpgsqlDataSourceBuilder(
+            configuration.GetConnectionString("directory_service")
+                ?? throw new InvalidOperationException("Connection string not found"));
+        
+        dataSourceBuilder.UseLoggerFactory(CreateLoggerFactory());
         
         _dataSource = dataSourceBuilder.Build();
     }
 
     public async Task<IDbConnection> CreateConnectionAsync(CancellationToken cancellationToken)
     {
-       return  await _dataSource.OpenConnectionAsync(cancellationToken);
+        return await _dataSource.OpenConnectionAsync(cancellationToken);
     }
     
-    private ILoggerFactory CreateLoggerFactory() =>
-        LoggerFactory.Create(builder => { builder.AddConsole();});
+    private static ILoggerFactory CreateLoggerFactory() =>
+        LoggerFactory.Create(builder => { builder.AddConsole(); });
 
     public void Dispose()
     {
