@@ -8,7 +8,7 @@ using DirectoryService.Shared.Errors;
 
 namespace DirectoryService.Application.Departments.Queries.GetRootDepartmentsWithPreloadingChildren;
 
-public sealed class GetRootDepartmentsHandler : IListQueryHandler<GetRootDepartmentsDto, GetRootDepartmentsQuery>
+public sealed class GetRootDepartmentsHandler : IQueryHandler<GetRootDepartmentsWithTotalCountDto, GetRootDepartmentsQuery>
 {
     private readonly IDbConnectionFactory _dbConnectionFactory;
 
@@ -17,17 +17,17 @@ public sealed class GetRootDepartmentsHandler : IListQueryHandler<GetRootDepartm
         _dbConnectionFactory = dbConnectionFactory;
     }
 
-    public async Task<Result<List<GetRootDepartmentsDto>, Errors>> HandleList(
+    public async Task<Result<GetRootDepartmentsWithTotalCountDto, Errors>> Handle(
         GetRootDepartmentsQuery query,
         CancellationToken cancellationToken)
     {
         using IDbConnection connection = await _dbConnectionFactory.CreateConnectionAsync(cancellationToken);
 
-        int limit = query.Pagination.PageSize ?? 20;
-        int offset = query.Pagination.Page ?? 1;
+        int limit = query.Request.Pagination.PageSize;
+        int offset = query.Request.Pagination.Page;
         
-        IEnumerable<GetRootDepartmentsDto> departmentsWithPreloadingChildren = 
-            await connection.QueryAsync<GetRootDepartmentsDto>(
+        IEnumerable<GetRootDepartmentDto> departmentsWithPreloadingChildren = 
+            await connection.QueryAsync<GetRootDepartmentDto>(
                 """
                     WITH roots AS
                     (
@@ -67,16 +67,18 @@ public sealed class GetRootDepartmentsHandler : IListQueryHandler<GetRootDepartm
                 {
                     rootLimit = limit,
                     rootOffset = (offset - 1) *  limit,
-                    prefetch = query.PrefetchDepth
+                    prefetch = query.Request.Prefetch
                 });
 
-        ILookup<Guid?, GetRootDepartmentsDto> childrenByParent = departmentsWithPreloadingChildren.ToLookup(d => d.ParentId);
+        int totalCount =
+            await connection.ExecuteScalarAsync<int>($"SELECT COUNT(*) FROM departments d WHERE d.parent_id IS NULL");
 
-        List<GetRootDepartmentsDto> roots = childrenByParent[null]
+        ILookup<Guid?, GetRootDepartmentDto> childrenByParent = departmentsWithPreloadingChildren.ToLookup(d => d.ParentId);
+
+        List<GetRootDepartmentDto> roots = childrenByParent[null]
             .Select(root => root with { Children = childrenByParent[root.Id].ToList() })
             .ToList();
 
-        return roots;
-
+        return new GetRootDepartmentsWithTotalCountDto([..roots], totalCount);
     }
 }

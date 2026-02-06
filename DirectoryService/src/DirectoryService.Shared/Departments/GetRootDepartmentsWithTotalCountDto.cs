@@ -1,0 +1,3 @@
+namespace DirectoryService.Shared.Departments;
+
+public record GetRootDepartmentsWithTotalCountDto(IReadOnlyList<GetRootDepartmentDto> RootDepartmentDto, int TotalCount);

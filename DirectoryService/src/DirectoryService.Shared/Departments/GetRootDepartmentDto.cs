@@ -1,6 +1,6 @@
 namespace DirectoryService.Shared.Departments;
 
-public record GetRootDepartmentsDto
+public record GetRootDepartmentDto
 {
     public Guid Id { get; init; }
     
@@ -12,7 +12,7 @@ public record GetRootDepartmentsDto
     
     public Guid? ParentId { get; init; }
     
-    public List<GetRootDepartmentsDto> Children { get; init; } = [];
+    public List<GetRootDepartmentDto> Children { get; init; } = [];
     
     public bool HasMoreChildren { get; init; }
 }

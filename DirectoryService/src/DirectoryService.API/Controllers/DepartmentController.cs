@@ -67,17 +67,14 @@ public class DepartmentController : ControllerBase
     }
 
     [HttpGet("roots/")]
-    public async Task<EndpointResult<List<GetRootDepartmentsDto>>> GetRootDepartmentsWithPreloadingChildren(
-        [FromQuery] PaginationRequest pagination,
-        [FromQuery] int? prefetch,
-        [FromServices] IListQueryHandler<GetRootDepartmentsDto, GetRootDepartmentsQuery> handler,
+    public async Task<EndpointResult<GetRootDepartmentsWithTotalCountDto>> GetRootDepartmentsWithPreloadingChildren(
+        [FromQuery] GetRootDeparmentsRequest request,
+        [FromServices] IQueryHandler<GetRootDepartmentsWithTotalCountDto, GetRootDepartmentsQuery> handler,
         CancellationToken cancellationToken)
     {
-        GetRootDepartmentsQuery query = new GetRootDepartmentsQuery(
-            pagination,
-            prefetch);
+        GetRootDepartmentsQuery query = new GetRootDepartmentsQuery(request);
         
-        return await handler.HandleList(query, cancellationToken);
+        return await handler.Handle(query, cancellationToken);
     }
 
     [HttpGet("{id:guid}/children")]
