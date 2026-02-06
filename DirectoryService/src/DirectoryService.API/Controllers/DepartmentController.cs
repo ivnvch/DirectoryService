@@ -4,6 +4,7 @@ using DirectoryService.Application.CQRS;
 using DirectoryService.Application.Departments.Commands.CreateDepartments;
 using DirectoryService.Application.Departments.Commands.UpdateDepartmentLocation;
 using DirectoryService.Application.Departments.Commands.UpdateDepartmentPath;
+using DirectoryService.Application.Departments.Queries.GetRootDepartmentsWithPreloadingChildren;
 using DirectoryService.Shared.Departments;
 using DirectoryService.Shared.Errors;
 using Microsoft.AspNetCore.Mvc;
@@ -61,5 +62,21 @@ public class DepartmentController : ControllerBase
         CancellationToken cancellationToken)
     {
         return await handler.Handle(cancellationToken);
+    }
+
+    [HttpGet("/roots/{page:int?}/{size:int?}/{prefetch:int?}")]
+    public async Task<EndpointResult<List<GetRootDepartmentsDto>>> GetRootDepartmentsWithPreloadingChildren(
+        [FromRoute] int? page,
+        [FromRoute] int? size,
+        [FromRoute] int? prefetch,
+        [FromServices] IListQueryHandler<GetRootDepartmentsDto, GetRootDepartmentsQuery> handler,
+        CancellationToken cancellationToken)
+    {
+        GetRootDepartmentsQuery query = new GetRootDepartmentsQuery(
+            Page: page ?? 0,
+            Size: size ?? 20,
+            PrefetchDepth: prefetch ?? 3);
+        
+        return await handler.HandleList(query, cancellationToken);
     }
 }
