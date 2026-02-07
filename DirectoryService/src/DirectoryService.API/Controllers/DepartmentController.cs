@@ -2,6 +2,7 @@ using DirectoryService.API.EndpointResults;
 using DirectoryService.API.Models.RequestModels.Departments;
 using DirectoryService.Application.CQRS;
 using DirectoryService.Application.Departments.Commands.CreateDepartments;
+using DirectoryService.Application.Departments.Commands.SoftDeleteDepartment;
 using DirectoryService.Application.Departments.Commands.UpdateDepartmentLocation;
 using DirectoryService.Application.Departments.Commands.UpdateDepartmentPath;
 using DirectoryService.Application.Departments.Queries.GetDescendantsDepartments;
@@ -58,7 +59,7 @@ public class DepartmentController : ControllerBase
         return await handler.Handle(pathCommand, cancellationToken);
     }
 
-    [HttpGet("/top-positions")]
+    [HttpGet("top-positions")]
     public async Task<EndpointResult<GetTopDepartmentsDto>> GetTopDepartments(
         [FromServices] IQueryHandler<GetTopDepartmentsDto> handler,
         CancellationToken cancellationToken)
@@ -67,9 +68,9 @@ public class DepartmentController : ControllerBase
     }
 
     [HttpGet("roots/")]
-    public async Task<EndpointResult<GetRootDepartmentsWithTotalCountDto>> GetRootDepartmentsWithPreloadingChildren(
+    public async Task<EndpointResult<PaginationResponse<GetRootDepartmentDto>>> GetRootDepartmentsWithPreloadingChildren(
         [FromQuery] GetRootDeparmentsRequest request,
-        [FromServices] IQueryHandler<GetRootDepartmentsWithTotalCountDto, GetRootDepartmentsQuery> handler,
+        [FromServices] GetRootDepartmentsHandler handler,
         CancellationToken cancellationToken)
     {
         GetRootDepartmentsQuery query = new GetRootDepartmentsQuery(request);
@@ -81,10 +82,21 @@ public class DepartmentController : ControllerBase
     public async Task<EndpointResult<List<GetDescendantsDepartmentDto>>> UploadingDescendants(
         [FromRoute] Guid id,
         [FromQuery] PaginationRequest pagination,
-        [FromServices] IListQueryHandler<GetDescendantsDepartmentDto, GetDescendantsDepartmentQuery> handler,
+        [FromServices] GetDescendantsDepartmentHandler handler,
         CancellationToken cancellationToken)
     {
         GetDescendantsDepartmentQuery query = new GetDescendantsDepartmentQuery(id,  pagination);
         return await handler.HandleList(query, cancellationToken);
+    }
+
+    [HttpDelete("{departmentId}:guid")]
+    public async Task<EndpointResult<Guid>> SoftDeleteDepartment(
+        [FromRoute] Guid departmentId,
+        [FromServices] SoftDeleteDepartmentHandler handler,
+        CancellationToken cancellationToken)
+    {
+        SoftDeleteDepartmentCommand command = new SoftDeleteDepartmentCommand(departmentId);
+        
+        return await handler.Handle(command, cancellationToken);
     }
 }

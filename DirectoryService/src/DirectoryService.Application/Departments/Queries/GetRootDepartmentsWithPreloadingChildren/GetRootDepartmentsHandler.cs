@@ -3,12 +3,13 @@ using CSharpFunctionalExtensions;
 using Dapper;
 using DirectoryService.Application.Abstractions.Database;
 using DirectoryService.Application.CQRS;
+using DirectoryService.Shared;
 using DirectoryService.Shared.Departments;
 using DirectoryService.Shared.Errors;
 
 namespace DirectoryService.Application.Departments.Queries.GetRootDepartmentsWithPreloadingChildren;
 
-public sealed class GetRootDepartmentsHandler : IQueryHandler<GetRootDepartmentsWithTotalCountDto, GetRootDepartmentsQuery>
+public sealed class GetRootDepartmentsHandler : IQueryHandler<PaginationResponse<GetRootDepartmentDto>, GetRootDepartmentsQuery>
 {
     private readonly IDbConnectionFactory _dbConnectionFactory;
 
@@ -17,7 +18,7 @@ public sealed class GetRootDepartmentsHandler : IQueryHandler<GetRootDepartments
         _dbConnectionFactory = dbConnectionFactory;
     }
 
-    public async Task<Result<GetRootDepartmentsWithTotalCountDto, Errors>> Handle(
+    public async Task<Result<PaginationResponse<GetRootDepartmentDto>, Errors>> Handle(
         GetRootDepartmentsQuery query,
         CancellationToken cancellationToken)
     {
@@ -37,6 +38,7 @@ public sealed class GetRootDepartmentsHandler : IQueryHandler<GetRootDepartments
                             d.identifier,
                             d.path,
                             d.parent_id,
+                            COUNT(*) OVER() AS total_count,
                             (EXISTS(SELECT 1 FROM departments ds WHERE d.id = ds.parent_id OFFSET @prefetch LIMIT 1)) as has_more_children
                         FROM departments d 
                         WHERE d.parent_id IS NULL
@@ -71,14 +73,21 @@ public sealed class GetRootDepartmentsHandler : IQueryHandler<GetRootDepartments
                 });
 
         int totalCount =
-            await connection.ExecuteScalarAsync<int>($"SELECT COUNT(*) FROM departments d WHERE d.parent_id IS NULL");
+            await connection.ExecuteScalarAsync<int>("SELECT COUNT(*) FROM departments d WHERE d.parent_id IS NULL");
 
         ILookup<Guid?, GetRootDepartmentDto> childrenByParent = departmentsWithPreloadingChildren.ToLookup(d => d.ParentId);
 
         List<GetRootDepartmentDto> roots = childrenByParent[null]
             .Select(root => root with { Children = childrenByParent[root.Id].ToList() })
             .ToList();
+        
+        int totalPages = (totalCount + limit - 1) / limit;
 
-        return new GetRootDepartmentsWithTotalCountDto([..roots], totalCount);
+        return new PaginationResponse<GetRootDepartmentDto>(
+            [..roots], 
+            totalCount,
+            offset,
+            limit,
+            totalPages);
     }
 }
