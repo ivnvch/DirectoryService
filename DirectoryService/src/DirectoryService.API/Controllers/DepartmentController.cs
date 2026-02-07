@@ -70,7 +70,7 @@ public class DepartmentController : ControllerBase
     [HttpGet("roots/")]
     public async Task<EndpointResult<PaginationResponse<GetRootDepartmentDto>>> GetRootDepartmentsWithPreloadingChildren(
         [FromQuery] GetRootDeparmentsRequest request,
-        [FromServices] GetRootDepartmentsHandler handler,
+        [FromServices] IQueryHandler<PaginationResponse<GetRootDepartmentDto>, GetRootDepartmentsQuery> handler,
         CancellationToken cancellationToken)
     {
         GetRootDepartmentsQuery query = new GetRootDepartmentsQuery(request);
@@ -82,7 +82,7 @@ public class DepartmentController : ControllerBase
     public async Task<EndpointResult<List<GetDescendantsDepartmentDto>>> UploadingDescendants(
         [FromRoute] Guid id,
         [FromQuery] PaginationRequest pagination,
-        [FromServices] GetDescendantsDepartmentHandler handler,
+        [FromServices] IListQueryHandler<GetDescendantsDepartmentDto, GetDescendantsDepartmentQuery> handler,
         CancellationToken cancellationToken)
     {
         GetDescendantsDepartmentQuery query = new GetDescendantsDepartmentQuery(id,  pagination);
@@ -92,7 +92,7 @@ public class DepartmentController : ControllerBase
     [HttpDelete("{departmentId}:guid")]
     public async Task<EndpointResult<Guid>> SoftDeleteDepartment(
         [FromRoute] Guid departmentId,
-        [FromServices] SoftDeleteDepartmentHandler handler,
+        [FromServices] ICommandHandler<Guid, SoftDeleteDepartmentCommand> handler,
         CancellationToken cancellationToken)
     {
         SoftDeleteDepartmentCommand command = new SoftDeleteDepartmentCommand(departmentId);
