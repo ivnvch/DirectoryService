@@ -8,4 +8,7 @@ public interface IPositionRepository
 {
     Task<Result<Guid, Error>> Add(Position position, CancellationToken cancellationToken);
     Task<UnitResult<Error>> ExistsActiveWithName(string name, CancellationToken cancellationToken);
+
+    Task<UnitResult<Error>> GetPositionsExclusiveToDepartment(Guid departmentId,
+        CancellationToken cancellationToken = default);
 }
