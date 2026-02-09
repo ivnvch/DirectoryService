@@ -89,7 +89,7 @@ public class DepartmentController : ControllerBase
         return await handler.HandleList(query, cancellationToken);
     }
 
-    [HttpDelete("{departmentId}:guid")]
+    [HttpDelete("{departmentId:guid}")]
     public async Task<EndpointResult<Guid>> SoftDeleteDepartment(
         [FromRoute] Guid departmentId,
         [FromServices] ICommandHandler<Guid, SoftDeleteDepartmentCommand> handler,

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using DirectoryService.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -12,9 +13,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace DirectoryService.Infrastructure.Migrations
 {
     [DbContext(typeof(DirectoryDbContext))]
-    partial class DirectoryDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260208083251_addedDeleteAtColumn")]
+    partial class addedDeleteAtColumn
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -134,7 +137,8 @@ namespace DirectoryService.Infrastructure.Migrations
                         .HasColumnName("created_at");
 
                     b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("deleted_at");
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("boolean")
@@ -182,7 +186,8 @@ namespace DirectoryService.Infrastructure.Migrations
                         .HasColumnName("created_at");
 
                     b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("deleted_at");
 
                     b.Property<string>("Description")
                         .HasColumnType("text")

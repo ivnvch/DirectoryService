@@ -36,7 +36,7 @@ public class PositionConfiguration : IEntityTypeConfiguration<Position>
             .HasColumnName("updated_at")
             .HasColumnType("timestamp with time zone");
         
-        
-
+        builder.Property(d => d.DeletedAt)
+            .HasColumnName("deleted_at");
     }
 }
