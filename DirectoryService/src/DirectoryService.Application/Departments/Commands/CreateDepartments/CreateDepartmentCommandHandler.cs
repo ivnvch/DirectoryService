@@ -56,7 +56,7 @@ public class CreateDepartmentCommandHandler : ICommandHandler<Guid, CreateDepart
 
         if (command.ParentId.HasValue)
         {
-            var parentId = await _departmentRepository.GetByIdAsync(command.ParentId.Value, cancellationToken);
+            var parentId = await _departmentRepository.GetByAsync(x => x.ParentId == command.ParentId.Value, cancellationToken);
             if (parentId.IsFailure)
             {
                 transactionScope.Rollback();
