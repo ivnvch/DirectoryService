@@ -30,4 +30,9 @@ public interface IDepartmentRepository
 
     Task<UnitResult<Errors>> UpdateDepartmentsHierarchyAsync(Department department, DepartmentPath oldPath,
         CancellationToken cancellationToken = default);
+
+    Task<UnitResult<Error>> UpdatePathAfterSoftDeleted(
+        DepartmentPath oldPath,
+        DepartmentPath newPath,
+        CancellationToken cancellationToken = default);
 }

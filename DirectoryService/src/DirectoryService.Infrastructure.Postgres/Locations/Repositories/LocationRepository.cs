@@ -70,18 +70,37 @@ public class LocationRepository : ILocationRepository
     public async Task<UnitResult<Error>> GetLocationsExclusiveToDepartment(Guid departmentId,
         CancellationToken cancellationToken = default)
     {
-        DateTime deletedAt = DateTime.UtcNow;
+        try
+        {
+            DateTime deletedAt = DateTime.UtcNow;
 
-        await _context.Locations
-            .Where(l => l.IsActive &&
-                        _context.DepartmentLocations.Any(dl =>
-                            dl.LocationId == l.Id && dl.DepartmentId == departmentId) &&
-                        !_context.DepartmentLocations.Any(dl =>
-                            dl.LocationId == l.Id && dl.DepartmentId != departmentId))
-            .ExecuteUpdateAsync(setter => setter
-                .SetProperty(l => l.IsActive, false)
-                .SetProperty(l => l.DeletedAt, deletedAt), cancellationToken);
+            await _context.Locations
+                .Where(l => l.IsActive &&
+                            _context.DepartmentLocations.Any(dl =>
+                                dl.LocationId == l.Id && dl.DepartmentId == departmentId) &&
+                            !_context.DepartmentLocations.Any(dl =>
+                                dl.LocationId == l.Id && dl.DepartmentId != departmentId))
+                .ExecuteUpdateAsync(setter => setter
+                    .SetProperty(l => l.IsActive, false)
+                    .SetProperty(l => l.DeletedAt, deletedAt), cancellationToken);
 
-        return UnitResult.Success<Error>();
+            return UnitResult.Success<Error>();
+        }
+        catch (OperationCanceledException ex)
+        {
+            _logger.LogError(ex,
+                "Operation cancelled while soft-deleting locations exclusive to department {DepartmentId}",
+                departmentId);
+
+            return LocationErrors.OperationCancelled();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex,
+                "Unexpected error while soft-deleting locations exclusive to department {DepartmentId}",
+                departmentId);
+
+            return LocationErrors.DatabaseError();
+        }
     }
 }

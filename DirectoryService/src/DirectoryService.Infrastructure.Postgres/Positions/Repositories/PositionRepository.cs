@@ -73,17 +73,36 @@ public class PositionRepository : IPositionRepository
     public async Task<UnitResult<Error>> GetPositionsExclusiveToDepartment(Guid departmentId,
         CancellationToken cancellationToken = default)
     {
-        DateTime deletedAt = DateTime.UtcNow;
+        try
+        {
+            DateTime deletedAt = DateTime.UtcNow;
 
-        await _context.Positions
-            .Where(p => p.IsActive 
-                        && _context.DepartmentPositions.Any(dp =>
-                                       dp.PositionId == p.Id && dp.DepartmentId == departmentId)
-                        && !_context.DepartmentPositions.Any(dp2 =>
-                                       dp2.PositionId == p.Id && dp2.DepartmentId != departmentId))
-            .ExecuteUpdateAsync(setter => setter.SetProperty(p => p.IsActive, false)
-                .SetProperty(p => p.DeletedAt, deletedAt), cancellationToken);
+            await _context.Positions
+                .Where(p => p.IsActive
+                            && _context.DepartmentPositions.Any(dp =>
+                                dp.PositionId == p.Id && dp.DepartmentId == departmentId)
+                            && !_context.DepartmentPositions.Any(dp2 =>
+                                dp2.PositionId == p.Id && dp2.DepartmentId != departmentId))
+                .ExecuteUpdateAsync(setter => setter.SetProperty(p => p.IsActive, false)
+                    .SetProperty(p => p.DeletedAt, deletedAt), cancellationToken);
 
-        return UnitResult.Success<Error>();
+            return UnitResult.Success<Error>();
+        }
+        catch (OperationCanceledException ex)
+        {
+            _logger.LogError(ex,
+                "Operation cancelled while soft-deleting positions exclusive to department {DepartmentId}",
+                departmentId);
+
+            return PositionError.OperationCancelled();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex,
+                "Unexpected error while soft-deleting positions exclusive to department {DepartmentId}",
+                departmentId);
+
+            return PositionError.DatabaseError();
+        }
     }
 }
