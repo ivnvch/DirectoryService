@@ -16,6 +16,7 @@ public sealed class Position
         IsActive = true;
         CreatedAt = DateTime.UtcNow;
         UpdatedAt = CreatedAt;
+        DeletedAt = null;
         _departments = departments.ToList();
     }
     
@@ -27,6 +28,8 @@ public sealed class Position
     public bool IsActive { get; private set; }
     public DateTime CreatedAt { get; private set; }
     public DateTime? UpdatedAt { get; private set; }
+    
+    public DateTime? DeletedAt { get; private set; }
     public IReadOnlyList<DepartmentPosition> Departments => _departments;
 
     public static Result<Position, Error> Create(

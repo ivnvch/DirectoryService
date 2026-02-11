@@ -1,3 +1,4 @@
+using System.Runtime.InteropServices.JavaScript;
 using CSharpFunctionalExtensions;
 using DirectoryService.Application.Positions.Repositories;
 using DirectoryService.Domain.Positions;
@@ -14,7 +15,7 @@ public class PositionRepository : IPositionRepository
     private readonly DirectoryDbContext _context;
     private readonly ILogger<PositionRepository> _logger;
 
-    public PositionRepository(DirectoryDbContext context, 
+    public PositionRepository(DirectoryDbContext context,
         ILogger<PositionRepository> logger)
     {
         _context = context;
@@ -40,7 +41,7 @@ public class PositionRepository : IPositionRepository
             {
                 return PositionError.PositionNameConflict(position.Name);
             }
-            
+
             _logger.LogError(ex, "Database udpate error while creating position: {position}", position.Name);
 
             return PositionError.DatabaseError();
@@ -53,18 +54,55 @@ public class PositionRepository : IPositionRepository
         }
         catch (Exception ex)
         {
-           _logger.LogError(ex, "Unexpected error while adding Position: {position.Name}", position.Name);
+            _logger.LogError(ex, "Unexpected error while adding Position: {position.Name}", position.Name);
 
-           return PositionError.DatabaseError();
+            return PositionError.DatabaseError();
         }
     }
 
     public async Task<UnitResult<Error>> ExistsActiveWithName(string name, CancellationToken cancellationToken)
     {
-       var result = await _context.Positions
+        var result = await _context.Positions
             .AnyAsync(p => p.IsActive && p.Name == name, cancellationToken: cancellationToken);
 
-       return !result ? UnitResult.Success<Error>()
-               : UnitResult.Failure(GeneralErrors.NotFound(name: name));
+        return !result
+            ? UnitResult.Success<Error>()
+            : UnitResult.Failure(GeneralErrors.NotFound(name: name));
+    }
+
+    public async Task<UnitResult<Error>> GetPositionsExclusiveToDepartment(Guid departmentId,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            DateTime deletedAt = DateTime.UtcNow;
+
+            await _context.Positions
+                .Where(p => p.IsActive
+                            && _context.DepartmentPositions.Any(dp =>
+                                dp.PositionId == p.Id && dp.DepartmentId == departmentId)
+                            && !_context.DepartmentPositions.Any(dp2 =>
+                                dp2.PositionId == p.Id && dp2.DepartmentId != departmentId))
+                .ExecuteUpdateAsync(setter => setter.SetProperty(p => p.IsActive, false)
+                    .SetProperty(p => p.DeletedAt, deletedAt), cancellationToken);
+
+            return UnitResult.Success<Error>();
+        }
+        catch (OperationCanceledException ex)
+        {
+            _logger.LogError(ex,
+                "Operation cancelled while soft-deleting positions exclusive to department {DepartmentId}",
+                departmentId);
+
+            return PositionError.OperationCancelled();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex,
+                "Unexpected error while soft-deleting positions exclusive to department {DepartmentId}",
+                departmentId);
+
+            return PositionError.DatabaseError();
+        }
     }
 }

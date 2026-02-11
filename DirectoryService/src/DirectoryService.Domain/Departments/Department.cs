@@ -10,8 +10,8 @@ public sealed class Department
 {
     private Department()
     {
-        
     }
+
     private Department(
         Guid id,
         Guid? parentId,
@@ -30,6 +30,7 @@ public sealed class Department
         IsActive = true;
         CreatedAt = DateTime.UtcNow;
         UpdatedAt = CreatedAt;
+        DeletedAt = null;
         _locations = departmentLocations.ToList();
     }
 
@@ -46,10 +47,11 @@ public sealed class Department
     public bool IsActive { get; private set; }
     public DateTime CreatedAt { get; private set; }
     public DateTime UpdatedAt { get; private set; }
+    public DateTime? DeletedAt { get; private set; }
     public IReadOnlyList<DepartmentLocation> Locations => _locations;
     public IReadOnlyList<DepartmentPosition> Positions => _positions;
     public IReadOnlyList<Department> ChildrenDepartments => _childrenDepartments;
-    
+
     public static Result<Department, Error> CreateParent(
         DepartmentName name,
         DepartmentIdentifier departmentIdentifier,
@@ -57,20 +59,20 @@ public sealed class Department
         Guid? departmentId = null)
     {
         if (string.IsNullOrWhiteSpace(name.Value))
-          return GeneralErrors.ValueIsInvalid($"'{name}'");
-        
+            return GeneralErrors.ValueIsInvalid($"'{name}'");
+
         List<DepartmentLocation> locationList = departmentLocations.ToList();
-        
-        if(locationList.Count() == 0)
+
+        if (locationList.Count() == 0)
             return GeneralErrors.ValueIsInvalid($"'{locationList}'");
 
         var path = DepartmentPath.CreateParent(departmentIdentifier).Value;
-        
+
         return new Department(
             departmentId ?? Guid.NewGuid(),
             null,
             name,
-            departmentIdentifier, 
+            departmentIdentifier,
             path,
             0,
             locationList);
@@ -84,7 +86,7 @@ public sealed class Department
         Guid? departmentId = null)
     {
         var departmentLocationsList = departmentLocations.ToList();
-        if(departmentLocationsList.Count == 0)
+        if (departmentLocationsList.Count == 0)
             return Error.Validation("department.location", "Department locations must contain at least one location");
 
         var path = parent.DepartmentPath.CreateChild(departmentIdentifier);
@@ -97,13 +99,13 @@ public sealed class Department
             path.Value,
             parent.Depth + 1,
             departmentLocationsList
-            );
+        );
     }
 
     public UnitResult<Error> UpdateLocations(IEnumerable<DepartmentLocation> locationIds)
     {
-        var departmentLocations =  locationIds.ToList();
-        if(departmentLocations.Count == 0)
+        var departmentLocations = locationIds.ToList();
+        if (departmentLocations.Count == 0)
             return GeneralErrors.ValueIsRequired($"'{departmentLocations}'");
 
         _locations.Clear();
@@ -117,11 +119,11 @@ public sealed class Department
         ParentId = null;
         Depth = 0;
         var newPath = DepartmentPath.CreateParent(identifier: DepartmentIdentifier);
-        if(newPath.IsFailure)
+        if (newPath.IsFailure)
             return newPath.Error;
-        
+
         DepartmentPath = newPath.Value;
-        
+
         return UnitResult.Success<Error>();
     }
 
@@ -130,11 +132,17 @@ public sealed class Department
         ParentId = parentId;
         Depth = (short)(parentDepth + 1);
         var path = DepartmentPath.UpdatePath(DepartmentIdentifier, departmentPath);
-        if(path.IsFailure)
+        if (path.IsFailure)
             return path.Error;
-        
+
         DepartmentPath = path.Value;
-        
+
         return UnitResult.Success<Error>();
+    }
+
+    public void SoftDelete()
+    {
+        DeletedAt = DateTime.UtcNow;
+        IsActive = false;
     }
 }

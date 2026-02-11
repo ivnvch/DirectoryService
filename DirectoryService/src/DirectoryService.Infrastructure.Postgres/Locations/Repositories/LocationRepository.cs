@@ -9,7 +9,7 @@ using Npgsql;
 
 namespace DirectoryService.Infrastructure.Locations.Repositories;
 
-public class LocationRepository :  ILocationRepository
+public class LocationRepository : ILocationRepository
 {
     private readonly DirectoryDbContext _context;
     private readonly ILogger<LocationRepository> _logger;
@@ -22,7 +22,7 @@ public class LocationRepository :  ILocationRepository
 
     public async Task<Result<Guid, Error>> Add(Location location, CancellationToken cancellation = default)
     {
-             _context.Locations.Add(location);
+        _context.Locations.Add(location);
         try
         {
             _logger.LogInformation($"Location {location.Id} has been added.");
@@ -54,17 +54,53 @@ public class LocationRepository :  ILocationRepository
         }
     }
 
-    public async Task<Result<bool, Errors>> AllExistAsync(IReadOnlyCollection<Guid> locationIds, CancellationToken cancellation = default)
+    public async Task<Result<bool, Errors>> AllExistAsync(IReadOnlyCollection<Guid> locationIds,
+        CancellationToken cancellation = default)
     {
         if (locationIds.Count == 0)
             return true;
-        
+
         var existingCount = await _context.Locations
             .Where(l => locationIds.Contains(l.Id))
             .CountAsync(cancellation);
-        
+
         return existingCount == locationIds.Count;
-        
-        
+    }
+
+    public async Task<UnitResult<Error>> GetLocationsExclusiveToDepartment(Guid departmentId,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            DateTime deletedAt = DateTime.UtcNow;
+
+            await _context.Locations
+                .Where(l => l.IsActive &&
+                            _context.DepartmentLocations.Any(dl =>
+                                dl.LocationId == l.Id && dl.DepartmentId == departmentId) &&
+                            !_context.DepartmentLocations.Any(dl =>
+                                dl.LocationId == l.Id && dl.DepartmentId != departmentId))
+                .ExecuteUpdateAsync(setter => setter
+                    .SetProperty(l => l.IsActive, false)
+                    .SetProperty(l => l.DeletedAt, deletedAt), cancellationToken);
+
+            return UnitResult.Success<Error>();
+        }
+        catch (OperationCanceledException ex)
+        {
+            _logger.LogError(ex,
+                "Operation cancelled while soft-deleting locations exclusive to department {DepartmentId}",
+                departmentId);
+
+            return LocationErrors.OperationCancelled();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex,
+                "Unexpected error while soft-deleting locations exclusive to department {DepartmentId}",
+                departmentId);
+
+            return LocationErrors.DatabaseError();
+        }
     }
 }

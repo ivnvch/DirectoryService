@@ -11,7 +11,7 @@ public record DepartmentPath
         Value = value;
     }
     
-    public string Value { get; }
+    public string Value { get; private set; }
 
     public static Result<DepartmentPath, Error> CreateParent(DepartmentIdentifier identifier)
     {
@@ -27,8 +27,8 @@ public record DepartmentPath
     {
         return new DepartmentPath(IsValidDepartmentPath(identifier.Value, departmentPath.Value).Value);
     }
-    
-    public static Result<string, Error> IsValidDepartmentPath(string path, string? existingPath = null)
+
+    private static Result<string, Error> IsValidDepartmentPath(string path, string? existingPath = null)
     {
         if (string.IsNullOrWhiteSpace(path))
             return GeneralErrors.ValueIsInvalid("path");
@@ -53,6 +53,17 @@ public record DepartmentPath
     public static DepartmentPath Create(string value)
     {
         return new DepartmentPath(value);
+    }
+
+    public DepartmentPath MarkAsDeleted()
+    {
+        var identifier = Value.LastIndexOf('.');
+
+       Value = identifier == -1
+            ? "deleted-" + Value
+            : Value[..(identifier + 1)] + "deleted-" + Value[(identifier + 1)..];
+
+       return this;
     }
 
     private static readonly Regex PathRegex = new Regex(

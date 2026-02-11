@@ -26,6 +26,7 @@ public sealed class Location
         IsActive = true;
         CreatedAt = DateTime.UtcNow;
         UpdatedAt = CreatedAt;
+        DeletedAt =  null;
     }
     private readonly List<DepartmentLocation> _departments = [];
     public Guid Id { get; private set; }
@@ -35,6 +36,7 @@ public sealed class Location
     public bool IsActive { get; private set; }
     public DateTime CreatedAt { get; private set; }
     public DateTime UpdatedAt { get; private set; }
+    public DateTime? DeletedAt { get; private set; }
     public IReadOnlyList<DepartmentLocation> Departments => _departments;
 
     public static Result<Location, Error> Create(

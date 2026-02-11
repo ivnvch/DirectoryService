@@ -1,5 +1,3 @@
-using System.Runtime.InteropServices;
-
 namespace DirectoryService.Domain.DepartmentLocations;
 
 public sealed class DepartmentLocation

@@ -60,6 +60,9 @@ public class DepartmentConfiguration : IEntityTypeConfiguration<Department>
             .HasColumnName("updated_at")
             .HasColumnType("timestamp with time zone");
 
+        builder.Property(d => d.DeletedAt)
+            .HasColumnName("deleted_at");
+
         builder.HasMany(x => x.ChildrenDepartments)
             .WithOne()
             .IsRequired(false)
