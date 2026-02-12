@@ -1,4 +1,5 @@
 using DirectoryService.Domain.Departments;
+using DirectoryService.Domain.Positions;
 using DirectoryService.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -10,8 +11,7 @@ public class DirectoryBaseTests : IClassFixture<DirectoryTestWebFactory>, IAsync
     protected readonly Func<Task> ResetDatabase;
     protected readonly HttpClient HttpClient;
     protected readonly HttpClient AppHttpClient;
-
-
+    
     protected DirectoryBaseTests(DirectoryTestWebFactory factory)
     {
         HttpClient = new HttpClient();
@@ -39,6 +39,9 @@ public class DirectoryBaseTests : IClassFixture<DirectoryTestWebFactory>, IAsync
 
     protected Task<Guid> CreateLocationAsync()
         => ExecuteInDb(context => TestDataFactory.CreateLocationAsync(context));
+    
+    protected Task<Position> CreatePositionAsync(IEnumerable<Guid> departmentIds)
+        => ExecuteInDb(context => TestDataFactory.CreatePositionAsync(context, departmentIds: departmentIds));
 
     protected Task<Department> CreateDepartmentAsync(int locationsCount = 1)
         => ExecuteInDb(context => TestDataFactory.CreateDepartmentAsync(context, locationsCount));
