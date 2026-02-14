@@ -2,12 +2,16 @@ using DirectoryService.API;
 using DirectoryService.API.Middlewares;
 using DirectoryService.Application;
 using DirectoryService.Infrastructure;
+using DirectoryService.Infrastructure.BackgroundServices;
 using DirectoryService.Infrastructure.Seeding;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
+
+builder.Services.Configure<DeleteUnActiveDepartmentOptions>(builder.Configuration.GetSection("DeleteUnActiveDepartmentOptions"));
+builder.Services.AddHostedService<DeleteUnActiveDepartmentService>();
 
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
