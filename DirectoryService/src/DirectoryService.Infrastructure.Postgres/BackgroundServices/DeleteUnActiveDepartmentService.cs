@@ -1,5 +1,3 @@
-using DirectoryService.Application.Abstractions.Database;
-using DirectoryService.Application.Departments.Repositories;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -46,6 +44,7 @@ public class DeleteUnActiveDepartmentService : BackgroundService
                 await Task.Delay(delay, stoppingToken);
             
                 _logger.LogInformation("Delete unactive department service was started.");
+                
                 await Delete(stoppingToken);
             }
             catch (OperationCanceledException)
@@ -63,72 +62,12 @@ public class DeleteUnActiveDepartmentService : BackgroundService
     {
 
         await using AsyncServiceScope scope = _serviceScopeFactory.CreateAsyncScope();
-        var departmentRepository = scope.ServiceProvider.GetRequiredService<IDepartmentRepository>();
-        var transactionManager = scope.ServiceProvider.GetRequiredService<ITransactionManager>();
+        var deleteDepartmentService = scope.ServiceProvider.GetRequiredService<DeleteDepartmentService>();
 
         var dateTime = DateTime.UtcNow - _deleteUnActiveDepartmentOptions.RetentionPeriod;
         
-        var departmentIds = await departmentRepository.GetIdsForDeleteAsync(dateTime, cancellationToken);
-        
-        if (departmentIds.Count == 0)
-        {
-            _logger.LogInformation("No departments found for delete");
-            return;
-        }
-
-        foreach (var departmentId in departmentIds)
-        {
-            var transactionScopeResult = await transactionManager.BeginTransactionAsync(cancellationToken);
-            
-            if (transactionScopeResult.IsFailure)
-            {
-                _logger.LogError("Failed to start transaction for delete, departmentId: {DepartmentId}", departmentId);
-                continue;
-            }
-
-            using var transactionScope = transactionScopeResult.Value;
-
-            var updatePathInHierarchyBeforeDelete =
-                await departmentRepository.UpdateChildrenHierarchyBeforeDeleteAsync(departmentId, cancellationToken);
-
-            if (updatePathInHierarchyBeforeDelete.IsFailure)
-            {
-                transactionScope.Rollback();
-                
-                _logger.LogError("Failed to update hierarchy before delete, departmentId: {DepartmentId}", departmentId);
-                continue;
-            }
-
-            var deleteDepartment = await departmentRepository.DeleteByIdAsync(departmentId, cancellationToken);
-
-            if (deleteDepartment.IsFailure)
-            {
-                transactionScope.Rollback();
-                _logger.LogError("Failed to delete department, departmentId: {DepartmentId}", departmentId);
-                continue;
-            }
-            
-            var saveChanges = await transactionManager.SaveChangesAsync(cancellationToken);
-            if (saveChanges.IsFailure)
-            {
-                transactionScope.Rollback();
-                _logger.LogError("Failed to save changes during delete, departmentId: {DepartmentId}", departmentId);
-                continue;
-            }
-
-            var committedResult = transactionScope.Commit();
-            if (committedResult.IsFailure)
-            {
-                _logger.LogError("Failed to commit transaction during delete, departmentId: {DepartmentId}", departmentId);
-                continue;
-            }
-
-            _logger.LogInformation("Department deleted successfully, departmentId: {DepartmentId}", departmentId);
-        }
+        await deleteDepartmentService.DeleteDepartment(dateTime, cancellationToken);
        
-        _logger.LogInformation("Delete completed, processed departments count: {Count}", departmentIds.Count);
-
-
     }
 
     private static DateTime GetNextRunUtc(DateTime nowUtc, TimeSpan runAtUtc)

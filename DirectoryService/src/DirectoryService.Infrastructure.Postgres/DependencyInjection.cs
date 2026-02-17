@@ -2,6 +2,7 @@ using DirectoryService.Application.Abstractions.Database;
 using DirectoryService.Application.Departments.Repositories;
 using DirectoryService.Application.Locations.Repositories;
 using DirectoryService.Application.Positions.Repositories;
+using DirectoryService.Infrastructure.BackgroundServices;
 using DirectoryService.Infrastructure.Database;
 using DirectoryService.Infrastructure.Departments.Repositories;
 using DirectoryService.Infrastructure.Locations.Repositories;
@@ -43,6 +44,8 @@ public static class DependencyInjection
         services.AddScoped<IDepartmentRepository, DepartmentRepository>();
         services.AddScoped<IPositionRepository, PositionRepository>();
         services.AddScoped<ITransactionManager, TransactionManager>();
+
+        services.AddScoped<DeleteDepartmentService>();
         
         services.AddSingleton<IDbConnectionFactory, NpgsqlConnectionFactory>();
         
