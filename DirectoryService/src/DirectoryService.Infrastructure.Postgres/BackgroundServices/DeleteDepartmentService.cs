@@ -2,9 +2,10 @@ using System.Data.Common;
 using CSharpFunctionalExtensions;
 using Dapper;
 using DirectoryService.Application.Abstractions.Database;
-using DirectoryService.Application.Departments.Repositories;
+using DirectoryService.Application.Extensions.Cache;
 using DirectoryService.Shared.Errors;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Hybrid;
 using Microsoft.Extensions.Logging;
 
 namespace DirectoryService.Infrastructure.BackgroundServices;
@@ -13,50 +14,48 @@ public sealed class DeleteDepartmentService
 {
     private readonly DirectoryDbContext _dbContext;
     private readonly ITransactionManager _transactionManager;
-    private readonly IDepartmentRepository _departmentRepository;
+    private readonly HybridCache _cache;
     private readonly ILogger<DeleteDepartmentService> _logger;
     
     public DeleteDepartmentService(
         DirectoryDbContext dbContext, 
-        ITransactionManager transactionManager, 
-        IDepartmentRepository departmentRepository, 
+        ITransactionManager transactionManager,
+        HybridCache cache,
         ILogger<DeleteDepartmentService> logger)
     {
         _dbContext = dbContext;
         _transactionManager = transactionManager;
-        _departmentRepository = departmentRepository;
+        _cache = cache;
         _logger = logger;
     }
 
     public async Task<UnitResult<Errors>> DeleteDepartment(DateTime period, CancellationToken cancellationToken = default)
     {
-        var departmentIds = await _departmentRepository.GetIdsForDeleteAsync(period, cancellationToken);
-        if (departmentIds.Count == 0)
-        {
-            _logger.LogInformation("No departments found for delete");
-            return UnitResult.Success<Errors>();
-        }
-        
-        var transactionScopeResult =  await _transactionManager.BeginTransactionAsync(cancellationToken);
+        DbConnection dbConnection = _dbContext.Database.GetDbConnection();
+
+        var transactionScopeResult = await _transactionManager.BeginTransactionAsync(cancellationToken);
         if (transactionScopeResult.IsFailure)
-        {
             return UnitResult.Failure(transactionScopeResult.Error.ToErrors());
-        }
 
         using var transactionScope = transactionScopeResult.Value;
 
-        DbConnection dbConnection = _dbContext.Database.GetDbConnection();
-
         try
         {
-            var updatePathInHierarchyBeforeDelete = await dbConnection.ExecuteAsync(
+            await dbConnection.ExecuteAsync(
                 """
-                    WITH targets AS (
+                WITH dept_ids AS (
+                    SELECT d.id
+                    FROM departments d
+                    WHERE d.is_active = false
+                      AND d.deleted_at IS NOT NULL
+                      AND d.deleted_at <= @period
+                ),
+                targets AS (
                     SELECT d.id, d.parent_id, d.path, d.depth,
                            p.path AS parent_path, p.depth AS parent_depth
                     FROM departments d
                     LEFT JOIN departments p ON p.id = d.parent_id
-                    WHERE d.id = ANY(@descendant_ids)
+                    WHERE d.id IN (SELECT id FROM dept_ids)
                 ),
                 picked AS (
                     SELECT DISTINCT ON (ch.id)
@@ -85,69 +84,44 @@ public sealed class DeleteDepartmentService
                         updated_at = now()
                     FROM picked p
                     WHERE d.id = p.child_id
-                    RETURNING d.id
+                ),
+                update_parent AS (
+                    UPDATE departments d
+                    SET parent_id = t.parent_id,
+                        updated_at = now()
+                    FROM targets t
+                    WHERE d.parent_id = t.id
+                ),
+                delete_locations AS (
+                    DELETE FROM department_locations
+                    WHERE department_id IN (SELECT id FROM dept_ids)
+                ),
+                delete_positions AS (
+                    DELETE FROM department_position
+                    WHERE department_id IN (SELECT id FROM dept_ids)
                 )
-                UPDATE departments d
-                SET parent_id = t.parent_id,
-                    updated_at = now()
-                FROM targets t
-                WHERE d.parent_id = t.id; 
-                """, new
-                {
-                    descendant_ids = departmentIds
-                });
+                DELETE FROM departments
+                WHERE id IN (SELECT id FROM dept_ids)
+                """, new { period });
         }
         catch (Exception ex)
         {
             transactionScope.Rollback();
-                
-            _logger.LogError(
-                "Failed to update hierarchy before delete, departmentIds: {@DepartmentIds}",
-                departmentIds);
-
-            return UnitResult.Failure(Error.Failure("failed.update.hierarchy.before.delete", ex.Message).ToErrors());
+            _logger.LogError(ex, "Failed to delete departments");
+            return UnitResult.Failure(Error.Failure("failed.delete.departments", ex.Message).ToErrors());
         }
 
-       var deleteDepartments = await dbConnection.ExecuteAsync(
-           """
-           DELETE FROM department_locations
-           WHERE department_id = ANY(@departmentIds);
+        var committedResult = transactionScope.Commit();
+        if (committedResult.IsFailure)
+        {
+            _logger.LogError("Failed to commit transaction during delete departments");
+            return UnitResult.Failure<Errors>(committedResult.Error);
+        }
 
-           DELETE FROM department_position
-           WHERE department_id = ANY(@departmentIds);
+        await _cache.RemoveByTagAsync(CacheTags.Departments, cancellationToken);
 
-           DELETE FROM departments
-           WHERE id = ANY(@departmentIds);
-           """,
-           new { departmentIds });
+        _logger.LogInformation("Departments deleted successfully");
 
-       if (deleteDepartments == 0)
-       {
-           transactionScope.Rollback();
-           _logger.LogError("Failed to delete departments, departmentIds: {@DepartmentIds}",
-               departmentIds);
-       }
-       
-       var saveChanges = await _transactionManager.SaveChangesAsync(cancellationToken);
-       if (saveChanges.IsFailure)
-       {
-           transactionScope.Rollback();
-           _logger.LogError("Failed to save changes during delete, departmentIds: {@DepartmentIds}",
-               departmentIds);
-       }
-
-       var committedResult = transactionScope.Commit();
-       if (committedResult.IsFailure)
-       {
-           _logger.LogError("Failed to commit transaction during delete, departmentIds: {@DepartmentIds}",
-               departmentIds);
-       }
-
-       _logger.LogInformation("Department deleted successfully, departmentId: {@DepartmentIds}",
-           departmentIds);
-       
-       _logger.LogInformation("Delete completed, processed departments count: {Count}", departmentIds.Count);
-       
-       return UnitResult.Success<Errors>();
+        return UnitResult.Success<Errors>();
     }
 }
