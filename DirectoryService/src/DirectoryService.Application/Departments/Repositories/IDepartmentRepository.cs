@@ -35,4 +35,16 @@ public interface IDepartmentRepository
         DepartmentPath oldPath,
         DepartmentPath newPath,
         CancellationToken cancellationToken = default);
+
+    Task<IReadOnlyList<Guid>> GetIdsForDeleteAsync(
+        DateTime deletedBeforeUtc,
+        CancellationToken cancellationToken = default);
+
+    Task<UnitResult<Error>> UpdateChildrenHierarchyBeforeDeleteAsync(
+        Guid departmentId,
+        CancellationToken cancellationToken = default);
+
+    Task<UnitResult<Error>> DeleteByIdAsync(
+        Guid departmentId,
+        CancellationToken cancellationToken = default);
 }

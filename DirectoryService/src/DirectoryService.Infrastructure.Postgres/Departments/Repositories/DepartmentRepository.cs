@@ -191,4 +191,88 @@ public class DepartmentRepository : IDepartmentRepository
 
         return UnitResult.Success<Error>();
     }
+
+    
+    public async Task<UnitResult<Error>> UpdateChildrenHierarchyBeforeDeleteAsync(
+        Guid departmentId,
+        CancellationToken cancellationToken = default)
+    {
+        DbConnection dbConnection = _context.Database.GetDbConnection();
+
+        await dbConnection.ExecuteAsync(
+            """
+            WITH target AS (
+                SELECT id, parent_id, path, depth
+                FROM departments
+                WHERE id = @departmentId
+            ),
+            parent AS (
+                SELECT d.path, d.depth
+                FROM departments d
+                JOIN target t ON t.parent_id = d.id
+            )
+            UPDATE departments d
+            SET path = CASE
+                WHEN t.parent_id IS NULL THEN subpath(d.path, 1)
+                ELSE p.path::ltree || subpath(d.path, nlevel(t.path::ltree))
+            END,
+            depth = CASE
+                WHEN t.parent_id IS NULL THEN d.depth - 1
+                ELSE p.depth + (d.depth - t.depth)
+            END,
+            updated_at = now()
+            FROM target t
+            LEFT JOIN parent p ON true
+            WHERE d.path <@ t.path::ltree
+              AND d.path != t.path::ltree;
+            """,
+            new { departmentId });
+
+        await dbConnection.ExecuteAsync(
+            """
+            UPDATE departments d
+            SET parent_id = t.parent_id,
+                updated_at = now()
+            FROM departments t
+            WHERE d.parent_id = t.id
+              AND t.id = @departmentId;
+            """,
+            new { departmentId });
+
+        return UnitResult.Success<Error>();
+    }
+
+
+    public async Task<IReadOnlyList<Guid>> GetIdsForDeleteAsync(
+        DateTime deletedBeforeUtc,
+        CancellationToken cancellationToken = default)
+    {
+        return await _context.Departments
+            .Where(x => !x.IsActive && x.DeletedAt != null && x.DeletedAt <= deletedBeforeUtc)
+            .OrderByDescending(x => x.Depth)
+            .Select(x => x.Id)
+            .ToListAsync(cancellationToken);
+    }
+    
+    public async Task<UnitResult<Error>> DeleteByIdAsync(
+        Guid departmentId,
+        CancellationToken cancellationToken = default)
+    {
+        DbConnection dbConnection = _context.Database.GetDbConnection();
+
+        await dbConnection.ExecuteAsync(
+            """
+            DELETE FROM department_locations
+            WHERE department_id = @departmentId;
+
+            DELETE FROM department_position
+            WHERE department_id = @departmentId;
+
+            DELETE FROM departments
+            WHERE id = @departmentId;
+            """,
+            new { departmentId });
+
+        return UnitResult.Success<Error>();
+    }
 }

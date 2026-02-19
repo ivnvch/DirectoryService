@@ -8,7 +8,11 @@ namespace DirectoryService.Domain.Positions;
 public sealed class Position
 {
     private Position(){}
-    private Position(Guid id, string name, string? description, IEnumerable<DepartmentPosition> departments)
+    private Position(
+        Guid id, 
+        string name, 
+        string? description, 
+        IEnumerable<DepartmentPosition> departments)
     {
         Id = id;
         Name = name;
@@ -35,7 +39,8 @@ public sealed class Position
     public static Result<Position, Error> Create(
         string name, 
         string? description, 
-        IEnumerable<DepartmentPosition> departmentPositions)
+        IEnumerable<DepartmentPosition> departmentPositions,
+        Guid? positionId = null)
     {
         if (string.IsNullOrWhiteSpace(name))
             return GeneralErrors.ValueIsInvalid("Name ");
@@ -48,7 +53,7 @@ public sealed class Position
         
 
         return new Position(
-            Guid.NewGuid(),
+            positionId ?? Guid.NewGuid(),
             name,
             description,
             departments);
