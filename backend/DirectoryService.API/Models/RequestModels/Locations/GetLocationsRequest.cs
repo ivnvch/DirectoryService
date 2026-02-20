@@ -1,4 +1,4 @@
-namespace DirectoryService.API.Models.RequestModels;
+namespace DirectoryService.API.Models.RequestModels.Locations;
 
 public record GetLocationsRequest(
     Guid[]? DepartmentIds,

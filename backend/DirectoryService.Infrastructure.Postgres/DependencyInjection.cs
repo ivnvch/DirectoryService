@@ -47,6 +47,8 @@ public static class DependencyInjection
 
         services.AddScoped<DeleteDepartmentService>();
         
+       // services.AddHybridCache();
+        
         services.AddSingleton<IDbConnectionFactory, NpgsqlConnectionFactory>();
         
         return services;
