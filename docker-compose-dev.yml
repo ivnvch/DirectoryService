@@ -1,4 +1,28 @@
 services:
+
+  directory-backend-service:
+    container_name: directory-backend-service
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "8001:8001"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Docker
+      - ASPNETCORE_URLS=http://+:8001
+    restart: always
+
+  nginx:
+    container_name: nginx
+    image: nginx:alpine
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx.conf:etc/nginx/nginx.conf:ro
+    depends_on:
+      - directory-backend-service
+    restart: always
+
   seq:
     container_name: seq
     image: datalust/seq:latest
@@ -12,7 +36,7 @@ services:
 
 
   postgres:
-      container_name: directory_container
+      container_name: directory-postgres
       image: postgres
       restart: always
       environment:          
