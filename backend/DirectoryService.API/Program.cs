@@ -13,7 +13,7 @@ builder.Services.AddControllers();
 builder.Services.Configure<DeleteUnActiveDepartmentOptions>(builder.Configuration.GetSection("DeleteUnActiveDepartmentOptions"));
 builder.Services.AddHostedService<DeleteUnActiveDepartmentService>();
 
-builder.Services.AddApplication();
+builder.Services.AddApplication(builder.Configuration);
 builder.Services.AddInfrastructure(builder.Configuration);
 
 builder.Services.AddConfiguration(builder.Configuration);
