@@ -49,7 +49,8 @@ public sealed class GetDescendantsDepartmentHandler : IListQueryHandler<GetDesce
         if (!isExists)
             return Error.NotFound("parent.department.not.found", $"Department with so Id: {query.Id} does not exists").ToErrors();
 
-        var keys = "getDescendantDepartment".ToCacheKey(id: query.Id, page: query.Pagination.Page, pageSize: query.Pagination.PageSize);
+        var keys = CacheConstants.GetDescendantDepartment
+            .ToCacheKey(id: query.Id, page: query.Pagination.Page, pageSize: query.Pagination.PageSize);
 
         return await _cache.GetOrCreateAsync(
             keys,

@@ -27,7 +27,8 @@ public sealed class GetRootDepartmentsHandler : IQueryHandler<PaginationResponse
         GetRootDepartmentsQuery query,
         CancellationToken cancellationToken)
     {
-        var keys = "root-department".ToCacheKey(query.Request.Pagination.PageSize, query.Request.Pagination.Page);
+        var keys = CacheConstants.RootDepartment
+            .ToCacheKey(query.Request.Pagination.PageSize, query.Request.Pagination.Page);
         
         return await _cache.GetOrCreateAsync(keys,
             factory: async ct => await GetRootDepartments(query, ct),

@@ -3,7 +3,6 @@ using Dapper;
 using DirectoryService.Application.Abstractions.Database;
 using DirectoryService.Application.CQRS;
 using DirectoryService.Application.Extensions.Cache;
-using DirectoryService.Shared.Constants;
 using DirectoryService.Shared.Departments;
 using DirectoryService.Shared.Errors;
 using Microsoft.Extensions.Caching.Hybrid;
@@ -23,7 +22,7 @@ public class GetTopDepartmentHandler : IQueryHandler<GetTopDepartmentsDto>
 
     public async Task<Result<GetTopDepartmentsDto, Errors>> Handle(CancellationToken cancellationToken)
     {
-        var keys = "top5Departments".ToCacheKey();
+        var keys = CacheConstants.Top5Departments.ToCacheKey();
         
         return await _cache.GetOrCreateAsync(
             keys,

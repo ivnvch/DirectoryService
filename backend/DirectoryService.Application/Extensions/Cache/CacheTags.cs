@@ -1,5 +1,3 @@
-using DirectoryService.Shared.Constants;
-
 namespace DirectoryService.Application.Extensions.Cache;
 
 public static class CacheTags
