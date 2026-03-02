@@ -1,5 +1,6 @@
 "use client";
-import { Locations } from "@/components/locations";
+
+import { Locations } from "@/shared/components/locations";
 
 export default function Home() {
   return <Locations />;

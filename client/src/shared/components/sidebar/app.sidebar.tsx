@@ -14,9 +14,9 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarRail,
-} from "../ui/sidebar";
-import { cn } from "@/lib/utils";
-import { useSidebar } from "@/components/ui/sidebar";
+  useSidebar,
+} from "@/shared/components/ui/sidebar";
+import { cn } from "@/shared/lib/utils";
 import { routes } from "@/shared/routes";
 
 const navigationItems = [
@@ -70,7 +70,7 @@ export function AppSidebar() {
                           aria-hidden="true"
                           className={cn(
                             "absolute top-1/2 -left-1 h-6 w-1 -translate-y-1/2 rounded-full bg-blue-500 transition-all duration-200 group-data-[collapsible=icon]:hidden",
-                            isActive ? "opacity-100" : "opacity-0"
+                            isActive ? "opacity-100" : "opacity-0",
                           )}
                         />
                         <Icon className="h-4 w-4" />
