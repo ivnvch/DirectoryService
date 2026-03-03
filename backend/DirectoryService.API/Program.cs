@@ -16,6 +16,8 @@ builder.Services.AddHostedService<DeleteUnActiveDepartmentService>();
 builder.Services.AddApplication(builder.Configuration);
 builder.Services.AddInfrastructure(builder.Configuration);
 
+builder.Services.AddCors();
+
 builder.Services.AddConfiguration(builder.Configuration);
 
 builder.Services.AddScoped<ISeeder, DirectorySeeder>();
@@ -32,6 +34,13 @@ if (app.Environment.IsDevelopment() || app.Environment.IsEnvironment("Docker"))
         await app.Services.RunSeeding();
     }*/
 }
+
+app.UseCors(policyBuilder =>
+{
+    policyBuilder.WithOrigins("http://localhost:3000")
+        .AllowAnyHeader()
+        .AllowAnyMethod();
+});
 
 app.UseSerilogRequestLogging();
 

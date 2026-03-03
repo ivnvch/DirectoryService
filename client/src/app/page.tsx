@@ -1,6 +1,6 @@
 "use client";
 
-import Todo from "@/components/todo";
+import Todo from "@/shared/components/todo";
 import { Building2, MapPin, Network, Users } from "lucide-react";
 
 export default function Home() {

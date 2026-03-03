@@ -1,8 +1,8 @@
 import Link from "next/link";
 import { Search, Video, Bell } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { SidebarTrigger } from "@/components/ui/sidebar";
+import { Button } from "@/shared/components/ui/button";
+import { Input } from "@/shared/components/ui/input";
+import { SidebarTrigger } from "@/shared/components/ui/sidebar";
 import { routes } from "@/shared/routes";
 
 export default function Header() {
