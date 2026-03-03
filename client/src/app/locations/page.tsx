@@ -1,7 +1,7 @@
 "use client";
 
-import { Locations } from "@/shared/components/locations";
+import { Locations } from "@/features/locations";
 
-export default function Home() {
+export default function LocationsPage() {
   return <Locations />;
 }

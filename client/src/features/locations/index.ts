@@ -1,0 +1,1 @@
+export { default as Locations } from "./ui/locations-page";

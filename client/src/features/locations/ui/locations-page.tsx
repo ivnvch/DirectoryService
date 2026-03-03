@@ -1,5 +1,4 @@
-import { locationsApi } from "@/entities/locations/api";
-import type { Location } from "@/entities/locations/types";
+import { useLocationsQuery } from "@/features/locations/api/use-locations-query";
 import {
   Card,
   CardContent,
@@ -7,8 +6,9 @@ import {
   CardHeader,
   CardTitle,
 } from "@/shared/components/ui/card";
+import { QueryErrorAlert } from "@/shared/components/ui/query-error-alert";
 import { MapPin } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Spinner } from "@/shared/components/ui/spinner";
 
 function formatDate(value: Date | string | undefined): string {
@@ -21,50 +21,13 @@ function formatDate(value: Date | string | undefined): string {
   });
 }
 
-const PAGE_SIZE = 10;
-const TOTAL_COUNT = 15;
-const TOTAL_PAGES = 5;
-
-export default function Location() {
+export default function LocationsPage() {
   const [page, setPage] = useState(1);
-  const [locations, setLocations] = useState<Location[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    let cancelled = false;
-
-    queueMicrotask(() => {
-      if (!cancelled) {
-        setIsLoading(true);
-        setError(null);
-      }
-    });
-
-    locationsApi
-      .getLocations({
-        totalCount: TOTAL_COUNT,
-        page,
-        pageSize: PAGE_SIZE,
-        totalPages: TOTAL_PAGES,
-      })
-      .then((data) => {
-        if (!cancelled) setLocations(data);
-      })
-      .catch((err) => {
-        if (!cancelled) {
-          setError(err?.message ?? "Не удалось загрузить локации");
-          setLocations([]);
-        }
-      })
-      .finally(() => {
-        if (!cancelled) setIsLoading(false);
-      });
-
-    return () => {
-      cancelled = true;
-    };
-  }, [page]);
+  const { data: locations, isLoading, error, refetch } = useLocationsQuery({
+    page,
+    pageSize: 10,
+  });
 
   if (isLoading) {
     return (
@@ -90,15 +53,13 @@ export default function Location() {
             Список локаций
           </CardTitle>
           <CardDescription>
-            Всего: {isLoading ? "—" : locations.length} записей
+            Всего: {isLoading ? "—" : locations?.items.length} записей
           </CardDescription>
         </CardHeader>
         <CardContent>
           {error ? (
-            <div className="rounded-lg border border-destructive/50 bg-destructive/10 p-4 text-destructive">
-              {error}
-            </div>
-          ) : locations.length === 0 ? (
+            <QueryErrorAlert error={error} onRetry={() => refetch()} />
+          ) : locations?.items.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-12 text-center text-muted-foreground">
               <MapPin className="mb-4 size-12 opacity-50" />
               <p className="font-medium">Нет локаций</p>
@@ -122,7 +83,7 @@ export default function Location() {
                   </tr>
                 </thead>
                 <tbody>
-                  {locations.map((loc, index) => (
+                  {locations?.items.map((loc, index) => (
                     <tr
                       key={`${loc.name}-${index}`}
                       className="border-b last:border-0 hover:bg-muted/30 transition-colors"
