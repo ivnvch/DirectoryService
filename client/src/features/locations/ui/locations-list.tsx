@@ -1,4 +1,4 @@
-import { useLocationsQuery } from "@/features/locations/api/use-locations-query";
+import { useLocationsQuery } from "@/features/locations/model/use-locations-query";
 import {
   Card,
   CardContent,
@@ -6,10 +6,11 @@ import {
   CardHeader,
   CardTitle,
 } from "@/shared/components/ui/card";
-import { QueryErrorAlert } from "@/shared/components/ui/query-error-alert";
 import { MapPin } from "lucide-react";
 import { useState } from "react";
 import { Spinner } from "@/shared/components/ui/spinner";
+import CreateLocationModal from "./create-location-modal";
+import { Button } from "@/shared/components/ui/button";
 
 function formatDate(value: Date | string | undefined): string {
   if (!value) return "—";
@@ -25,7 +26,7 @@ export default function LocationsList() {
   const [open, setOpen] = useState(false);
   const [page, setPage] = useState(1);
 
-  const { locations, isPending, error, isError, totalPages } =
+  const { locations, isPending, error, isError, totalCount, totalPages } =
     useLocationsQuery({
       page,
     });
@@ -38,12 +39,15 @@ export default function LocationsList() {
     );
   }
 
-  if (isError) {
-    return <div>Ошибка: {error ? error.message : "Неизвестнаня ошибка!"}</div>;
-  }
+  // if (isError) {
+  //   return <div>Ошибка: {error ? error.message : "Неизвестнаня ошибка!"}</div>;
+  // }
 
   return (
     <div className="space-y-6 p-6">
+      <Button onClick={() => setOpen(true)} disabled={isPending}>
+        Добавить локацию
+      </Button>
       <div>
         <h1 className="text-2xl font-bold tracking-tight">Локации</h1>
         <p className="text-muted-foreground mt-1">
@@ -62,7 +66,6 @@ export default function LocationsList() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          (
           <div className="overflow-x-auto rounded-lg border">
             <table className="w-full min-w-[600px] text-sm">
               <thead>
@@ -96,9 +99,9 @@ export default function LocationsList() {
               </tbody>
             </table>
           </div>
-          )
         </CardContent>
       </Card>
+      <CreateLocationModal open={open} onOpenChange={setOpen} />
     </div>
   );
 }
