@@ -64,6 +64,12 @@ export const locationsApi = {
         const response = await apiClient.post("/locations", request);
 
         return response.data;
+    },
+
+    deleteLocation: async(locationId: string) => {
+      const response = await apiClient.delete(`/locations/${locationId}`)
+
+      return response.data;
     }
 }
 

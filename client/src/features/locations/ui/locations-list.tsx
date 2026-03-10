@@ -1,4 +1,5 @@
 import { useLocationsQuery } from "@/features/locations/model/use-locations-query";
+import { useDeleteLocation } from "@/features/locations/model/use-delete-location";
 import {
   Card,
   CardContent,
@@ -6,7 +7,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/shared/components/ui/card";
-import { MapPin } from "lucide-react";
+import { MapPin, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { Spinner } from "@/shared/components/ui/spinner";
 import CreateLocationModal from "./create-location-modal";
@@ -30,6 +31,7 @@ export default function LocationsList() {
     useLocationsQuery({
       page,
     });
+  const { deleteLocation, isPending: isDeleting } = useDeleteLocation();
 
   if (isPending) {
     return (
@@ -78,12 +80,15 @@ export default function LocationsList() {
                   <th className="px-4 py-3 text-left font-medium">
                     Дата создания
                   </th>
+                  <th className="px-4 py-3 text-right font-medium w-16">
+                    Действия
+                  </th>
                 </tr>
               </thead>
               <tbody>
                 {locations?.map((loc, index) => (
                   <tr
-                    key={`${loc.name}-${index}`}
+                    key={loc.id ?? `loc-${loc.name}-${index}`}
                     className="border-b last:border-0 hover:bg-muted/30 transition-colors"
                   >
                     <td className="px-4 py-3 font-medium">{loc.name}</td>
@@ -93,6 +98,18 @@ export default function LocationsList() {
                     <td className="px-4 py-3">{loc.timezone}</td>
                     <td className="px-4 py-3 text-muted-foreground">
                       {formatDate(loc.createdAt)}
+                    </td>
+                    <td className="px-4 py-3 text-right">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => loc.id && deleteLocation(loc.id)}
+                        disabled={isDeleting || !loc.id}
+                        className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                        aria-label="Удалить локацию"
+                      >
+                        <Trash2 className="size-4" />
+                      </Button>
                     </td>
                   </tr>
                 ))}

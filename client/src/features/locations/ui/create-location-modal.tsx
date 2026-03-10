@@ -1,7 +1,4 @@
-import {
-  buildAddressDto,
-  locationsQueryOptions,
-} from "@/entities/locations/api";
+import { buildAddressDto } from "@/entities/locations/api";
 import { Button } from "@/shared/components/ui/button";
 import {
   Dialog,
@@ -15,15 +12,20 @@ import { Input } from "@/shared/components/ui/input";
 import { Label } from "@/shared/components/ui/label";
 import { Select } from "@/shared/components/ui/select";
 import { TIMEZONE_OPTIONS } from "@/shared/lib/timezones";
-import { useState } from "react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
 import { useCreateLocation } from "../api/use-create-location";
+import {
+  createLocationSchema,
+  type CreateLocationFormData,
+} from "../model/create-location-schema";
 
 type Props = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
 };
 
-const initialFormData = {
+const defaultValues: CreateLocationFormData = {
   name: "",
   country: "",
   city: "",
@@ -34,28 +36,34 @@ const initialFormData = {
 };
 
 export default function CreateLocationModal({ open, onOpenChange }: Props) {
-  const [formData, setFormData] = useState(initialFormData);
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm<CreateLocationFormData>({
+    resolver: zodResolver(createLocationSchema),
+    defaultValues,
+  });
 
   const { createLocation, isPending, error } = useCreateLocation();
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-
+  const onSubmit = (data: CreateLocationFormData) => {
     createLocation(
       {
-        name: formData.name,
+        name: data.name,
         address: buildAddressDto({
-          country: formData.country,
-          city: formData.city,
-          street: formData.street,
-          house: formData.house,
-          apartment: formData.apartment,
+          country: data.country,
+          city: data.city,
+          street: data.street,
+          house: data.house,
+          apartment: data.apartment,
         }),
-        timezone: formData.timezone,
+        timezone: data.timezone,
       },
       {
         onSuccess: () => {
-          setFormData(initialFormData);
+          reset(defaultValues);
           onOpenChange(false);
         },
       },
@@ -72,84 +80,90 @@ export default function CreateLocationModal({ open, onOpenChange }: Props) {
           </DialogDescription>
         </DialogHeader>
 
-        <form className="grid gap-4 py-4" onSubmit={handleSubmit}>
+        <form
+          className="grid gap-4 py-4"
+          onSubmit={handleSubmit(onSubmit)}
+        >
           <div className="grid gap-2">
             <Label htmlFor="name">Название</Label>
             <Input
               id="name"
               placeholder="Введите название локации"
-              value={formData.name}
-              onChange={(e) =>
-                setFormData((prev) => ({ ...prev, name: e.target.value }))
-              }
+              aria-invalid={!!errors.name}
+              {...register("name")}
             />
+            {errors.name && (
+              <p className="text-sm text-destructive">{errors.name.message}</p>
+            )}
           </div>
           <div className="grid gap-2">
             <Label htmlFor="country">Страна</Label>
             <Input
               id="country"
               placeholder="Название страны"
-              value={formData.country}
-              onChange={(e) =>
-                setFormData((prev) => ({ ...prev, country: e.target.value }))
-              }
+              aria-invalid={!!errors.country}
+              {...register("country")}
             />
+            {errors.country && (
+              <p className="text-sm text-destructive">
+                {errors.country.message}
+              </p>
+            )}
           </div>
           <div className="grid gap-2">
             <Label htmlFor="city">Город</Label>
             <Input
               id="city"
               placeholder="Название города"
-              value={formData.city}
-              onChange={(e) =>
-                setFormData((prev) => ({ ...prev, city: e.target.value }))
-              }
+              aria-invalid={!!errors.city}
+              {...register("city")}
             />
+            {errors.city && (
+              <p className="text-sm text-destructive">{errors.city.message}</p>
+            )}
           </div>
           <div className="grid gap-2">
             <Label htmlFor="street">Улица</Label>
             <Input
               id="street"
               placeholder="Название улицы"
-              value={formData.street}
-              onChange={(e) =>
-                setFormData((prev) => ({ ...prev, street: e.target.value }))
-              }
+              aria-invalid={!!errors.street}
+              {...register("street")}
             />
+            {errors.street && (
+              <p className="text-sm text-destructive">
+                {errors.street.message}
+              </p>
+            )}
           </div>
           <div className="grid gap-2">
             <Label htmlFor="house">№ дома</Label>
             <Input
               id="house"
               placeholder="Номер дома"
-              value={formData.house}
-              onChange={(e) =>
-                setFormData((prev) => ({ ...prev, house: e.target.value }))
-              }
+              aria-invalid={!!errors.house}
+              {...register("house")}
             />
+            {errors.house && (
+              <p className="text-sm text-destructive">
+                {errors.house.message}
+              </p>
+            )}
           </div>
           <div className="grid gap-2">
             <Label htmlFor="apartment">Квартира (необязательно)</Label>
             <Input
               id="apartment"
               placeholder="Номер квартиры"
-              value={formData.apartment}
-              onChange={(e) =>
-                setFormData((prev) => ({ ...prev, apartment: e.target.value }))
-              }
+              {...register("apartment")}
             />
           </div>
           <div className="grid gap-2">
             <Label htmlFor="timezone">Часовой пояс</Label>
             <Select
               id="timezone"
-              value={formData.timezone}
-              onChange={(e) =>
-                setFormData((prev) => ({
-                  ...prev,
-                  timezone: e.target.value,
-                }))
-              }
+              aria-invalid={!!errors.timezone}
+              {...register("timezone")}
             >
               <option value="">Выберите часовой пояс</option>
               {TIMEZONE_OPTIONS.map(({ value, label }) => (
@@ -158,6 +172,11 @@ export default function CreateLocationModal({ open, onOpenChange }: Props) {
                 </option>
               ))}
             </Select>
+            {errors.timezone && (
+              <p className="text-sm text-destructive">
+                {errors.timezone.message}
+              </p>
+            )}
           </div>
 
           <DialogFooter>
