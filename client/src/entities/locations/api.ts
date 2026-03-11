@@ -66,6 +66,11 @@ export const locationsApi = {
         return response.data;
     },
 
+    updateLocation: async (locationId: string, request: CreateLocationRequest) => {
+      const response = await apiClient.put(`/locations/${locationId}`, request);
+      return response.data;
+    },
+
     deleteLocation: async(locationId: string) => {
       const response = await apiClient.delete(`/locations/${locationId}`)
 

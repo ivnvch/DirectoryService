@@ -7,10 +7,12 @@ import {
   CardHeader,
   CardTitle,
 } from "@/shared/components/ui/card";
-import { MapPin, Trash2 } from "lucide-react";
+import { MapPin, Pencil, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { Spinner } from "@/shared/components/ui/spinner";
 import CreateLocationModal from "./create-location-modal";
+import UpdateLocationModal from "./update-location-modal";
+import type { Location } from "@/entities/locations/types";
 import { Button } from "@/shared/components/ui/button";
 
 function formatDate(value: Date | string | undefined): string {
@@ -25,6 +27,8 @@ function formatDate(value: Date | string | undefined): string {
 
 export default function LocationsList() {
   const [open, setOpen] = useState(false);
+  const [updateModalOpen, setUpdateModalOpen] = useState(false);
+  const [locationToEdit, setLocationToEdit] = useState<Location | null>(null);
   const [page, setPage] = useState(1);
 
   const { locations, isPending, error, isError, totalCount, totalPages } =
@@ -80,7 +84,7 @@ export default function LocationsList() {
                   <th className="px-4 py-3 text-left font-medium">
                     Дата создания
                   </th>
-                  <th className="px-4 py-3 text-right font-medium w-16">
+                  <th className="px-4 py-3 text-right font-medium w-24">
                     Действия
                   </th>
                 </tr>
@@ -100,16 +104,30 @@ export default function LocationsList() {
                       {formatDate(loc.createdAt)}
                     </td>
                     <td className="px-4 py-3 text-right">
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => loc.id && deleteLocation(loc.id)}
-                        disabled={isDeleting || !loc.id}
-                        className="text-destructive hover:text-destructive hover:bg-destructive/10"
-                        aria-label="Удалить локацию"
-                      >
-                        <Trash2 className="size-4" />
-                      </Button>
+                      <div className="flex items-center justify-end gap-1">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => {
+                            setLocationToEdit(loc);
+                            setUpdateModalOpen(true);
+                          }}
+                          disabled={!loc.id}
+                          aria-label="Редактировать локацию"
+                        >
+                          <Pencil className="size-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => loc.id && deleteLocation(loc.id)}
+                          disabled={isDeleting || !loc.id}
+                          className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                          aria-label="Удалить локацию"
+                        >
+                          <Trash2 className="size-4" />
+                        </Button>
+                      </div>
                     </td>
                   </tr>
                 ))}
@@ -119,6 +137,14 @@ export default function LocationsList() {
         </CardContent>
       </Card>
       <CreateLocationModal open={open} onOpenChange={setOpen} />
+      <UpdateLocationModal
+        open={updateModalOpen}
+        onOpenChange={(open) => {
+          setUpdateModalOpen(open);
+          if (!open) setLocationToEdit(null);
+        }}
+        location={locationToEdit}
+      />
     </div>
   );
 }
