@@ -14,7 +14,6 @@ import { Label } from "@/shared/components/ui/label";
 import { Select } from "@/shared/components/ui/select";
 import { TIMEZONE_OPTIONS } from "@/shared/lib/timezones";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { useUpdateLocation } from "../api/use-update-location";
 import { parseAddressString } from "../model/parse-address";
@@ -29,39 +28,34 @@ type Props = {
   location: Location | null;
 };
 
-export default function UpdateLocationModal({
-  open,
-  onOpenChange,
+function getDefaultValues(location: Location): CreateLocationFormData {
+  const parsed = parseAddressString(location.address);
+  return {
+    name: location.name,
+    country: parsed.country,
+    city: parsed.city,
+    street: parsed.street,
+    house: parsed.house,
+    apartment: parsed.apartment,
+    timezone: location.timezone || "Europe/Moscow",
+  };
+}
+
+function UpdateLocationForm({
   location,
-}: Props) {
-  const {
-    register,
-    handleSubmit,
-    reset,
-    formState: { errors },
-  } = useForm<CreateLocationFormData>({
+  onClose,
+}: {
+  location: Location;
+  onClose: () => void;
+}) {
+  const { register, handleSubmit, formState: { errors } } = useForm<CreateLocationFormData>({
     resolver: zodResolver(createLocationSchema),
+    defaultValues: getDefaultValues(location),
   });
 
   const { updateLocation, isPending } = useUpdateLocation();
 
-  useEffect(() => {
-    if (open && location) {
-      const parsed = parseAddressString(location.address);
-      reset({
-        name: location.name,
-        country: parsed.country,
-        city: parsed.city,
-        street: parsed.street,
-        house: parsed.house,
-        apartment: parsed.apartment,
-        timezone: location.timezone || "Europe/Moscow",
-      });
-    }
-  }, [open, location, reset]);
-
   const onSubmit = (data: CreateLocationFormData) => {
-    if (!location?.id) return;
     updateLocation(
       {
         id: location.id,
@@ -78,30 +72,14 @@ export default function UpdateLocationModal({
         },
       },
       {
-        onSuccess: () => {
-          onOpenChange(false);
-        },
-      }
+        onSuccess: onClose,
+      },
     );
   };
 
-  if (!location) return null;
-
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[500px]">
-        <DialogHeader>
-          <DialogTitle>Редактирование локации</DialogTitle>
-          <DialogDescription>
-            Измените данные локации и сохраните
-          </DialogDescription>
-        </DialogHeader>
-
-        <form
-          className="grid gap-4 py-4"
-          onSubmit={handleSubmit(onSubmit)}
-        >
-          <div className="grid gap-2">
+    <form className="grid gap-4 py-4" onSubmit={handleSubmit(onSubmit)}>
+      <div className="grid gap-2">
             <Label htmlFor="name">Название</Label>
             <Input
               id="name"
@@ -109,11 +87,11 @@ export default function UpdateLocationModal({
               aria-invalid={!!errors.name}
               {...register("name")}
             />
-            {errors.name && (
-              <p className="text-sm text-destructive">{errors.name.message}</p>
-            )}
-          </div>
-          <div className="grid gap-2">
+        {errors.name && (
+          <p className="text-sm text-destructive">{errors.name.message}</p>
+        )}
+      </div>
+      <div className="grid gap-2">
             <Label htmlFor="country">Страна</Label>
             <Input
               id="country"
@@ -121,13 +99,11 @@ export default function UpdateLocationModal({
               aria-invalid={!!errors.country}
               {...register("country")}
             />
-            {errors.country && (
-              <p className="text-sm text-destructive">
-                {errors.country.message}
-              </p>
-            )}
-          </div>
-          <div className="grid gap-2">
+        {errors.country && (
+          <p className="text-sm text-destructive">{errors.country.message}</p>
+        )}
+      </div>
+      <div className="grid gap-2">
             <Label htmlFor="city">Город</Label>
             <Input
               id="city"
@@ -135,11 +111,11 @@ export default function UpdateLocationModal({
               aria-invalid={!!errors.city}
               {...register("city")}
             />
-            {errors.city && (
-              <p className="text-sm text-destructive">{errors.city.message}</p>
-            )}
-          </div>
-          <div className="grid gap-2">
+        {errors.city && (
+          <p className="text-sm text-destructive">{errors.city.message}</p>
+        )}
+      </div>
+      <div className="grid gap-2">
             <Label htmlFor="street">Улица</Label>
             <Input
               id="street"
@@ -147,13 +123,11 @@ export default function UpdateLocationModal({
               aria-invalid={!!errors.street}
               {...register("street")}
             />
-            {errors.street && (
-              <p className="text-sm text-destructive">
-                {errors.street.message}
-              </p>
-            )}
-          </div>
-          <div className="grid gap-2">
+        {errors.street && (
+          <p className="text-sm text-destructive">{errors.street.message}</p>
+        )}
+      </div>
+      <div className="grid gap-2">
             <Label htmlFor="house">№ дома</Label>
             <Input
               id="house"
@@ -162,9 +136,7 @@ export default function UpdateLocationModal({
               {...register("house")}
             />
             {errors.house && (
-              <p className="text-sm text-destructive">
-                {errors.house.message}
-              </p>
+              <p className="text-sm text-destructive">{errors.house.message}</p>
             )}
           </div>
           <div className="grid gap-2">
@@ -189,22 +161,44 @@ export default function UpdateLocationModal({
                 </option>
               ))}
             </Select>
-            {errors.timezone && (
-              <p className="text-sm text-destructive">
-                {errors.timezone.message}
-              </p>
-            )}
-          </div>
+        {errors.timezone && (
+          <p className="text-sm text-destructive">{errors.timezone.message}</p>
+        )}
+      </div>
 
-          <DialogFooter>
-            <Button variant="outline" onClick={() => onOpenChange(false)}>
+      <DialogFooter>
+            <Button variant="outline" onClick={onClose}>
               Отмена
             </Button>
             <Button type="submit" disabled={isPending}>
               {isPending ? "Сохранение..." : "Сохранить"}
             </Button>
-          </DialogFooter>
-        </form>
+      </DialogFooter>
+    </form>
+  );
+}
+
+export default function UpdateLocationModal({
+  open,
+  onOpenChange,
+  location,
+}: Props) {
+  if (!location) return null;
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="sm:max-w-[500px]">
+        <DialogHeader>
+          <DialogTitle>Редактирование локации</DialogTitle>
+          <DialogDescription>
+            Измените данные локации и сохраните
+          </DialogDescription>
+        </DialogHeader>
+        <UpdateLocationForm
+          key={location.id}
+          location={location}
+          onClose={() => onOpenChange(false)}
+        />
       </DialogContent>
     </Dialog>
   );
