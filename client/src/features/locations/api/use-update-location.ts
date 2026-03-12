@@ -15,8 +15,8 @@ export function useUpdateLocation() {
     onError: () => {
       toast.error("Ошибка при обновлении локации");
     },
-    onSuccess: () => {
-      toast.success("Локация успешно обновлена");
+    onSuccess: (_, variables) => {
+      toast.success(`'${variables.data.name}' успешно обновлена`);
     },
   });
 

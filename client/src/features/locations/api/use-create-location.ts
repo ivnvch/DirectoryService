@@ -13,8 +13,8 @@ export function useCreateLocation() {
             onError: () => {
                 toast.error("Ошибка при добавлении локации");
             },
-            onSuccess: () => {
-                toast.success("Локация успешно добавлена");
+            onSuccess: (_, variables) => {
+                toast.success(`'${variables.name}' успешно добавлена`);
             }
 });
 
