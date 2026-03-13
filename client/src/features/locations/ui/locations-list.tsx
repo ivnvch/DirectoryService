@@ -8,12 +8,13 @@ import {
   CardTitle,
 } from "@/shared/components/ui/card";
 import { MapPin, Pencil, Trash2 } from "lucide-react";
-import { useState } from "react";
+import { RefCallback, useCallback, useState } from "react";
 import { Spinner } from "@/shared/components/ui/spinner";
 import CreateLocationModal from "./create-location-modal";
 import UpdateLocationModal from "./update-location-modal";
 import type { Location } from "@/entities/locations/types";
 import { Button } from "@/shared/components/ui/button";
+import { RefCallBack } from "react-hook-form";
 
 function formatDate(value: Date | string | undefined): string {
   if (!value) return "—";
@@ -29,12 +30,17 @@ export default function LocationsList() {
   const [open, setOpen] = useState(false);
   const [updateModalOpen, setUpdateModalOpen] = useState(false);
   const [locationToEdit, setLocationToEdit] = useState<Location | null>(null);
-  const [page, setPage] = useState(1);
 
-  const { locations, isPending, error, isError, totalCount, totalPages } =
-    useLocationsQuery({
-      page,
-    });
+  const {
+    locations,
+    isPending,
+    error,
+    isError,
+    refetch,
+    cursorRef,
+    isFetchingNextPage,
+  } = useLocationsQuery();
+
   const { deleteLocation, isPending: isDeleting } = useDeleteLocation();
 
   if (isPending) {
@@ -44,10 +50,6 @@ export default function LocationsList() {
       </div>
     );
   }
-
-  // if (isError) {
-  //   return <div>Ошибка: {error ? error.message : "Неизвестнаня ошибка!"}</div>;
-  // }
 
   return (
     <div className="space-y-6 p-6">
@@ -145,6 +147,9 @@ export default function LocationsList() {
         }}
         location={locationToEdit}
       />
+      <div ref={cursorRef} className="flex justify-center py-4">
+        {isFetchingNextPage && <Spinner />}
+      </div>
     </div>
   );
 }
