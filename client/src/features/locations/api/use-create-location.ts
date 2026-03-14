@@ -5,23 +5,24 @@ import { toast } from "sonner";
 export function useCreateLocation() {
     const queryClient = useQueryClient();
 
-    const mutation = useMutation({ 
-    mutationFn: locationsApi.createLocation,
-    onSettled: () =>
-         queryClient.invalidateQueries({
-            queryKey: [locationsQueryOptions.baseKey]}),
-            onError: () => {
-                toast.error("Ошибка при добавлении локации");
-            },
-            onSuccess: (_, variables) => {
-                toast.success(`'${variables.name}' успешно добавлена`);
-            }
-});
+    const mutation = useMutation({
+        mutationFn: locationsApi.createLocation,
+        onSettled: () =>
+            queryClient.invalidateQueries({
+                queryKey: [locationsQueryOptions.baseKey]
+            }),
+        onError: () => {
+            toast.error("Ошибка при добавлении локации");
+        },
+        onSuccess: (_, variables) => {
+            toast.success(`'${variables.name}' успешно добавлена`);
+        }
+    });
 
-return {
-    createLocation: mutation.mutate,
-    isError: mutation.isError,
-    error: mutation.error,
-    isPending: mutation.isPending
-  };
+    return {
+        createLocation: mutation.mutate,
+        isError: mutation.isError,
+        error: mutation.error,
+        isPending: mutation.isPending
+    };
 }
