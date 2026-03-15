@@ -2,6 +2,7 @@ import { apiClient } from "@/shared/api/axios-instance";
 import type { Location } from "./types";
 import { PaginationResponse } from "@/shared/api/types";
 import { infiniteQueryOptions, queryOptions } from "@tanstack/react-query";
+import { LocationsFilterState } from "@/features/locations/model/location-filter-store";
 
 
 export type AddressDto = {
@@ -38,8 +39,10 @@ export type CreateLocationRequest = {
 };
 
 export type GetLocationsRequest = {
-    page: number;
-    pageSize: number;
+  search?: string;
+  isActive?: boolean;
+  page: number;
+  pageSize: number;
 };
 
 const EMPTY_PAGINATION: PaginationResponse<Location> = {
@@ -97,11 +100,17 @@ getLocationsOptions: ({
     });
   },
 
-  getLocationsInfinityOptions: ({pageSize }: {pageSize: number }) => {
+  getLocationsInfinityOptions: ({ filter }: { filter: LocationsFilterState }) => {
       return infiniteQueryOptions({
-        queryKey: [locationsQueryOptions.baseKey],
-        queryFn: ({pageParam}) => {
-          return locationsApi.getLocations({page: pageParam ?? 1, pageSize});
+        queryKey: [locationsQueryOptions.baseKey, { filter }],
+        queryFn: ({ pageParam }) => {
+          const { search, isDeleted, pageSize } = filter;
+          return locationsApi.getLocations({
+            search,
+            isActive: isDeleted === undefined ? undefined : !isDeleted,
+            page: pageParam,
+            pageSize: pageSize ?? 10,
+          });
         },
         initialPageParam: 1,
         getNextPageParam: (response) => {
@@ -113,7 +122,7 @@ getLocationsOptions: ({
           items: data.pages.flatMap((page) => page?.items ?? []),
           totalCount: data.pages[0]?.totalCount ?? 0,
           page: data.pages[0]?.page ?? 1,
-          pageSize: data.pages[0]?.pageSize ?? pageSize,
+          pageSize: data.pages[0]?.pageSize,
           totalPages: data.pages[0]?.totalPages ?? 0,
         }),
       });

@@ -2,10 +2,12 @@ import { locationsQueryOptions } from "@/entities/locations/api";
 import { EnvelopeError } from "@/shared/api/error";
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import { RefCallback, useCallback } from "react";
+import { LocationsFilter } from "../ui/locations-list";
+import { LocationsFilterState } from "./location-filter-store";
 
-const PAGE_SIZE = 10;
+export const PAGE_SIZE = 5;
 
-export function useLocationsQuery() {
+export function useLocationsQuery({ search, pageSize, isDeleted }: LocationsFilterState) {
   const {
     data, 
     isPending, 
@@ -15,7 +17,8 @@ export function useLocationsQuery() {
     hasNextPage,
     fetchNextPage, 
     isFetchingNextPage } = useInfiniteQuery({
-    ...locationsQueryOptions.getLocationsInfinityOptions({ pageSize: PAGE_SIZE })
+    ...locationsQueryOptions.getLocationsInfinityOptions({ 
+      filter: { search, isDeleted, pageSize } })
   });
 
 
