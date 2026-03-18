@@ -5,6 +5,7 @@ using DirectoryService.Application.Departments.Commands.CreateDepartments;
 using DirectoryService.Application.Departments.Commands.SoftDeleteDepartment;
 using DirectoryService.Application.Departments.Commands.UpdateDepartmentLocation;
 using DirectoryService.Application.Departments.Commands.UpdateDepartmentPath;
+using DirectoryService.Application.Departments.Queries.GetDepartmentsForSelection;
 using DirectoryService.Application.Departments.Queries.GetDescendantsDepartments;
 using DirectoryService.Application.Departments.Queries.GetRootDepartmentsWithPreloadingChildren;
 using DirectoryService.Shared;
@@ -57,6 +58,14 @@ public class DepartmentController : ControllerBase
     {
         UpdateDepartmentPathCommand pathCommand = new UpdateDepartmentPathCommand(departmentId, parentId);
         return await handler.Handle(pathCommand, cancellationToken);
+    }
+
+    [HttpGet("selection")]
+    public async Task<EndpointResult<List<GetDepartmentForSelectionDto>>> GetForSelection(
+        [FromServices] IQueryHandler<List<GetDepartmentForSelectionDto>, GetDepartmentsForSelectionQuery> handler,
+        CancellationToken cancellationToken)
+    {
+        return await handler.Handle(new GetDepartmentsForSelectionQuery(), cancellationToken);
     }
 
     [HttpGet("top-positions")]
