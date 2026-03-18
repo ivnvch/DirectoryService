@@ -3,6 +3,8 @@ using DirectoryService.API.Models.RequestModels;
 using DirectoryService.API.Models.RequestModels.Locations;
 using DirectoryService.Application.CQRS;
 using DirectoryService.Application.Locations.Commands.CreateLocations;
+using DirectoryService.Application.Locations.Commands.DeleteLocation;
+using DirectoryService.Application.Locations.Commands.UpdateLocation;
 using DirectoryService.Application.Locations.Queries.GetLocations;
 using DirectoryService.Shared;
 using DirectoryService.Shared.Locations.ResponseModels;
@@ -20,7 +22,7 @@ public class LocationsController : ControllerBase
         [FromBody] CreateLocationRequest request,
         CancellationToken cancellationToken)
     {
-        var command = new CreateLocationCommand(request.Name, request.address, request.Timezone);
+        var command = new CreateLocationCommand(request.Name, request.AddressDto, request.Timezone);
         return await handler.Handle(command, cancellationToken);
     }
 
@@ -40,5 +42,30 @@ public class LocationsController : ControllerBase
             request.SortDirection);
         
         return await query.Handle(locationQuery, cancellationToken);
+    }
+
+    [HttpPut("{locationId:guid}")]
+    public async Task<EndpointResult<Guid>> Update(
+        [FromRoute] Guid locationId,
+        [FromServices] ICommandHandler<Guid, UpdateLocationCommand> handler,
+        [FromBody] CreateLocationRequest request,
+        CancellationToken cancellationToken)
+    {
+        var command = new UpdateLocationCommand(
+            locationId,
+            request.Name,
+            request.AddressDto,
+            request.Timezone);
+        return await handler.Handle(command, cancellationToken);
+    }
+
+    [HttpDelete("{locationId:guid}")]
+    public async Task<EndpointResult<Guid>> Delete(
+        [FromRoute] Guid locationId,
+        [FromServices] ICommandHandler<Guid, DeleteLocationCommand> handler,
+        CancellationToken cancellationToken)
+    {
+        var command = new DeleteLocationCommand(locationId);
+        return await handler.Handle(command, cancellationToken);
     }
 }

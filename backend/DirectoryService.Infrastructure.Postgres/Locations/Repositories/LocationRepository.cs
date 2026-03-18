@@ -103,4 +103,45 @@ public class LocationRepository : ILocationRepository
             return LocationErrors.DatabaseError();
         }
     }
+
+    public async Task<Result<Location, Error>> GetByIdAsync(Guid locationId, CancellationToken cancellationToken = default)
+    {
+        var location = await _context.Locations
+            .FirstOrDefaultAsync(l => l.Id == locationId && l.IsActive, cancellationToken);
+
+        if (location is null)
+            return LocationErrors.NotFound(locationId);
+
+        return location;
+    }
+
+    public async Task<UnitResult<Error>> UpdateAsync(Location location, CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            _context.Locations.Update(location);
+            await _context.SaveChangesAsync(cancellationToken);
+            return UnitResult.Success<Error>();
+        }
+        catch (DbUpdateException ex) when (ex.InnerException is PostgresException pgEx)
+        {
+            if (pgEx is { SqlState: PostgresErrorCodes.UniqueViolation, ConstraintName: not null } &&
+                pgEx.ConstraintName.Contains("ix_locations_address", StringComparison.InvariantCultureIgnoreCase))
+            {
+                return LocationErrors.LocationAddressConflict(location.Address.ToString());
+            }
+            _logger.LogError(ex, "Database update error while updating location {LocationId}", location.Id);
+            return LocationErrors.DatabaseError();
+        }
+        catch (OperationCanceledException ex)
+        {
+            _logger.LogError(ex, "Operation cancelled while updating location {LocationId}", location.Id);
+            return LocationErrors.OperationCancelled();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Unexpected error while updating location {LocationId}", location.Id);
+            return LocationErrors.DatabaseError();
+        }
+    }
 }

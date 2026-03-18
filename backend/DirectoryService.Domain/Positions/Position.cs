@@ -58,4 +58,11 @@ public sealed class Position
             description,
             departments);
     }
+
+    public void SoftDeleted()
+    {
+        DeletedAt = DateTime.UtcNow;
+        UpdatedAt = DeletedAt;
+        IsActive = false;
+    }
 }

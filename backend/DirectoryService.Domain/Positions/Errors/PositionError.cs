@@ -14,4 +14,7 @@ public static class PositionError
     public static Error PositionNameConflict(string positionName) =>
         Error.Conflict("position.conflict.name_conflict",
             $"Position with this name: {positionName} already exists");
+
+    public static Error NotFound(Guid id) =>
+        Error.NotFound("position.not.found", $"Позиция с id {id} не найдена.");
 }

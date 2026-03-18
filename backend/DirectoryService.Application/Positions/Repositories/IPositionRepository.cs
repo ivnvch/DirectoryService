@@ -11,4 +11,6 @@ public interface IPositionRepository
 
     Task<UnitResult<Error>> GetPositionsExclusiveToDepartment(Guid departmentId,
         CancellationToken cancellationToken = default);
+    
+    Task<Result<Position, Error>> GetPositionById(Guid positionId, CancellationToken cancellationToken);
 }

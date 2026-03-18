@@ -5,4 +5,5 @@ public static class CacheConstants
     public const string GetDescendantDepartment = "getDescendantDepartment";
     public const string RootDepartment = "root-department";
     public const string Top5Departments = "top5Departments";
+    public const string SelectedDepartmentForPositions = "selectedDepartmentForPositions";
 }
