@@ -105,4 +105,15 @@ public class PositionRepository : IPositionRepository
             return PositionError.DatabaseError();
         }
     }
+
+    public async Task<Result<Position, Error>> GetPositionById(Guid positionId, CancellationToken cancellationToken)
+    {
+        Position? position = await _context.Positions
+            .Where(p => p.Id == positionId)
+            .FirstOrDefaultAsync(cancellationToken);
+        
+        if (position is null)
+            return PositionError.NotFound(positionId);
+        return position;
+    }
 }
