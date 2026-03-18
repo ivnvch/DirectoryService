@@ -13,4 +13,8 @@ public interface ILocationRepository
 
     Task<UnitResult<Error>> GetLocationsExclusiveToDepartment(Guid departmentId,
         CancellationToken cancellationToken = default);
+
+    Task<Result<Location, Error>> GetByIdAsync(Guid locationId, CancellationToken cancellationToken = default);
+
+    Task<UnitResult<Error>> UpdateAsync(Location location, CancellationToken cancellationToken = default);
 }

@@ -36,8 +36,8 @@ public class GetLocationsHandler : IQueryHandler<PaginationResponse<GetLocationD
             queryResult = queryResult.Where(x =>
                 EF.Functions.Like(x.Name.Value.ToLower(), $"%{query.Search.ToLower()}%"));
         
-        if (query.IsActive.HasValue)
-            queryResult = queryResult.Where(x => x.IsActive == query.IsActive.Value);
+        var isActiveFilter = query.IsActive ?? true;
+        queryResult = queryResult.Where(x => x.IsActive == isActiveFilter);
 
         if (query.DepartmentIds is { Length: > 0 })
             queryResult = queryResult
@@ -63,6 +63,7 @@ public class GetLocationsHandler : IQueryHandler<PaginationResponse<GetLocationD
          var result = await queryResult
                 .Select(x => new GetLocationDto
                 {
+                    Id = x.Id,
                     Name = x.Name.Value,
                     Address =
                         $"{x.Address.Country}, {x.Address.City}, {x.Address.Street}, {x.Address.House}, {x.Address.Apartment}",

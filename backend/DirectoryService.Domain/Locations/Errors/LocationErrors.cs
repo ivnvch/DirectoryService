@@ -14,4 +14,7 @@ public static class LocationErrors
     public static Error LocationAddressConflict(string address) =>
         Error.Conflict("location.conflict.address",
             $"Location with this address: {address} already exists.");
+
+    public static Error NotFound(Guid id) =>
+        Error.NotFound("location.not.found", $"Локация с id {id} не найдена.");
 }

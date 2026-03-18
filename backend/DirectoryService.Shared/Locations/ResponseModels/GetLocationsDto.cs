@@ -2,6 +2,7 @@ namespace DirectoryService.Shared.Locations.ResponseModels;
 
 public record GetLocationDto
 {
+    public Guid Id { get; init; }
     public string Name { get; init; }
     public string Address { get; init; }
     public string Timezone {get; init; }

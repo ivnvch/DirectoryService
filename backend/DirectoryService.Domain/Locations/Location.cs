@@ -46,4 +46,20 @@ public sealed class Location
     {
         return new Location(Guid.NewGuid(), name, address, timezone);
     }
+
+    public UnitResult<Error> Update(LocationName name, LocationAddress address, LocationTimezone timezone)
+    {
+        Name = name;
+        Address = address;
+        Timezone = timezone;
+        UpdatedAt = DateTime.UtcNow;
+        return UnitResult.Success<Error>();
+    }
+
+    public void SoftDelete()
+    {
+        IsActive = false;
+        DeletedAt = DateTime.UtcNow;
+        UpdatedAt = DeletedAt.Value;
+    }
 }
