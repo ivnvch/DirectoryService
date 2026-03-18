@@ -9,6 +9,7 @@ public static class CacheTags
     public static string[] Top5Departments() => WithGroup(Departments, "top5departments");
     public static string[] ForDepartment(Guid id) => WithGroup(Departments, $"department:{id}");
     public static string[] RootDepartments() => WithGroup(Departments, "root-departments");
+    public static string[] SelectedDepartmentForPositions() => WithGroup(Departments, "SelectedDepartmentForPositions");
 
     public static string[] ForLocation(Guid id) => WithGroup(Locations, $"location:{id}");
     public static string[] ForPosition(Guid id) => WithGroup(Positions, $"position:{id}");
