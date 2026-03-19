@@ -1,13 +1,13 @@
 using CSharpFunctionalExtensions;
 using DirectoryService.Application.CQRS;
 using DirectoryService.Application.Departments.Repositories;
-using DirectoryService.Application.Extensions.Validation;
 using DirectoryService.Application.Positions.Repositories;
 using DirectoryService.Domain.DepartmentPositions;
 using DirectoryService.Domain.Positions;
-using DirectoryService.Shared.Errors;
+using Shared.Errors;
 using FluentValidation;
 using Microsoft.Extensions.Logging;
+using Shared.Validation;
 
 namespace DirectoryService.Application.Positions.Commands.CreatePositions;
 
@@ -32,7 +32,7 @@ public class CreatePositionCommandHandler : ICommandHandler<Guid, CreatePosition
     public async Task<Result<Guid, Errors>> Handle(CreatePositionCommand command, CancellationToken cancellationToken)
     {
         var validationResult = await _positionValidator.ValidateAsync(command, cancellationToken);
-        if (validationResult.IsValid == false)
+        if (!validationResult.IsValid)
             return validationResult.ToError().ToErrors();
 
         List<Guid> departmentIds = command.DepartmentIds;

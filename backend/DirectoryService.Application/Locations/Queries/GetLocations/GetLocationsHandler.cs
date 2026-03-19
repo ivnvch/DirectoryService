@@ -2,13 +2,13 @@ using System.Linq.Expressions;
 using CSharpFunctionalExtensions;
 using DirectoryService.Application.Abstractions.Database;
 using DirectoryService.Application.CQRS;
-using DirectoryService.Application.Extensions.Validation;
 using DirectoryService.Domain.Locations;
 using DirectoryService.Shared;
-using DirectoryService.Shared.Errors;
+using Shared.Errors;
 using DirectoryService.Shared.Locations.ResponseModels;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
+using Shared.Validation;
 
 namespace DirectoryService.Application.Locations.Queries.GetLocations;
 

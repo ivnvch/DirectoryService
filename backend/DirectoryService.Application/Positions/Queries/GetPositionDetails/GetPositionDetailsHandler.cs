@@ -3,7 +3,7 @@ using Dapper;
 using DirectoryService.Application.Abstractions.Database;
 using DirectoryService.Application.CQRS;
 using DirectoryService.Shared.Departments;
-using DirectoryService.Shared.Errors;
+using Shared.Errors;
 using DirectoryService.Shared.Positions;
 
 namespace DirectoryService.Application.Positions.Queries.GetPositionDetails;

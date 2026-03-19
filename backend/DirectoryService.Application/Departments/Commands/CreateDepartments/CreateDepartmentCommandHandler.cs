@@ -3,16 +3,16 @@ using DirectoryService.Application.Abstractions.Database;
 using DirectoryService.Application.CQRS;
 using DirectoryService.Application.Departments.Repositories;
 using DirectoryService.Application.Extensions.Cache;
-using DirectoryService.Application.Extensions.Validation;
 using DirectoryService.Application.Locations.Repositories;
 using DirectoryService.Domain.DepartmentLocations;
 using DirectoryService.Domain.Departments;
 using DirectoryService.Domain.Departments.ValueObject;
-using DirectoryService.Shared.Errors;
+using Shared.Errors;
 using FluentValidation;
 using FluentValidation.Results;
 using Microsoft.Extensions.Caching.Hybrid;
 using Microsoft.Extensions.Logging;
+using Shared.Validation;
 
 namespace DirectoryService.Application.Departments.Commands.CreateDepartments;
 

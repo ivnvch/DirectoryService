@@ -1,6 +1,6 @@
 using System.Data;
 using CSharpFunctionalExtensions;
-using DirectoryService.Shared.Errors;
+using Shared.Errors;
 
 namespace DirectoryService.Application.Abstractions.Database;
 

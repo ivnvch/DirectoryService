@@ -1,7 +1,7 @@
 using CSharpFunctionalExtensions;
 using DirectoryService.Domain.DepartmentPositions;
 using DirectoryService.Shared.Constants;
-using DirectoryService.Shared.Errors;
+using Shared.Errors;
 
 namespace DirectoryService.Domain.Positions;
 

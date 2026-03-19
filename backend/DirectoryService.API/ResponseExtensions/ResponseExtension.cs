@@ -1,4 +1,4 @@
-using DirectoryService.Shared.Errors;
+using Shared.Errors;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DirectoryService.API.ResponseExtensions;

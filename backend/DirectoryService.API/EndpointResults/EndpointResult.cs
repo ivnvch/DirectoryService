@@ -1,6 +1,6 @@
 using System.Reflection;
 using CSharpFunctionalExtensions;
-using DirectoryService.Shared.Errors;
+using Shared.Errors;
 using Microsoft.AspNetCore.Http.Metadata;
 using IResult = Microsoft.AspNetCore.Http.IResult;
 

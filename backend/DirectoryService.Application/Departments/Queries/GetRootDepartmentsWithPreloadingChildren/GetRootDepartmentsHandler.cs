@@ -6,7 +6,7 @@ using DirectoryService.Application.CQRS;
 using DirectoryService.Application.Extensions.Cache;
 using DirectoryService.Shared;
 using DirectoryService.Shared.Departments;
-using DirectoryService.Shared.Errors;
+using Shared.Errors;
 using Microsoft.Extensions.Caching.Hybrid;
 
 namespace DirectoryService.Application.Departments.Queries.GetRootDepartmentsWithPreloadingChildren;

@@ -1,8 +1,7 @@
-using CSharpFunctionalExtensions;
 using DirectoryService.Application.Departments.Repositories;
-using DirectoryService.Application.Extensions.Validation;
-using DirectoryService.Shared.Errors;
+using Shared.Errors;
 using FluentValidation;
+using Shared.Validation;
 
 namespace DirectoryService.Application.Departments.Commands.UpdateDepartmentPath;
 

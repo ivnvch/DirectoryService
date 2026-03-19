@@ -1,5 +1,5 @@
 using CSharpFunctionalExtensions;
-using DirectoryService.Shared.Errors;
+using Shared.Errors;
 using NodaTime;
 
 namespace DirectoryService.Domain.Locations.ValueObject;

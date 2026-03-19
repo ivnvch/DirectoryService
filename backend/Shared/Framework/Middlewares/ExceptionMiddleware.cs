@@ -1,0 +1,60 @@
+using System.Text.Json;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
+using Shared.Errors;
+using Shared.Exceptions;
+
+namespace Shared.Middlewares;
+
+public class ExceptionMiddleware
+{
+    private readonly RequestDelegate _next;
+    private readonly ILogger<ExceptionMiddleware> _logger;
+
+    public ExceptionMiddleware(RequestDelegate next, ILogger<ExceptionMiddleware> logger)
+    {
+        _next = next;
+        _logger = logger;
+    }
+
+    public async Task InvokeAsync(HttpContext httpContext)
+    {
+        try
+        {
+            await _next(httpContext);
+        }
+        catch (Exception ex)
+        {
+            await HandleExceptionAsync(httpContext, ex);
+        }
+    }
+
+    private async Task HandleExceptionAsync(HttpContext context, Exception exception)
+    {
+        _logger.LogError(exception, exception.Message);
+
+        var (code, errors) = exception switch
+        {
+            BadRequestException => (StatusCodes.Status500InternalServerError,
+                new Shared.Errors.Errors(JsonSerializer.Deserialize<Error[]>(exception.Message) ?? [])),
+
+            NotFoundException => (StatusCodes.Status404NotFound,
+                new Shared.Errors.Errors(JsonSerializer.Deserialize<Error[]>(exception.Message) ?? [])),
+            
+            _ => (StatusCodes.Status500InternalServerError, new Shared.Errors.Errors([Error.Failure("server.failure", "Something went wrong", null)]))
+        };
+        
+        var envelope = Envelope.Error(errors);
+        context.Response.ContentType = "application/json";
+        context.Response.StatusCode = code;
+
+        await context.Response.WriteAsJsonAsync(envelope);
+    }
+}
+
+public static class ExceptionMiddlewareExtension
+{
+    public static IApplicationBuilder UseExceptionMiddleware(this IApplicationBuilder app) =>
+         app.UseMiddleware<ExceptionMiddleware>();
+}

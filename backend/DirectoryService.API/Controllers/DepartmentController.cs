@@ -10,7 +10,7 @@ using DirectoryService.Application.Departments.Queries.GetDescendantsDepartments
 using DirectoryService.Application.Departments.Queries.GetRootDepartmentsWithPreloadingChildren;
 using DirectoryService.Shared;
 using DirectoryService.Shared.Departments;
-using DirectoryService.Shared.Errors;
+using Shared.Errors;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DirectoryService.API.Controllers;

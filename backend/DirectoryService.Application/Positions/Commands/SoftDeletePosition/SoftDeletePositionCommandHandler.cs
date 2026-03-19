@@ -3,7 +3,7 @@ using DirectoryService.Application.Abstractions.Database;
 using DirectoryService.Application.CQRS;
 using DirectoryService.Application.Extensions.Cache;
 using DirectoryService.Application.Positions.Repositories;
-using DirectoryService.Shared.Errors;
+using Shared.Errors;
 using Microsoft.Extensions.Caching.Hybrid;
 
 namespace DirectoryService.Application.Positions.Commands.SoftDeletePosition;
