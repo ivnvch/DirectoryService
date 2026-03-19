@@ -2,7 +2,7 @@ using CSharpFunctionalExtensions;
 using DirectoryService.Application.Locations.Repositories;
 using DirectoryService.Domain.Locations;
 using DirectoryService.Domain.Locations.Errors;
-using DirectoryService.Shared.Errors;
+using Shared.Errors;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Npgsql;

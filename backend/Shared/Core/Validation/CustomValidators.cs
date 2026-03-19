@@ -1,10 +1,9 @@
 using System.Text.Json;
-using System.Text.Json.Nodes;
 using CSharpFunctionalExtensions;
-using DirectoryService.Shared.Errors;
 using FluentValidation;
+using Shared.Errors;
 
-namespace DirectoryService.Application.Extensions.Validation;
+namespace Shared.Validation;
 
 public static class CustomValidators
 {

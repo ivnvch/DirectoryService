@@ -1,7 +1,7 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace DirectoryService.Shared.Errors;
+namespace Shared.Errors;
 
 public record ErrorMessage(string Code, string Message, string? InvalidField = null);
 public record Error

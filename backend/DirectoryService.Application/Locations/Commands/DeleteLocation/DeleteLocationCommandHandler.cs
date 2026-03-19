@@ -2,7 +2,7 @@ using CSharpFunctionalExtensions;
 using DirectoryService.Application.Abstractions.Database;
 using DirectoryService.Application.CQRS;
 using DirectoryService.Application.Locations.Repositories;
-using DirectoryService.Shared.Errors;
+using Shared.Errors;
 
 namespace DirectoryService.Application.Locations.Commands.DeleteLocation;
 

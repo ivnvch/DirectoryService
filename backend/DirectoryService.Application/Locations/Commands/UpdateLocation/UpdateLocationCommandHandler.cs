@@ -3,7 +3,7 @@ using DirectoryService.Application.CQRS;
 using DirectoryService.Application.Locations.Repositories;
 using DirectoryService.Domain.Locations;
 using DirectoryService.Domain.Locations.ValueObject;
-using DirectoryService.Shared.Errors;
+using Shared.Errors;
 using Microsoft.Extensions.Logging;
 
 namespace DirectoryService.Application.Locations.Commands.UpdateLocation;

@@ -1,5 +1,5 @@
-using DirectoryService.Shared.Errors;
-using Microsoft.OpenApi.Models;
+using Shared.Errors;
+using Microsoft.OpenApi;
 using Serilog;
 using Serilog.Exceptions;
 
@@ -22,13 +22,9 @@ public static class DependencyInjection
             {
                 if (context.JsonTypeInfo.Type == typeof(Envelope<Errors>))
                 {
-                    if (schema.Properties.TryGetValue("errors", out var errorsProp))
+                    if (schema.Properties?.TryGetValue("errors", out var errorsProp) == true && errorsProp is OpenApiSchema openApiSchema)
                     {
-                        errorsProp.Items.Reference = new OpenApiReference
-                        {
-                            Type = ReferenceType.Schema,
-                            Id = "Error"
-                        };
+                        openApiSchema.Items = new OpenApiSchemaReference("Error");
                     }
                 }
                 return Task.CompletedTask;

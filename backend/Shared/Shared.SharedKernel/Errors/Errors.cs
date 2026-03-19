@@ -1,6 +1,6 @@
 using System.Collections;
 
-namespace DirectoryService.Shared.Errors;
+namespace Shared.Errors;
 
 public class Errors :  IEnumerable<Error>
 {

@@ -1,6 +1,6 @@
 using System.Text.Json;
 using DirectoryService.Application.Exceptions;
-using DirectoryService.Shared.Errors;
+using Shared.Errors;
 
 namespace DirectoryService.API.Middlewares;
 

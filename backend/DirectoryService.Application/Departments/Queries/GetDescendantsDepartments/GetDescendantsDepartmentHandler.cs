@@ -4,14 +4,12 @@ using Dapper;
 using DirectoryService.Application.Abstractions.Database;
 using DirectoryService.Application.CQRS;
 using DirectoryService.Application.Extensions.Cache;
-using DirectoryService.Application.Extensions.Validation;
-using DirectoryService.Domain.Departments;
 using DirectoryService.Shared.Departments;
-using DirectoryService.Shared.Errors;
+using Shared.Errors;
 using FluentValidation;
 using FluentValidation.Results;
-using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.Extensions.Caching.Hybrid;
+using Shared.Validation;
 
 namespace DirectoryService.Application.Departments.Queries.GetDescendantsDepartments;
 

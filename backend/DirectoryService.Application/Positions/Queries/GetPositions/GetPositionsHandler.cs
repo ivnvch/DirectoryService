@@ -2,14 +2,14 @@ using System.Linq.Expressions;
 using CSharpFunctionalExtensions;
 using DirectoryService.Application.Abstractions.Database;
 using DirectoryService.Application.CQRS;
-using DirectoryService.Application.Extensions.Validation;
 using DirectoryService.Domain.Positions;
 using DirectoryService.Shared;
-using DirectoryService.Shared.Errors;
+using Shared.Errors;
 using DirectoryService.Shared.Positions;
 using FluentValidation;
 using FluentValidation.Results;
 using Microsoft.EntityFrameworkCore;
+using Shared.Validation;
 
 namespace DirectoryService.Application.Positions.Queries.GetPositions;
 

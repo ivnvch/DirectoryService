@@ -1,14 +1,13 @@
 using CSharpFunctionalExtensions;
 using DirectoryService.Application.Abstractions.Database;
 using DirectoryService.Application.CQRS;
-using DirectoryService.Application.Extensions.Validation;
 using DirectoryService.Application.Locations.Repositories;
 using DirectoryService.Domain.Locations;
 using DirectoryService.Domain.Locations.ValueObject;
-using DirectoryService.Shared.Errors;
-using DirectoryService.Shared.Locations;
+using Shared.Errors;
 using FluentValidation;
 using Microsoft.Extensions.Logging;
+using Shared.Validation;
 
 namespace DirectoryService.Application.Locations.Commands.CreateLocations;
 

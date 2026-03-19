@@ -3,7 +3,7 @@ using DirectoryService.Application.Departments.Commands.SoftDeleteDepartment;
 using DirectoryService.Domain.DepartmentLocations;
 using DirectoryService.Domain.Departments.ValueObject;
 using DirectoryService.IntegrationTests.Infrastructure;
-using DirectoryService.Shared.Errors;
+using Shared.Errors;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 

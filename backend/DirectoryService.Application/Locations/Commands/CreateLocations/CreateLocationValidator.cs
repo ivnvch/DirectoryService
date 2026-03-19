@@ -1,9 +1,9 @@
 using CSharpFunctionalExtensions;
-using DirectoryService.Application.Extensions.Validation;
 using DirectoryService.Domain.Locations.ValueObject;
-using DirectoryService.Shared.Errors;
+using Shared.Errors;
 using DirectoryService.Shared.Locations;
 using FluentValidation;
+using Shared.Validation;
 
 namespace DirectoryService.Application.Locations.Commands.CreateLocations;
 
@@ -22,13 +22,6 @@ public class CreateLocationValidator : AbstractValidator<CreateLocationCommand>
 
         RuleFor(x => x.Timezone)
             .MustBeValueObject(LocationTimezone.Create);
-        
-        /*RuleFor(x => x.Timezone)
-            .NotNull()
-            .NotEmpty()
-            .Must(t => TimeZoneInfo.TryFindSystemTimeZoneById(t, out _))
-            .WithMessage("Timezone must be valid IANA code");*/
-            
     }
 }
 

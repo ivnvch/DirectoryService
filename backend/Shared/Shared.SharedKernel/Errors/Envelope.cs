@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
 
-namespace DirectoryService.Shared.Errors;
+namespace Shared.Errors;
 
 public record Envelope
 {

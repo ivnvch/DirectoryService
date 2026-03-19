@@ -1,6 +1,5 @@
 using CSharpFunctionalExtensions;
-using DirectoryService.Shared.Errors;
-using MediatR;
+using Shared.Errors;
 
 namespace DirectoryService.Application.CQRS;
 
