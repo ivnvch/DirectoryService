@@ -1,4 +1,5 @@
 using FileService.Core;
+using FileService.Infrastructure.Postgres;
 using FileService.Infrastructure.S3;
 using Microsoft.OpenApi;
 using Serilog;
@@ -13,7 +14,8 @@ public static class DependencyInjectionExtensions
     {
         services
             .AddSerilogLogging(configuration, "FileService")
-            .AddS3(configuration);/*
+            .AddS3(configuration)
+            .AddInfrastructure(configuration);/*
             .AddEndpoints(typeof(DependencyInjectionCoreExtensions).Assembly);
 */
         services
