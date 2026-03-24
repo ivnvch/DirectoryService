@@ -29,4 +29,7 @@ public static class GeneralErrors
     {
         return Error.Failure("server.failure", message ?? "Серверная ошибка", null);
     }
+    
+    public static Error Forbidden(string message = "The server denied access to the requested resource due to insufficient permissions.") 
+        => Error.Conflict("forbidden", message);
 }
