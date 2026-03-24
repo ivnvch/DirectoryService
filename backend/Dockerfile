@@ -1,12 +1,24 @@
-﻿FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS base
+FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS base
 USER $APP_UID
 WORKDIR /app
-EXPOSE 8080
-EXPOSE 8081
+EXPOSE 8001
 
-FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
+FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
+
+ARG GITHUB_NUGET_USERNAME
+ARG GITHUB_NUGET_OWNER
+
+RUN --mount=type=secret,id=github_token \
+    test -n "${GITHUB_NUGET_USERNAME}" && test -n "${GITHUB_NUGET_OWNER}" && \
+    dotnet nuget add source https://nuget.pkg.github.com/${GITHUB_NUGET_OWNER}/index.json \
+    -n github \
+    --username ${GITHUB_NUGET_USERNAME} \
+    --password "$(cat /run/secrets/github_token)" \
+    --store-password-in-clear-text
+
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
+COPY nuget.config .
 COPY ["DirectoryService.API/DirectoryService.API.csproj", "DirectoryService.API/"]
 COPY ["DirectoryService.Infrastructure.Postgres/DirectoryService.Infrastructure.Postgres.csproj", "DirectoryService.Infrastructure.Postgres/"]
 COPY ["DirectoryService.Application/DirectoryService.Application.csproj", "DirectoryService.Application/"]

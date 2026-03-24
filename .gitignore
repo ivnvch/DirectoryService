@@ -217,3 +217,7 @@ project.lock.json
 
 # Cursor
 .cursor/
+
+# Локальные секреты для docker compose (GITHUB_PACKAGES_TOKEN и т.д.)
+.env
+.github_token

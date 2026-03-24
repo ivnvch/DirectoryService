@@ -1,3 +1,4 @@
+using System.Text.Json;
 using Amazon.S3;
 using Amazon.S3.Model;
 using Amazon.S3.Util;
@@ -74,21 +75,22 @@ public class S3BucketInitializationService : BackgroundService
                 BucketName = bucketName,
             };
 
-            string policy = $$$"""
-                               {
-                                 "Version": "2012-10-17",
-                                     "Statement": [
-                                         {
-                                             "Effect": "Allow",
-                                             "Principal": {
-                                                 "AWS": ["*"]
-                                             },
-                                             "Action": ["s3:GetObject"],
-                                             "Resource": ["arn:aws:s3:::{{bucketName}}/*"]
-                                         }
-                                     ]    
-                               }
-                               """;
+            // ARN должен содержать реальное имя бакета; шаблон {{bucketName}} в $$$""" не подставлялся → MalformedPolicy у MinIO.
+            var policyDocument = new
+            {
+                Version = "2012-10-17",
+                Statement = new object[]
+                {
+                    new
+                    {
+                        Effect = "Allow",
+                        Principal = new { AWS = new[] { "*" } },
+                        Action = new[] { "s3:GetObject" },
+                        Resource = new[] { $"arn:aws:s3:::{bucketName}/*" },
+                    },
+                },
+            };
+            string policy = JsonSerializer.Serialize(policyDocument);
 
             await _s3Client.PutBucketAsync(putBucketRequest, cancellationToken);
 
