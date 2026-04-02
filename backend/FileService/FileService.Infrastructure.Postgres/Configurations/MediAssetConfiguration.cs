@@ -1,4 +1,5 @@
 using FileService.Domain;
+using FileService.Domain.Enums;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

@@ -10,24 +10,14 @@ public static class S3ErrorMapper
     {
         AmazonS3Exception { ErrorCode: "NoSuchBucket" }
             => FileErrors.BucketNotFound(),
-        
-        /*AmazonS3Exception { ErrorCode: "AccessDenied" or "SignatureDoesNotMatch" or "InvalidAccessKeyId" }
-            => GeneralErrors.Forbidden(),*/
-
-        AmazonS3Exception { ErrorCode: "InvalidRequest" or "InvalidArgument" } => FileErrors.ValidationFailed(),
-
-        AmazonS3Exception { ErrorCode: "InternalError" } => FileErrors.InternalServerError(),
 
         AmazonS3Exception { ErrorCode: "NoSuchKey" } => FileErrors.ObjectNotFound(),
 
-        AmazonS3Exception { ErrorCode: "NoSuchUpload" } => FileErrors.UploadNotFound(),
+        AmazonS3Exception { ErrorCode: "AccessDenied" } => GeneralErrors.Forbidden(),
 
-        ArgumentException => FileErrors.ValidationFailed(),
+        AmazonS3Exception { ErrorCode: "InvalidObjectState" }
+            => Error.Conflict("s3.invalid.object.state", "Object state is invalid for this operation"),
 
-        HttpRequestException => FileErrors.NetworkError(),
-
-        OperationCanceledException => FileErrors.OperationCanceled(),
-
-        _ => GeneralErrors.Failure(ex.Message)
+        _ => FileErrors.InternalServerError()
     };
 }

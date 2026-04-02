@@ -1,5 +1,6 @@
 using FluentValidation;
-using Microsoft.AspNetCore.Mvc.ModelBinding.Binders;
+using FileService.Core.Features.MediaAssets;
+using FileService.Core.Features.MediaAssets.Delete;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -10,6 +11,7 @@ public static class DependencyInjectionCoreExtensions
     public static IServiceCollection AddCore(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddValidatorsFromAssembly(typeof(DependencyInjectionCoreExtensions).Assembly);
+        services.AddScoped<DeleteFileHandler>();
         
         return services;
     }
