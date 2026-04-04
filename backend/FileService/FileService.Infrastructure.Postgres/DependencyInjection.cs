@@ -3,6 +3,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using FileService.Core;
+using FileService.Infrastructure.Postgres.Repositiories;
 
 namespace FileService.Infrastructure.Postgres;
 
@@ -28,6 +30,7 @@ public static class DependencyInjection
         });
         
         Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;
+        services.AddScoped<IMediaRepository, MediaRepository>();
 
         return services;
     }

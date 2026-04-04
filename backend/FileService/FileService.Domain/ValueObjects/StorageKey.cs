@@ -1,7 +1,7 @@
 using CSharpFunctionalExtensions;
 using Shared.Errors;
 
-namespace FileService.Domain;
+namespace FileService.Domain.ValueObjects;
 
 public sealed record StorageKey
 {
@@ -35,7 +35,29 @@ public sealed record StorageKey
         if (normalizedPrefixResult.IsFailure)
             return normalizedPrefixResult.Error;
 
-        return new StorageKey(location.Trim(), normalizedPrefixResult.Value, normalizedPrefixResult.Value);
+        return new StorageKey(normalizedKeyResult.Value, normalizedPrefixResult.Value, location.Trim());
+    }
+
+    public static Result<StorageKey, Error> FromStoragePath(string path)
+    {
+        if (string.IsNullOrWhiteSpace(path))
+            return GeneralErrors.ValueIsInvalid(nameof(path));
+
+        string normalized = path.Trim().Replace('\\', '/').Trim('/');
+        if (string.IsNullOrWhiteSpace(normalized))
+            return GeneralErrors.ValueIsInvalid(nameof(path));
+
+        string[] segments = normalized.Split('/', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+        if (segments.Length < 2)
+            return GeneralErrors.ValueIsInvalid(nameof(path));
+
+        string location = segments[0];
+        string key = segments[^1];
+        string? prefix = segments.Length > 2
+            ? string.Join('/', segments[1..^1])
+            : null;
+
+        return Create(location, prefix, key);
     }
 
     public Result<StorageKey, Error> AppendSegment(string segment)

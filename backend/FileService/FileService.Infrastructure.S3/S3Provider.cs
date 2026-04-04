@@ -314,15 +314,15 @@ public class S3Provider : IS3Provider, IDisposable
     {
         try
         {
-           var result = await _s3Client.DeleteObjectAsync(
-               bucketName, objectKey, cancellationToken);
-           
-           _logger.LogInformation(
-               "Deleted file from bucket '{BucketName}' with key '{ObjectKey}'",
-               bucketName,
-               objectKey);
+            DeleteObjectResponse result =
+                await _s3Client.DeleteObjectAsync(bucketName, objectKey, cancellationToken);
 
-           return result.DeleteMarker;
+            _logger.LogInformation(
+                "Deleted file from bucket '{BucketName}' with key '{ObjectKey}'",
+                bucketName,
+                objectKey);
+
+            return result.DeleteMarker;
         }
         catch (Exception ex)
         {

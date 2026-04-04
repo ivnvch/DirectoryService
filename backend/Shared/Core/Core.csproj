@@ -19,7 +19,7 @@
 
     <PropertyGroup>
         <PackageId>ivnvch.Core</PackageId>
-        <Version>0.0.1</Version>
+        <Version>0.0.2</Version>
         <Authors>ivnvch</Authors>
         <Company>ivnvch</Company>
         <PackageDescription>Core</PackageDescription>

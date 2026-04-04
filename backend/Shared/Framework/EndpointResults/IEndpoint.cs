@@ -4,5 +4,5 @@ namespace Shared.EndpointResults;
 
 public interface IEndpoint
 {
-    void MapEndpoint(IEndpointRouteBuilder endpoints);
+    void MapEndpoint(IEndpointRouteBuilder builder);
 }

@@ -1,4 +1,4 @@
-namespace FileService.Domain;
+namespace FileService.Domain.Enums;
 
 public enum AssetType
 {

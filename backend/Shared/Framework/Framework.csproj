@@ -30,7 +30,7 @@
 
     <PropertyGroup>
         <PackageId>ivnvch.Framework</PackageId>
-        <Version>0.0.4</Version>
+        <Version>0.0.5</Version>
         <Authors>ivnvch</Authors>
         <Company>ivnvch</Company>
         <PackageDescription>Framework</PackageDescription>

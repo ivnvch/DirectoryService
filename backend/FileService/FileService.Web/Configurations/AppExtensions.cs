@@ -1,5 +1,6 @@
 using Scalar.AspNetCore;
 using Serilog;
+using Shared.EndpointResults;
 using Shared.Middlewares;
 
 namespace FileService.Web.Configurations;
@@ -10,6 +11,8 @@ public static class AppExtensions
     {
         app.UseExceptionMiddleware();
         app.UseSerilogRequestLogging();
+        app.UseRouting();
+        app.MapEndpoints();
 
         app.MapOpenApi();
         app.MapScalarApiReference();
