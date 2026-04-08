@@ -1,4 +1,6 @@
 using CSharpFunctionalExtensions;
+using FileService.Domain.Enums;
+using FileService.Domain.ValueObjects;
 using Shared.Errors;
 
 namespace FileService.Domain;
@@ -42,6 +44,21 @@ public abstract class MediaAsset
         Owner = owner;
         Key = key;
         FinalKey = finalKey;
+    }
+
+    public static Result<MediaAsset, Error> CreateForUpload(Guid mediaAssetId, MediaData mediaData, AssetType assetType, MediaOwner owner)
+    {
+        switch (assetType)
+        {
+            case AssetType.Video:
+                Result<VideoAsset, Error> videoAssetResult = VideoAsset.CreateForUpload(mediaAssetId, mediaData, owner);
+                    return videoAssetResult.IsFailure ? videoAssetResult.Error : videoAssetResult.Value;
+            case AssetType.Preview:
+                Result<PreviewAsset, Error> previewAssetResult = PreviewAsset.CreateForUpload(mediaAssetId, mediaData, owner);
+                return previewAssetResult.IsFailure ? previewAssetResult.Error : previewAssetResult.Value;
+            /*case AssetType.Avatar*/
+            default: throw new ArgumentOutOfRangeException(nameof(assetType), assetType, null);
+        }
     }
 
     public UnitResult<Error> MarkUploaded(DateTime updatedAt)

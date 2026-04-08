@@ -1,7 +1,7 @@
 using CSharpFunctionalExtensions;
 using Shared.Errors;
 
-namespace FileService.Domain;
+namespace FileService.Domain.ValueObjects;
 
 public sealed record ContentType
 {

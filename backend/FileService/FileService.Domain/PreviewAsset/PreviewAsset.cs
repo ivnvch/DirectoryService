@@ -1,4 +1,6 @@
 using CSharpFunctionalExtensions;
+using FileService.Domain.Enums;
+using FileService.Domain.ValueObjects;
 using Shared.Errors;
 
 namespace FileService.Domain;
