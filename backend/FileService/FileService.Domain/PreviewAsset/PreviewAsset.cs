@@ -1,9 +1,9 @@
 using CSharpFunctionalExtensions;
 using FileService.Domain.Enums;
 using FileService.Domain.ValueObjects;
-using Shared.Errors;
+using Shared.CommonErrors;
 
-namespace FileService.Domain;
+namespace FileService.Domain.PreviewAsset;
 
 public class PreviewAsset : MediaAsset
 {

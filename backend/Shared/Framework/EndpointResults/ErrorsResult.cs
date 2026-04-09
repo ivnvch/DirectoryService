@@ -1,18 +1,18 @@
 using Microsoft.AspNetCore.Http;
-using Shared.Errors;
+using Shared.CommonErrors;
 using IResult = Microsoft.AspNetCore.Http.IResult;
 
 namespace Shared.EndpointResults;
 
 public class ErrorsResult : IResult
 {
-    private readonly Shared.Errors.Errors _errors;
+    private readonly Errors _errors;
 
     public ErrorsResult(Error error)
     {
         _errors = error;
     }
-    public ErrorsResult(Shared.Errors.Errors errors)
+    public ErrorsResult(Errors errors)
     {
         _errors = errors;
     }

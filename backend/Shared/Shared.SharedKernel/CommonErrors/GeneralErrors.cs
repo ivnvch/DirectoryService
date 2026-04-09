@@ -1,4 +1,4 @@
-namespace Shared.Errors;
+namespace Shared.CommonErrors;
 
 public static class GeneralErrors
 {

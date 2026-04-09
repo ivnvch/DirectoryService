@@ -1,5 +1,7 @@
 using FileService.Domain;
 using FileService.Domain.Enums;
+using FileService.Domain.PreviewAsset;
+using FileService.Domain.VideoAsset;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

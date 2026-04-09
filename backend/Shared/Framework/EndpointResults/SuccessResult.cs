@@ -1,5 +1,5 @@
 using Microsoft.AspNetCore.Http;
-using Shared.Errors;
+using Shared.CommonErrors;
 using IResult = Microsoft.AspNetCore.Http.IResult;
 
 namespace Shared.EndpointResults;

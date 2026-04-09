@@ -1,5 +1,6 @@
 using CSharpFunctionalExtensions;
 using FileService.Core.Extensions;
+using FileService.Core.FileStorage;
 using FileService.Domain;
 using FluentValidation;
 using Microsoft.AspNetCore.Builder;
@@ -8,11 +9,11 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Logging;
 using Shared.Abstractions;
 using Shared.EndpointResults;
-using Shared.Errors;
+using Shared.CommonErrors;
 
 namespace FileService.Core.Features.MediaAssets.Delete;
 
-public class DeleteFileEndpoint : IEndpoint
+public sealed class DeleteFileEndpoint : IEndpoint
 {
     public void MapEndpoint(IEndpointRouteBuilder builder)
     {

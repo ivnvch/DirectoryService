@@ -1,8 +1,8 @@
 using System.Net.Http.Json;
 using CSharpFunctionalExtensions;
-using Shared.Errors;
+using Shared.CommonErrors;
 
-namespace DirectoryService.Shared.HttpCommunication;
+namespace Shared.HttpCommunication;
 
 public static class HttpResponseMessageExtension
 {

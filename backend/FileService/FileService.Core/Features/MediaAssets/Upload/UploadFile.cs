@@ -1,8 +1,10 @@
 using CSharpFunctionalExtensions;
 using FileService.Contracts;
 using FileService.Core.Extensions;
+using FileService.Core.FileStorage;
 using FileService.Domain;
 using FileService.Domain.Enums;
+using FileService.Domain.Extensions;
 using FileService.Domain.ValueObjects;
 using FluentValidation;
 using FluentValidation.Results;
@@ -13,12 +15,12 @@ using Microsoft.Extensions.Logging;
 using Shared.Abstractions;
 using Shared.Database;
 using Shared.EndpointResults;
-using Shared.Errors;
+using Shared.CommonErrors;
 using Shared.Validation;
 
 namespace FileService.Core.Features.MediaAssets.Upload;
 
-public class UploadFileEndpoint : IEndpoint
+public sealed class UploadFileEndpoint : IEndpoint
 {
     public void MapEndpoint(IEndpointRouteBuilder builder)
     {

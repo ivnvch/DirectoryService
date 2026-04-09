@@ -1,5 +1,6 @@
 using CSharpFunctionalExtensions;
 using FileService.Core.Extensions;
+using FileService.Core.FileStorage;
 using FileService.Domain.ValueObjects;
 using FluentValidation;
 using FluentValidation.Results;
@@ -9,12 +10,12 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Logging;
 using Shared.Abstractions;
 using Shared.EndpointResults;
-using Shared.Errors;
+using Shared.CommonErrors;
 using Shared.Validation;
 
 namespace FileService.Core.Features.MediaAssets.Download;
 
-public class DownloadUrlsEndpoint : IEndpoint
+public sealed class DownloadUrlsEndpoint : IEndpoint
 {
     public void MapEndpoint(IEndpointRouteBuilder builder)
     {
@@ -39,7 +40,7 @@ public class DownloadUrlsValidator : AbstractValidator<DownloadUrlsCommand>
 
 public record DownloadUrlsCommand(IEnumerable<string> Paths) : ICommand;
 
-public class DownloadUrlsHandler : ICommandHandler<IEnumerable<string>, DownloadUrlsCommand>
+public sealed class DownloadUrlsHandler : ICommandHandler<IEnumerable<string>, DownloadUrlsCommand>
 {
     private readonly IS3Provider _s3Provider;
     private readonly IValidator<DownloadUrlsCommand> _validator;

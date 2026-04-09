@@ -1,6 +1,6 @@
 using CSharpFunctionalExtensions;
 using FileService.Domain.ValueObjects;
-using Shared.Errors;
+using Shared.CommonErrors;
 
 namespace FileService.Domain;
 
