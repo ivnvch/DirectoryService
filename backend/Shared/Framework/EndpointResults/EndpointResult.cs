@@ -3,7 +3,7 @@ using CSharpFunctionalExtensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Metadata;
-using Shared.Errors;
+using Shared.CommonErrors;
 using IResult =  Microsoft.AspNetCore.Http.IResult;
 
 namespace Shared.EndpointResults;
@@ -19,7 +19,7 @@ public sealed class EndpointResult<TValue> : IResult, IEndpointMetadataProvider
             : new ErrorsResult(result.Error);
     }
     
-    public EndpointResult(Result<TValue, Shared.Errors.Errors> result)
+    public EndpointResult(Result<TValue, Errors> result)
     {
         _result = result.IsSuccess
             ? new SuccessResult<TValue>(result.Value)
@@ -30,8 +30,8 @@ public sealed class EndpointResult<TValue> : IResult, IEndpointMetadataProvider
         _result.ExecuteAsync(httpContext);
 
     public static implicit operator EndpointResult<TValue>(Result<TValue, Error> result) => new(result);
-    public static implicit operator EndpointResult<TValue>(Result<TValue, Shared.Errors.Errors> result) => new(result);
-    public static EndpointResult<TValue> ToEndpointResult(Result<TValue, Shared.Errors.Errors> result) => new(result);
+    public static implicit operator EndpointResult<TValue>(Result<TValue, Errors> result) => new(result);
+    public static EndpointResult<TValue> ToEndpointResult(Result<TValue, Errors> result) => new(result);
 
     public static void PopulateMetadata(MethodInfo method, EndpointBuilder builder)
     {

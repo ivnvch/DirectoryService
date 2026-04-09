@@ -2,9 +2,9 @@ using CSharpFunctionalExtensions;
 using FileService.Contracts;
 using FileService.Domain;
 using FileService.Domain.ValueObjects;
-using Shared.Errors;
+using Shared.CommonErrors;
 
-namespace FileService.Core;
+namespace FileService.Core.FileStorage;
 
 public interface IS3Provider
 {
@@ -19,23 +19,26 @@ public interface IS3Provider
         CancellationToken cancellationToken);
     
     Task<Result<string, Error>> StartMultipartUploadAsync(
-        string bucketName,
-        string key,
-        string contentType,
+        StorageKey storageKey,
+        MediaData mediaData,
         CancellationToken cancellationToken);
 
-    Task<Result<IReadOnlyList<string>, Error>> GenerateAllChunkUploadUrlsAsync(
-        string bucketName,
-        string key,
+    Task<Result<IReadOnlyList<ChunkUploadUrl>, Error>> GenerateAllChunkUploadUrlsAsync(
+        StorageKey storageKey,
         string uploadId,
         int totalChunks,
+        CancellationToken cancellationToken);
+    
+    Task<Result<string, Error>> GenerateChunkUploadUrlAsync(
+        StorageKey storageKey,
+        string uploadId,
+        int partNumber,
         CancellationToken cancellationToken);
 
     Task<Result<string, Error>> GenerateDownloadUrlAsync(StorageKey storageKey);
 
     Task<Result<string, Error>> CompleteMultipartUploadAsync(
-        string bucketName,
-        string key,
+        StorageKey storageKey,
         string uploadId,
         IReadOnlyList<PartETagDto> partETags,
         CancellationToken cancellationToken);
@@ -44,6 +47,15 @@ public interface IS3Provider
         string bucketName,
         string objectKey,
         CancellationToken cancellationToken);
+    
+    Task<UnitResult<Error>> AbortMultipartUploadAsync(
+        StorageKey storageKey,
+        string uploadId,
+        CancellationToken cancellationToken);
+    
+    /*Task<Result<ListMultipartUploadsResponse, Errors>> ListMultipartUploadsAsync(
+        string bucketName,
+        CancellationToken cancellationToken);*/
 
     void Dispose();
 }

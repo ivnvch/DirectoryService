@@ -1,13 +1,15 @@
+using System.Text.Json;
 using FileService.Domain;
 using FileService.Domain.Enums;
 using FileService.Domain.PreviewAsset;
+using FileService.Domain.ValueObjects;
 using FileService.Domain.VideoAsset;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace FileService.Infrastructure.Postgres.Configurations;
 
-public class MediAssetConfiguration : IEntityTypeConfiguration<MediaAsset>
+public class MediaAssetConfiguration : IEntityTypeConfiguration<MediaAsset>
 {
     public void Configure(EntityTypeBuilder<MediaAsset> builder)
     {
@@ -67,7 +69,20 @@ public class MediAssetConfiguration : IEntityTypeConfiguration<MediaAsset>
             md.Property(x => x.Size).HasJsonPropertyName("size");
         });
 
-        builder.OwnsOne(e => e.Key, rkb =>
+        builder.Property(e => e.Key)
+            .HasColumnName("raw_key")
+            .HasConversion(
+                v => JsonSerializer.Serialize(v, JsonSerializerOptions.Default),
+                v => JsonSerializer.Deserialize<StorageKey>(v, JsonSerializerOptions.Default)!)
+            .HasColumnType("jsonb");
+
+        builder.Property(e => e.FinalKey)
+            .HasColumnName("final_key")
+            .HasConversion(
+                v => JsonSerializer.Serialize(v, JsonSerializerOptions.Default),
+                v => JsonSerializer.Deserialize<StorageKey>(v, JsonSerializerOptions.Default)!)
+            .HasColumnType("jsonb");
+        /*builder.OwnsOne(e => e.Key, rkb =>
         {
             rkb.ToJson("key");
 
@@ -87,7 +102,7 @@ public class MediAssetConfiguration : IEntityTypeConfiguration<MediaAsset>
             fkb.Property(fke => fke.Prefix).HasJsonPropertyName("prefix");
 
             fkb.Property(fke => fke.Key).HasJsonPropertyName("key");
-        });
+        });*/
 
         builder.ComplexProperty(e => e.Owner, ob =>
         {

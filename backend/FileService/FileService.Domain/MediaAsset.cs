@@ -1,7 +1,7 @@
 using CSharpFunctionalExtensions;
 using FileService.Domain.Enums;
 using FileService.Domain.ValueObjects;
-using Shared.Errors;
+using Shared.CommonErrors;
 
 namespace FileService.Domain;
 
@@ -51,10 +51,10 @@ public abstract class MediaAsset
         switch (assetType)
         {
             case AssetType.Video:
-                Result<VideoAsset, Error> videoAssetResult = VideoAsset.CreateForUpload(mediaAssetId, mediaData, owner);
+                Result<VideoAsset.VideoAsset, Error> videoAssetResult = VideoAsset.VideoAsset.CreateForUpload(mediaAssetId, mediaData, owner);
                     return videoAssetResult.IsFailure ? videoAssetResult.Error : videoAssetResult.Value;
             case AssetType.Preview:
-                Result<PreviewAsset, Error> previewAssetResult = PreviewAsset.CreateForUpload(mediaAssetId, mediaData, owner);
+                Result<PreviewAsset.PreviewAsset, Error> previewAssetResult = PreviewAsset.PreviewAsset.CreateForUpload(mediaAssetId, mediaData, owner);
                 return previewAssetResult.IsFailure ? previewAssetResult.Error : previewAssetResult.Value;
             /*case AssetType.Avatar*/
             default: throw new ArgumentOutOfRangeException(nameof(assetType), assetType, null);

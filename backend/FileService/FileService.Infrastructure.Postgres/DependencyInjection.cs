@@ -4,7 +4,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using FileService.Core;
+using FileService.Infrastructure.Postgres.Database;
 using FileService.Infrastructure.Postgres.Repositiories;
+using Shared.Database;
 
 namespace FileService.Infrastructure.Postgres;
 
@@ -31,6 +33,8 @@ public static class DependencyInjection
         
         Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;
         services.AddScoped<IMediaRepository, MediaRepository>();
+        
+        services.AddScoped<ITransactionManager, TransactionManager>();
 
         return services;
     }
