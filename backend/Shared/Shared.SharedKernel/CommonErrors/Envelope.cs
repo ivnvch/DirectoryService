@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
 
-namespace Shared.Errors;
+namespace Shared.CommonErrors;
 
 public record Envelope
 {

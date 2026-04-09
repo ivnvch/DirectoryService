@@ -1,7 +1,9 @@
 using CSharpFunctionalExtensions;
 using FileService.Contracts;
+using FileService.Core.FileStorage;
 using FileService.Domain;
 using FileService.Domain.Enums;
+using FileService.Domain.Extensions;
 using FileService.Domain.ValueObjects;
 using FluentValidation;
 using FluentValidation.Results;
@@ -11,12 +13,12 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Logging;
 using Shared.Abstractions;
 using Shared.EndpointResults;
-using Shared.Errors;
+using Shared.CommonErrors;
 using Shared.Validation;
 
 namespace FileService.Core.Features.MediaAssets.Upload;
 
-public class UploadUrlEndpoint : IEndpoint
+public sealed class UploadUrlEndpoint : IEndpoint
 {
     public void MapEndpoint(IEndpointRouteBuilder builder)
     {
@@ -37,7 +39,7 @@ public class UploadUrlCommandValidator : AbstractValidator<UploadUrlCommand>
 }
 public record UploadUrlCommand(GetUploadUrlRequest Request) : ICommand;
 
-public class UploadUrlHandler : ICommandHandler<string, UploadUrlCommand>
+public sealed class UploadUrlHandler : ICommandHandler<string, UploadUrlCommand>
 {
     private readonly IS3Provider _s3Provider;
     private readonly IValidator<UploadUrlCommand> _validator;

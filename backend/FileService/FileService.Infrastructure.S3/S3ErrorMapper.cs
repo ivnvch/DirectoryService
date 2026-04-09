@@ -1,6 +1,6 @@
 using Amazon.S3;
 using FileService.Domain;
-using Shared.Errors;
+using Shared.CommonErrors;
 
 namespace FileService.Infrastructure.S3;
 

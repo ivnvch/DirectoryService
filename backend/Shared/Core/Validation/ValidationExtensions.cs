@@ -1,6 +1,6 @@
 using System.Text.Json;
 using FluentValidation.Results;
-using Shared.Errors;
+using Shared.CommonErrors;
 
 namespace Shared.Validation;
 

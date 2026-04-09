@@ -12,8 +12,8 @@
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="ivnvch.Core" Version="0.0.2" />
-      <PackageReference Include="ivnvch.framework" Version="0.0.5" />
+      <PackageReference Include="ivnvch.Core" Version="0.0.5" />
+      <PackageReference Include="ivnvch.framework" Version="0.0.6" />
     </ItemGroup>
 
 </Project>

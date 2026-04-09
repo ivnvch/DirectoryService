@@ -1,7 +1,7 @@
 using System.Text.Json;
 using CSharpFunctionalExtensions;
 using FluentValidation;
-using Shared.Errors;
+using Shared.CommonErrors;
 
 namespace Shared.Validation;
 

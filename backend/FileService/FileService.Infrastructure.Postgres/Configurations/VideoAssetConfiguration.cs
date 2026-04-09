@@ -1,4 +1,5 @@
 using FileService.Domain;
+using FileService.Domain.VideoAsset;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

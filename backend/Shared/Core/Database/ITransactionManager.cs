@@ -1,6 +1,6 @@
 using System.Data;
 using CSharpFunctionalExtensions;
-using Shared.Errors;
+using Shared.CommonErrors;
 
 namespace Shared.Database;
 
