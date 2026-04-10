@@ -1,4 +1,4 @@
-namespace FileService.Core.Features;
+namespace FileService.Contracts;
 
 public record GetMediaAssetDto(
     Guid Id,

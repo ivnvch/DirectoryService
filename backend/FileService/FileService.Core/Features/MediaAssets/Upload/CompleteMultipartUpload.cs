@@ -17,16 +17,17 @@ public sealed class CompleteMultipartUpload : IEndpoint
 {
     public void MapEndpoint(IEndpointRouteBuilder builder)
     {
-        builder.MapPost("/files/complete-upload", async Task<EndpointResult> (
+        builder.MapPost("/files/multipart/end", async Task<EndpointResult<CompleteMultipartUploadResponse>> (
             [FromBody] CompleteMultipartUploadDtoRequest dtoRequest,
             [FromServices] CompleteMultipartUploadHandler handler,
             CancellationToken cancellationToken) => await handler.Handle(new CompleteMultipartUploadCommand(dtoRequest), cancellationToken));
     }
 }
 
+public record CompleteMultipartUploadResponse(Guid MediaAssetId);
 public record CompleteMultipartUploadCommand(CompleteMultipartUploadDtoRequest DtoRequest) : ICommand;
 
-public sealed class CompleteMultipartUploadHandler : ICommandHandler<CompleteMultipartUploadCommand>
+public sealed class CompleteMultipartUploadHandler : ICommandHandler<CompleteMultipartUploadResponse, CompleteMultipartUploadCommand>
 {
     private readonly IS3Provider _s3Provider;
     private readonly IMediaRepository _mediaRepository;
@@ -45,12 +46,12 @@ public sealed class CompleteMultipartUploadHandler : ICommandHandler<CompleteMul
         _logger = logger;
     }
 
-    public async Task<UnitResult<Error>> Handle(CompleteMultipartUploadCommand command,
+    public async Task<Result<CompleteMultipartUploadResponse, Errors>> Handle(CompleteMultipartUploadCommand command,
         CancellationToken cancellationToken)
     {
          (_, bool isFailure,  MediaAsset? mediaAsset, Error? error) = await _mediaRepository.GetBy(m => m.Id == command.DtoRequest.MediaAssetId, cancellationToken);
          if (isFailure)
-             return error;
+             return error.ToErrors();
 
          Result<ITransactionScope, Error> transactionScopeResult = await _transactionManager.BeginTransactionAsync(cancellationToken);
          using ITransactionScope? transactionResult = transactionScopeResult.Value;
@@ -58,7 +59,7 @@ public sealed class CompleteMultipartUploadHandler : ICommandHandler<CompleteMul
          if (mediaAsset.MediaData.ExpectedChunksCount != command.DtoRequest.PartETags.Count)
          {
              transactionResult.Rollback();
-             return GeneralErrors.Failure("Количество eTag не соответствует количеству чанков");
+             return GeneralErrors.Failure("Количество eTag не соответствует количеству чанков").ToErrors();
          }
          
          Result<string, Error> completeResult = await _s3Provider.CompleteMultipartUploadAsync(
@@ -72,7 +73,7 @@ public sealed class CompleteMultipartUploadHandler : ICommandHandler<CompleteMul
              mediaAsset.MarkFailed(DateTime.UtcNow);
              
              await _transactionManager.SaveChangesAsync(cancellationToken);
-             return completeResult.Error;
+             return completeResult.Error.ToErrors();
          }
 
          mediaAsset.MarkUploaded(DateTime.UtcNow);
@@ -83,11 +84,11 @@ public sealed class CompleteMultipartUploadHandler : ICommandHandler<CompleteMul
          if (commitedResult.IsFailure)
          {
              _logger.LogError("Error while committing transaction");
-             return commitedResult.Error;
+             return commitedResult.Error.ToErrors();
          }
          
          _logger.LogInformation("File upload successfully. MediaAssetId: {MediaAssetId}", mediaAsset.Id);
                  
-         return Result.Success<Error>();
+         return new CompleteMultipartUploadResponse(mediaAsset.Id);
     }
 }

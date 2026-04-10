@@ -1,4 +1,5 @@
 using CSharpFunctionalExtensions;
+using FileService.Contracts;
 using FileService.Core.FileStorage;
 using FileService.Core.Models;
 using FileService.Domain;
