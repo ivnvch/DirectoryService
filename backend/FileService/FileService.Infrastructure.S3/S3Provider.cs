@@ -3,13 +3,13 @@ using Amazon.S3.Model;
 using CSharpFunctionalExtensions;
 using FileService.Contracts;
 using FileService.Core.FileStorage;
+using FileService.Core.Models;
 using FileService.Domain;
 using FileService.Domain.ValueObjects;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Shared.CommonErrors;
 using AbortMultipartUploadRequest = Amazon.S3.Model.AbortMultipartUploadRequest;
-using ListMultipartUploadsResponse = FileService.Contracts.ListMultipartUploadsResponse;
 
 namespace FileService.Infrastructure.S3;
 
@@ -157,23 +157,26 @@ public class S3Provider : IS3Provider, IDisposable
         }
     }
 
-    public async Task<Result<IReadOnlyList<string>, Errors>> GenerateDownloadUrlsAsync(IEnumerable<StorageKey> storageKeys, CancellationToken cancellationToken)
+    public async Task<Result<IReadOnlyList<MediaUrl>, Errors>> GenerateDownloadUrlsAsync(IEnumerable<StorageKey> storageKeys, CancellationToken cancellationToken)
     {
-        IEnumerable<Task<Result<string, Error>>> tasks = storageKeys.Select(async key =>
+        IEnumerable<Task<Result<MediaUrl, Error>>> tasks = storageKeys.Select(async key =>
         {
             await _requestSemaphore.WaitAsync(cancellationToken);
 
             try
             {
-                return await GenerateDownloadUrlAsync(key);
+                Result<string, Error> urlResult = await GenerateDownloadUrlAsync(key);
+                
+                return Result.Success<MediaUrl, Error>(new MediaUrl(key, urlResult.Value));
             }
             finally
             {
                 _requestSemaphore.Release();
             }
-        });
+        })
+        .ToArray();
 
-        Result<string, Error>[] downloadUrlsResult = await Task.WhenAll(tasks);
+        Result<MediaUrl, Error>[] downloadUrlsResult = await Task.WhenAll(tasks);
         
         Error[] errors = downloadUrlsResult
             .Where(x => x.IsFailure)
@@ -183,7 +186,7 @@ public class S3Provider : IS3Provider, IDisposable
         if (errors.Any())
             return new Errors(errors);
         
-        return downloadUrlsResult.Select(x => x.Value).ToList();
+        return downloadUrlsResult.Select(x => x.Value).ToArray();
     }
 
     public async Task<Result<string, Error>> StartMultipartUploadAsync(

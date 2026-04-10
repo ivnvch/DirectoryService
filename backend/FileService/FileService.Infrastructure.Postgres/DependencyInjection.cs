@@ -35,6 +35,7 @@ public static class DependencyInjection
         services.AddScoped<IMediaRepository, MediaRepository>();
         
         services.AddScoped<ITransactionManager, TransactionManager>();
+        services.AddScoped<IReadDbContext>(sp => sp.GetRequiredService<FileServiceDbContext>());
 
         return services;
     }

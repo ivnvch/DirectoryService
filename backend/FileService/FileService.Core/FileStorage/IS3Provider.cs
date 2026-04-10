@@ -1,5 +1,6 @@
 using CSharpFunctionalExtensions;
 using FileService.Contracts;
+using FileService.Core.Models;
 using FileService.Domain;
 using FileService.Domain.ValueObjects;
 using Shared.CommonErrors;
@@ -14,7 +15,7 @@ public interface IS3Provider
     
     Task<Result<string, Error>> GenerateUploadUrlAsync(StorageKey storageKey, MediaData mediaData, CancellationToken cancellationToken);
     
-    Task<Result<IReadOnlyList<string>, Errors>> GenerateDownloadUrlsAsync(
+    Task<Result<IReadOnlyList<MediaUrl>, Errors>> GenerateDownloadUrlsAsync(
         IEnumerable<StorageKey> storageKeys,
         CancellationToken cancellationToken);
     
