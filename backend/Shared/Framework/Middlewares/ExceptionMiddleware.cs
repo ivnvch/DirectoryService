@@ -2,7 +2,7 @@ using System.Text.Json;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
-using Shared.Errors;
+using Shared.CommonErrors;
 using Shared.Exceptions;
 
 namespace Shared.Middlewares;
@@ -37,12 +37,12 @@ public class ExceptionMiddleware
         var (code, errors) = exception switch
         {
             BadRequestException => (StatusCodes.Status500InternalServerError,
-                new Shared.Errors.Errors(JsonSerializer.Deserialize<Error[]>(exception.Message) ?? [])),
+                new Errors(JsonSerializer.Deserialize<Error[]>(exception.Message) ?? [])),
 
             NotFoundException => (StatusCodes.Status404NotFound,
-                new Shared.Errors.Errors(JsonSerializer.Deserialize<Error[]>(exception.Message) ?? [])),
+                new Errors(JsonSerializer.Deserialize<Error[]>(exception.Message) ?? [])),
             
-            _ => (StatusCodes.Status500InternalServerError, new Shared.Errors.Errors([Error.Failure("server.failure", "Something went wrong", null)]))
+            _ => (StatusCodes.Status500InternalServerError, new Errors([Error.Failure("server.failure", "Something went wrong", null)]))
         };
         
         var envelope = Envelope.Error(errors);

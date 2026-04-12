@@ -55,7 +55,7 @@ public sealed class DeleteFileHandler : ICommandHandler<string, DeleteFileComman
     {
         Result<(string BucketName, string ObjectKey), Error> parseResult = command.Path.ParseStoragePath();
         if (parseResult.IsFailure)
-            return ToErrors(parseResult.Error);
+            return parseResult.Error.ToErrors();
 
         MediaAsset? mediaAsset = await _mediaRepository.GetByStoragePathAsync(
             parseResult.Value.BucketName,
@@ -63,7 +63,7 @@ public sealed class DeleteFileHandler : ICommandHandler<string, DeleteFileComman
             cancellationToken);
 
         if (mediaAsset is null)
-            return ToErrors(FileErrors.ObjectNotFound($"{parseResult.Value.BucketName}/{parseResult.Value.ObjectKey}"));
+            return FileErrors.ObjectNotFound($"{parseResult.Value.BucketName}/{parseResult.Value.ObjectKey}").ToErrors();
 
         Result<string, Error> deleteResult = await _s3Provider.DeleteFileAsync(
             parseResult.Value.BucketName,
@@ -71,11 +71,11 @@ public sealed class DeleteFileHandler : ICommandHandler<string, DeleteFileComman
             cancellationToken);
 
         if (deleteResult.IsFailure)
-            return ToErrors(deleteResult.Error);
+            return deleteResult.Error.ToErrors();
         
         UnitResult<Error> markDeletedResult = mediaAsset.MarkDelete(DateTime.UtcNow);
         if (markDeletedResult.IsFailure)
-            return ToErrors(markDeletedResult.Error);
+            return markDeletedResult.Error.ToErrors();
         
         await _mediaRepository.SaveChangesAsync(cancellationToken);
 
@@ -86,7 +86,4 @@ public sealed class DeleteFileHandler : ICommandHandler<string, DeleteFileComman
 
         return $"{parseResult.Value.BucketName}/{parseResult.Value.ObjectKey}";
     }
-
-    private static Errors ToErrors(Error error)
-        => new([error]);
 }

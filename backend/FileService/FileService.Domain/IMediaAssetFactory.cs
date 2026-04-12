@@ -1,10 +1,11 @@
 using CSharpFunctionalExtensions;
-using Shared.Errors;
+using FileService.Domain.ValueObjects;
+using Shared.CommonErrors;
 
 namespace FileService.Domain;
 
 public interface IMediaAssetFactory
 {
-    Result<VideoAsset, Error> CreateVideoForUpload(MediaData mediaData, MediaOwner owner);
-    Result<PreviewAsset, Error> CreatePreviewForUpload(MediaData mediaData, MediaOwner owner);
+    Result<VideoAsset.VideoAsset, Error> CreateVideoForUpload(MediaData mediaData, MediaOwner owner);
+    Result<PreviewAsset.PreviewAsset, Error> CreatePreviewForUpload(MediaData mediaData, MediaOwner owner);
 }

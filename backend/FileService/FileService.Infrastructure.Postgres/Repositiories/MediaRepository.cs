@@ -1,6 +1,9 @@
+using System.Linq.Expressions;
+using CSharpFunctionalExtensions;
 using FileService.Core;
 using FileService.Domain;
 using Microsoft.EntityFrameworkCore;
+using Shared.CommonErrors;
 
 namespace FileService.Infrastructure.Postgres.Repositiories;
 
@@ -26,11 +29,21 @@ public sealed class MediaRepository : IMediaRepository
                 cancellationToken);
     }
 
+    public async Task<Result<MediaAsset, Error>> GetBy(Expression<Func<MediaAsset, bool>> predicate, CancellationToken cancellationToken)
+    {
+        MediaAsset? asset = await _dbContext.MediaAssets.FirstOrDefaultAsync(predicate, cancellationToken);
+
+        if (asset is null)
+            return GeneralErrors.NotFound(null, "mediaAsset");
+
+        return asset;
+    }
+
     public Task SaveChangesAsync(CancellationToken cancellationToken)
         => _dbContext.SaveChangesAsync(cancellationToken);
 
-    public Task AddAsync(MediaAsset asset, CancellationToken cancellationToken)
+    public async  Task AddAsync(MediaAsset asset, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        await _dbContext.MediaAssets.AddAsync(asset, cancellationToken);
     }
 }
