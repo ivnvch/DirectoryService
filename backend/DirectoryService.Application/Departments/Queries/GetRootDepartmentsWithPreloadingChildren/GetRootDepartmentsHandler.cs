@@ -2,11 +2,11 @@ using System.Data;
 using CSharpFunctionalExtensions;
 using Dapper;
 using DirectoryService.Application.Abstractions.Database;
-using DirectoryService.Application.CQRS;
+using Shared.Abstractions;
 using DirectoryService.Application.Extensions.Cache;
 using DirectoryService.Shared;
 using DirectoryService.Shared.Departments;
-using Shared.Errors;
+using Shared.CommonErrors;
 using Microsoft.Extensions.Caching.Hybrid;
 
 namespace DirectoryService.Application.Departments.Queries.GetRootDepartmentsWithPreloadingChildren;

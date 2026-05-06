@@ -1,6 +1,6 @@
 
 
-using Shared.Errors;
+using Shared.CommonErrors;
 
 namespace DirectoryService.Domain.Positions.Errors;
 

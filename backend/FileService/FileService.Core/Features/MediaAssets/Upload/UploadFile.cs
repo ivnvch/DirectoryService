@@ -1,5 +1,6 @@
 using CSharpFunctionalExtensions;
 using FileService.Contracts;
+using FileService.Contracts.MediaAssets.Upload.Requests;
 using FileService.Core.Extensions;
 using FileService.Core.FileStorage;
 using FileService.Domain;

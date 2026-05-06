@@ -1,7 +1,7 @@
 using DirectoryService.API.EndpointResults;
 using DirectoryService.API.Models.RequestModels;
 using DirectoryService.API.Models.RequestModels.Locations;
-using DirectoryService.Application.CQRS;
+using Shared.Abstractions;
 using DirectoryService.Application.Locations.Commands.CreateLocations;
 using DirectoryService.Application.Locations.Commands.DeleteLocation;
 using DirectoryService.Application.Locations.Commands.UpdateLocation;

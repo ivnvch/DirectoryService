@@ -1,4 +1,4 @@
-using Shared.Errors;
+using Shared.CommonErrors;
 
 namespace DirectoryService.API.EndpointResults;
 

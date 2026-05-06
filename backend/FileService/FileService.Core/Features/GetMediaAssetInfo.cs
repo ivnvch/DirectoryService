@@ -1,5 +1,6 @@
 using CSharpFunctionalExtensions;
 using FileService.Contracts;
+using FileService.Contracts.MediaAssets.DTOs;
 using FileService.Core.FileStorage;
 using FileService.Core.Models;
 using FileService.Domain;
@@ -45,10 +46,6 @@ public sealed class GetMediaAssetInfoHandler : ICommandHandler<GetMediaAssetDto?
 
         if (mediaAsset == null)
             return Result.Success<GetMediaAssetDto?, Errors>(null);
-        
-        Result<string, Error> urlsResult = await _s3Provider.GenerateDownloadUrlAsync(mediaAsset.Key);
-        if (urlsResult.IsFailure)
-            return urlsResult.Error.ToErrors();
 
         string? url = null;
         if (mediaAsset.Status == MediaStatus.Ready)

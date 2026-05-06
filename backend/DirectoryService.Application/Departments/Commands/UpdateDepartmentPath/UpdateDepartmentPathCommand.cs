@@ -1,4 +1,4 @@
-using DirectoryService.Application.CQRS;
+using Shared.Abstractions;
 
 namespace DirectoryService.Application.Departments.Commands.UpdateDepartmentPath;
 

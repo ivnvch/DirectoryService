@@ -1,7 +1,7 @@
 using CSharpFunctionalExtensions;
 using DirectoryService.Application.Departments.Repositories;
 using DirectoryService.Application.Positions.Repositories;
-using Shared.Errors;
+using Shared.CommonErrors;
 using FluentValidation;
 using Shared.Validation;
 

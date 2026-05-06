@@ -2,7 +2,7 @@ using System.Runtime.InteropServices;
 using CSharpFunctionalExtensions;
 using DirectoryService.Domain.DepartmentLocations;
 using DirectoryService.Domain.Locations.ValueObject;
-using Shared.Errors;
+using Shared.CommonErrors;
 
 namespace DirectoryService.Domain.Locations;
 

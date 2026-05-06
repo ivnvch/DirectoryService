@@ -1,5 +1,6 @@
 using CSharpFunctionalExtensions;
 using FileService.Contracts;
+using FileService.Contracts.MediaAssets.DTOs;
 using FileService.Core.Models;
 using FileService.Domain;
 using FileService.Domain.ValueObjects;

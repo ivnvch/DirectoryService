@@ -5,7 +5,7 @@ using DirectoryService.Application.Departments.Repositories;
 using DirectoryService.Domain.Departments;
 using DirectoryService.Domain.Departments.Errors;
 using DirectoryService.Domain.Departments.ValueObject;
-using Shared.Errors;
+using Shared.CommonErrors;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Dapper;

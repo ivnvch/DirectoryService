@@ -46,6 +46,10 @@ public class DepartmentConfiguration : IEntityTypeConfiguration<Department>
         builder.Property(d => d.ParentId)
             .HasColumnName("parent_id");
         
+        builder.Property(d => d.VideoId)
+            .IsRequired(false)
+            .HasColumnName("video_id");
+        
         builder.Property(d => d.Depth)
             .HasColumnName("depth");
         

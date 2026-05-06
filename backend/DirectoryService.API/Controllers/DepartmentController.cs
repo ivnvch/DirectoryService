@@ -1,6 +1,7 @@
 using DirectoryService.API.EndpointResults;
 using DirectoryService.API.Models.RequestModels.Departments;
-using DirectoryService.Application.CQRS;
+using DirectoryService.Application.Departments.Commands.AttachVideos;
+using Shared.Abstractions;
 using DirectoryService.Application.Departments.Commands.CreateDepartments;
 using DirectoryService.Application.Departments.Commands.SoftDeleteDepartment;
 using DirectoryService.Application.Departments.Commands.UpdateDepartmentLocation;
@@ -10,7 +11,7 @@ using DirectoryService.Application.Departments.Queries.GetDescendantsDepartments
 using DirectoryService.Application.Departments.Queries.GetRootDepartmentsWithPreloadingChildren;
 using DirectoryService.Shared;
 using DirectoryService.Shared.Departments;
-using Shared.Errors;
+using Shared.CommonErrors;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DirectoryService.API.Controllers;
@@ -107,5 +108,17 @@ public class DepartmentController : ControllerBase
         SoftDeleteDepartmentCommand command = new SoftDeleteDepartmentCommand(departmentId);
         
         return await handler.Handle(command, cancellationToken);
+    }
+    
+    [HttpPatch("/{departmentId:guid}/attach-video")]
+    public async Task<EndpointResult<Guid>> AttachVideoToDepartment(
+        [FromRoute] Guid departmentId,
+        [FromBody] AttachVideoToDepartmentRequest toDepartmentRequest,
+        [FromServices] ICommandHandler<Guid, AttachVideoToDepartmentCommand> handler,
+        CancellationToken cancellationToken)
+    {
+        AttachVideoToDepartmentCommand toDepartmentCommand = new AttachVideoToDepartmentCommand(departmentId, toDepartmentRequest);
+        
+        return await handler.Handle(toDepartmentCommand, cancellationToken);
     }
 }

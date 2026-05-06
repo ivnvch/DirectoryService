@@ -1,6 +1,6 @@
 using System.Text.RegularExpressions;
 using CSharpFunctionalExtensions;
-using Shared.Errors;
+using Shared.CommonErrors;
 
 namespace DirectoryService.Domain.Departments.ValueObject;
 

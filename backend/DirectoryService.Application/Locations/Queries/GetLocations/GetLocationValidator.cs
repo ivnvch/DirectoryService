@@ -1,5 +1,5 @@
-using Shared.Errors;
 using FluentValidation;
+using Shared.CommonErrors;
 using Shared.Validation;
 
 namespace DirectoryService.Application.Locations.Queries.GetLocations;

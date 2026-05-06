@@ -1,6 +1,6 @@
 using DirectoryService.Application.Locations.Repositories;
 using DirectoryService.Domain.Departments.ValueObject;
-using Shared.Errors;
+using Shared.CommonErrors;
 using FluentValidation;
 using Shared.Validation;
 

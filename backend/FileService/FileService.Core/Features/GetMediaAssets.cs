@@ -1,5 +1,8 @@
 using CSharpFunctionalExtensions;
 using FileService.Contracts;
+using FileService.Contracts.MediaAssets.DTOs;
+using FileService.Contracts.MediaAssets.Queries.Requests;
+using FileService.Contracts.MediaAssets.Queries.Responses;
 using FileService.Core.FileStorage;
 using FileService.Core.Models;
 using FileService.Domain;

@@ -1,11 +1,11 @@
 using CSharpFunctionalExtensions;
-using DirectoryService.Application.Abstractions.Database;
-using DirectoryService.Application.CQRS;
+using Shared.Database;
+using Shared.Abstractions;
 using DirectoryService.Application.Departments.Repositories;
 using DirectoryService.Application.Extensions.Cache;
 using DirectoryService.Application.Locations.Repositories;
 using DirectoryService.Domain.DepartmentLocations;
-using Shared.Errors;
+using Shared.CommonErrors;
 using FluentValidation;
 using Microsoft.Extensions.Caching.Hybrid;
 using Microsoft.Extensions.Logging;

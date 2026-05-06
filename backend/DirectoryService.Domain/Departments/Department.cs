@@ -2,7 +2,7 @@ using CSharpFunctionalExtensions;
 using DirectoryService.Domain.DepartmentLocations;
 using DirectoryService.Domain.DepartmentPositions;
 using DirectoryService.Domain.Departments.ValueObject;
-using Shared.Errors;
+using Shared.CommonErrors;
 
 namespace DirectoryService.Domain.Departments;
 
@@ -42,6 +42,7 @@ public sealed class Department
     public DepartmentName Name { get; private set; } = null!;
     public DepartmentIdentifier DepartmentIdentifier { get; private set; } = null!;
     public Guid? ParentId { get; private set; }
+    public Guid? VideoId { get; private set; }
     public DepartmentPath DepartmentPath { get; private set; } = null!;
     public int Depth { get; private set; }
     public bool IsActive { get; private set; }
@@ -144,5 +145,11 @@ public sealed class Department
     {
         DeletedAt = DateTime.UtcNow;
         IsActive = false;
+    }
+
+    public void AttachVideo(Guid? videoId)
+    {
+        VideoId = videoId;
+        UpdatedAt = DateTime.UtcNow;
     }
 }

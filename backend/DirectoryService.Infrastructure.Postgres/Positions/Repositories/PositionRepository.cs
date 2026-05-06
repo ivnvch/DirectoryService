@@ -3,7 +3,7 @@ using CSharpFunctionalExtensions;
 using DirectoryService.Application.Positions.Repositories;
 using DirectoryService.Domain.Positions;
 using DirectoryService.Domain.Positions.Errors;
-using Shared.Errors;
+using Shared.CommonErrors;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Npgsql;

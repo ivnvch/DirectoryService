@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net10.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <RootNamespace>DirectoryService.Shared</RootNamespace>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <Reference Include="JetBrains.ReSharper.TestRunner.Merged">
+        <HintPath>C:\Program Files\JetBrains\Rider\r2r\2025.1.2R\C0D55BBB359F8052536B912F54474FC\TestRunner\netcoreapp3.0\JetBrains.ReSharper.TestRunner.Merged.dll</HintPath>
+      </Reference>
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="CSharpFunctionalExtensions" Version="3.6.0" />
+    </ItemGroup>
+
+</Project>

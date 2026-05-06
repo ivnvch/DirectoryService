@@ -1,4 +1,4 @@
-using Shared.Errors;
+using Shared.CommonErrors;
 using Microsoft.OpenApi;
 using Serilog;
 using Serilog.Exceptions;

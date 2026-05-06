@@ -1,4 +1,4 @@
-using DirectoryService.Application.CQRS;
+using Shared.Abstractions;
 using DirectoryService.Shared;
 using DirectoryService.Shared.Departments;
 

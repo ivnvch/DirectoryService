@@ -18,7 +18,7 @@ public static class HttpResponseMessageExtension
 
             if (!response.IsSuccessStatusCode)
             {
-                return envelopeResponse.ErrorsList ?? GeneralErrors.Failure("Error while processing response");
+                return envelopeResponse?.ErrorsList ?? GeneralErrors.Failure("Error while processing response");
             }
 
             if (envelopeResponse is null)
@@ -36,7 +36,7 @@ public static class HttpResponseMessageExtension
                 return GeneralErrors.Failure("Error while processing response").ToErrors();
             }
 
-           return envelopeResponse.Result;
+            return envelopeResponse.Result;
         }
         catch
         {
@@ -66,11 +66,6 @@ public static class HttpResponseMessageExtension
             if (envelopeResponse.ErrorList is not null)
             {
                 return envelopeResponse.ErrorList;
-            }
-
-            if (envelopeResponse.Result is null)
-            {
-                return GeneralErrors.Failure("Error while processing response").ToErrors();
             }
 
             return UnitResult.Success<Errors>();

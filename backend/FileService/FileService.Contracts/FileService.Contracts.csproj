@@ -12,4 +12,23 @@
       </Reference>
     </ItemGroup>
 
+    <ItemGroup>
+      <PackageReference Include="ivnvch.SharedKernel" Version="0.0.6" />
+      <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.3.9" />
+      <PackageReference Include="Microsoft.Extensions.Http" Version="10.0.7" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="MediaAssets\DTOs\" />
+    </ItemGroup>
+    
+    <PropertyGroup>
+        <PackageId>ivnvch.FileService.Communication</PackageId>
+        <Version>0.0.2</Version>
+        <Authors>ivnvch</Authors>
+        <Company>ivnvch</Company>
+        <PackageDescription>Communication layer for FileService</PackageDescription>
+        <RepositoryUrl>https://github.com/ivnvch/DirectoryService</RepositoryUrl>
+    </PropertyGroup>
+
 </Project>

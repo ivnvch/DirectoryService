@@ -1,8 +1,9 @@
 using System.Data;
 using CSharpFunctionalExtensions;
 using DirectoryService.Application.Abstractions.Database;
-using Shared.Errors;
+using Shared.CommonErrors;
 using Microsoft.Extensions.Logging;
+using Shared.Database;
 
 namespace DirectoryService.Infrastructure.Database;
 

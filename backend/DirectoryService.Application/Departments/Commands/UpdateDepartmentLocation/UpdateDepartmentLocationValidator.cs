@@ -1,4 +1,4 @@
-using Shared.Errors;
+using Shared.CommonErrors;
 using FluentValidation;
 using Shared.Validation;
 

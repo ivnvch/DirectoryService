@@ -1,5 +1,5 @@
 using System.Net;
-using Shared.Errors;
+using Shared.CommonErrors;
 
 namespace DirectoryService.API.EndpointResults;
 

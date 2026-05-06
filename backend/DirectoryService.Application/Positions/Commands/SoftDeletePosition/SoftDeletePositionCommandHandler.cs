@@ -1,9 +1,9 @@
 using CSharpFunctionalExtensions;
-using DirectoryService.Application.Abstractions.Database;
-using DirectoryService.Application.CQRS;
+using Shared.Database;
+using Shared.Abstractions;
 using DirectoryService.Application.Extensions.Cache;
 using DirectoryService.Application.Positions.Repositories;
-using Shared.Errors;
+using Shared.CommonErrors;
 using Microsoft.Extensions.Caching.Hybrid;
 
 namespace DirectoryService.Application.Positions.Commands.SoftDeletePosition;

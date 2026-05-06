@@ -1,5 +1,8 @@
 using CSharpFunctionalExtensions;
 using FileService.Contracts;
+using FileService.Contracts.MediaAssets.DTOs;
+using FileService.Contracts.MediaAssets.Multipart.Requests;
+using FileService.Contracts.MediaAssets.Multipart.Responses;
 using FileService.Core.FileStorage;
 using FileService.Domain;
 using FileService.Domain.Extensions;
@@ -61,13 +64,16 @@ public sealed class StartMultipartUploadHandler : ICommandHandler<StartMultipart
         if (contentTypeResult.IsFailure)
             return contentTypeResult.Error.ToErrors();
 
-        Result<(long ChunkSize, int TotalChunks), Error> chunkCalculationResult = _chunkSizeCalculator.CalculateChunkSize(command.Request.Size);
+        Result<(int ChunkSize, int TotalChunks), Error> chunkCalculationResult = _chunkSizeCalculator.CalculateChunkSize(command.Request.Size);
         
         var mediaData = MediaData.Create(
             fileNameResult.Value,
             contentTypeResult.Value,
             command.Request.Size,
             chunkCalculationResult.Value.TotalChunks);
+        
+        if (mediaData.IsFailure)
+            return mediaData.Error.ToErrors();
         
         Guid mediaAssetId = Guid.NewGuid();
         

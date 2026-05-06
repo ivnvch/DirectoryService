@@ -1,9 +1,9 @@
 using CSharpFunctionalExtensions;
 using Dapper;
 using DirectoryService.Application.Abstractions.Database;
-using DirectoryService.Application.CQRS;
+using Shared.Abstractions;
 using DirectoryService.Shared.Departments;
-using Shared.Errors;
+using Shared.CommonErrors;
 using DirectoryService.Shared.Positions;
 
 namespace DirectoryService.Application.Positions.Queries.GetPositionDetails;

@@ -1,6 +1,6 @@
 using CSharpFunctionalExtensions;
 using DirectoryService.Domain.Locations.ValueObject;
-using Shared.Errors;
+using Shared.CommonErrors;
 using DirectoryService.Shared.Locations;
 using FluentValidation;
 using Shared.Validation;
