@@ -1,4 +1,4 @@
-using DirectoryService.Application.CQRS;
+using Shared.Abstractions;
 using DirectoryService.Shared;
 
 namespace DirectoryService.Application.Departments.Queries.GetDescendantsDepartments;

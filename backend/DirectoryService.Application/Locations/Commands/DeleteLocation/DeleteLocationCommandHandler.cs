@@ -1,8 +1,8 @@
 using CSharpFunctionalExtensions;
-using DirectoryService.Application.Abstractions.Database;
-using DirectoryService.Application.CQRS;
+using Shared.Database;
+using Shared.Abstractions;
 using DirectoryService.Application.Locations.Repositories;
-using Shared.Errors;
+using Shared.CommonErrors;
 
 namespace DirectoryService.Application.Locations.Commands.DeleteLocation;
 

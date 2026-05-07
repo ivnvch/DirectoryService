@@ -43,3 +43,8 @@ finally
 {
     await Log.CloseAndFlushAsync();
 }
+
+namespace FileService.Web
+{
+    public partial class Program;
+}

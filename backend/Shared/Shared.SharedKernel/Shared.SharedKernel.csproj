@@ -14,7 +14,7 @@
 
     <PropertyGroup>
         <PackageId>ivnvch.SharedKernel</PackageId>
-        <Version>0.0.5</Version>
+        <Version>0.0.6</Version>
         <Authors>ivnvch</Authors>
         <Company>ivnvch</Company>
         <PackageDescription>SharedKernel</PackageDescription>

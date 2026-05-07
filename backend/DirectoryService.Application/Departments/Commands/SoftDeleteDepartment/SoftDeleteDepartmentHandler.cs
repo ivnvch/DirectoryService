@@ -1,16 +1,16 @@
 using CSharpFunctionalExtensions;
-using DirectoryService.Application.Abstractions.Database;
-using DirectoryService.Application.CQRS;
 using DirectoryService.Application.Departments.Repositories;
 using DirectoryService.Application.Extensions.Cache;
 using DirectoryService.Application.Locations.Repositories;
 using DirectoryService.Application.Positions.Repositories;
 using DirectoryService.Domain.Departments;
 using DirectoryService.Domain.Departments.ValueObject;
-using Shared.Errors;
+using Shared.CommonErrors;
 using FluentValidation;
 using FluentValidation.Results;
 using Microsoft.Extensions.Caching.Hybrid;
+using Shared.Abstractions;
+using Shared.Database;
 using Shared.Validation;
 
 namespace DirectoryService.Application.Departments.Commands.SoftDeleteDepartment;

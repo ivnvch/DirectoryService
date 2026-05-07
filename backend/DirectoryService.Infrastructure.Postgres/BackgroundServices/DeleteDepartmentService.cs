@@ -1,13 +1,13 @@
 using System.Data.Common;
 using CSharpFunctionalExtensions;
 using Dapper;
-using DirectoryService.Application.Abstractions.Database;
 using DirectoryService.Application.Extensions.Cache;
 //using DirectoryService.Application.Extensions.Cache;
-using Shared.Errors;
+using Shared.CommonErrors;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Hybrid;
 using Microsoft.Extensions.Logging;
+using Shared.Database;
 
 namespace DirectoryService.Infrastructure.BackgroundServices;
 

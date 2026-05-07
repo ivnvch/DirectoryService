@@ -1,5 +1,6 @@
 using CSharpFunctionalExtensions;
 using FileService.Contracts;
+using FileService.Contracts.MediaAssets.Multipart.Requests;
 using FileService.Core.FileStorage;
 using FileService.Domain;
 using Microsoft.AspNetCore.Builder;

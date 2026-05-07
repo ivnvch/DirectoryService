@@ -2,7 +2,7 @@ using System.Linq.Expressions;
 using CSharpFunctionalExtensions;
 using DirectoryService.Domain.Departments;
 using DirectoryService.Domain.Departments.ValueObject;
-using Shared.Errors;
+using Shared.CommonErrors;
 using DirectoryService.Domain.Positions;
 
 namespace DirectoryService.Application.Departments.Repositories;

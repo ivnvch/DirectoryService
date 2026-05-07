@@ -1,4 +1,4 @@
-using DirectoryService.Application.CQRS;
+using Shared.Abstractions;
 using DirectoryService.Shared.Locations;
 
 namespace DirectoryService.Application.Locations.Commands.CreateLocations;

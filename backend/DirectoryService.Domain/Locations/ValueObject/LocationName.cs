@@ -1,6 +1,6 @@
 using CSharpFunctionalExtensions;
 using DirectoryService.Shared.Constants;
-using Shared.Errors;
+using Shared.CommonErrors;
 
 namespace DirectoryService.Domain.Locations.ValueObject;
 

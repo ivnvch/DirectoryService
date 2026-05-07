@@ -1,6 +1,6 @@
 using DirectoryService.API.EndpointResults;
 using DirectoryService.API.Models.RequestModels.Positions;
-using DirectoryService.Application.CQRS;
+using Shared.Abstractions;
 using DirectoryService.Application.Positions.Commands.CreatePositions;
 using DirectoryService.Application.Positions.Commands.SoftDeletePosition;
 using DirectoryService.Application.Positions.Queries.GetPositionDetails;

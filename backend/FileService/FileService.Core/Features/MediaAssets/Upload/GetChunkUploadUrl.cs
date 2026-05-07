@@ -1,5 +1,7 @@
 using CSharpFunctionalExtensions;
 using FileService.Contracts;
+using FileService.Contracts.MediaAssets.Multipart.Requests;
+using FileService.Contracts.MediaAssets.Multipart.Responses;
 using FileService.Core.FileStorage;
 using FluentValidation;
 using FluentValidation.Results;

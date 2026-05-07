@@ -1,5 +1,6 @@
 using CSharpFunctionalExtensions;
 using FileService.Contracts;
+using FileService.Contracts.MediaAssets.Multipart.Requests;
 using FileService.Core.FileStorage;
 using FileService.Domain;
 using Microsoft.AspNetCore.Builder;
@@ -61,7 +62,9 @@ public sealed class AbortMultipartUploadHandler : ICommandHandler<AbortMultipart
            return abortResult.Error;
        }
 
-       mediaAsset.MarkDelete(DateTime.UtcNow);
+       UnitResult<Error> result =  mediaAsset.MarkFailed(DateTime.UtcNow);
+       if (result.IsFailure)
+           return result.Error;
        
        UnitResult<Error> commitedResult = await _transactionManager.SaveChangesAsync(cancellationToken);
 

@@ -1,4 +1,4 @@
-using DirectoryService.Application.CQRS;
+using Shared.Abstractions;
 
 namespace DirectoryService.API.Models.RequestModels.Departments;
 

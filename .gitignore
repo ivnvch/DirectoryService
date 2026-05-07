@@ -14,6 +14,9 @@
 x64/
 [Bb]in/
 [Oo]bj/
+**/test-[Bb]in/
+# Вывод тестов/сборки с префиксом .test-bin (например .test-binDebug)
+**/.test-bin*/
 # build folder is nowadays used for build scripts and should not be ignored
 #build/
 

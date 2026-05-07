@@ -1,9 +1,9 @@
 using CSharpFunctionalExtensions;
-using DirectoryService.Application.CQRS;
+using Shared.Abstractions;
 using DirectoryService.Application.Locations.Repositories;
 using DirectoryService.Domain.Locations;
 using DirectoryService.Domain.Locations.ValueObject;
-using Shared.Errors;
+using Shared.CommonErrors;
 using Microsoft.Extensions.Logging;
 
 namespace DirectoryService.Application.Locations.Commands.UpdateLocation;

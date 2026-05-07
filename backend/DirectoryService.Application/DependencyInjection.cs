@@ -1,9 +1,10 @@
-using DirectoryService.Application.CQRS;
 using DirectoryService.Application.Extensions.Cache.Options;
+using FileService.Contracts.HttpCommunication;
 using Microsoft.Extensions.DependencyInjection;
 using FluentValidation;
 using Microsoft.Extensions.Caching.Hybrid;
 using Microsoft.Extensions.Configuration;
+using Shared.Abstractions;
 
 namespace DirectoryService.Application;
 
@@ -26,7 +27,8 @@ public static class DependencyInjection
             .WithScopedLifetime());
 
         services
-            .AddCache(configuration);
+            .AddCache(configuration)
+            .AddFilesServiceHttpCommunication(configuration);
         
         return services;
     }

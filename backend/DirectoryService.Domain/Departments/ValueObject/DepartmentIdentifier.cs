@@ -1,6 +1,6 @@
 using CSharpFunctionalExtensions;
 using DirectoryService.Shared.Constants;
-using Shared.Errors;
+using Shared.CommonErrors;
 using DirectoryService.Shared.Validations;
 
 namespace DirectoryService.Domain.Departments.ValueObject;

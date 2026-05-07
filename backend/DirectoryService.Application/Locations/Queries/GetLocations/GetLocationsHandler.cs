@@ -1,10 +1,10 @@
 using System.Linq.Expressions;
 using CSharpFunctionalExtensions;
 using DirectoryService.Application.Abstractions.Database;
-using DirectoryService.Application.CQRS;
+using Shared.Abstractions;
 using DirectoryService.Domain.Locations;
 using DirectoryService.Shared;
-using Shared.Errors;
+using Shared.CommonErrors;
 using DirectoryService.Shared.Locations.ResponseModels;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
